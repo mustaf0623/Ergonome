@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
 <meta name="theme-color" content="#060d1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,295 +12,278 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
 <title>Ergonome — Calculateur Woyofal</title>
 <style>
 :root{
-  --font-ui:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-  --font-mono:'SF Mono','Fira Code','Consolas','Courier New',monospace;
+  --fu:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --fm:'SF Mono','Consolas','Courier New',monospace;
   --bg:#060d1a;--bg2:#0a1528;--bg3:#0f1e38;
   --card:#0c1930;--card2:#112040;
-  --border:#1a3358;--border2:#224070;
-  --accent:#f5a623;--accent2:#e8870a;--accent3:#ffcc70;
-  --green:#22c55e;--red:#ef4444;--blue:#38bdf8;--purple:#c084fc;
-  --text:#eaf0fb;--text2:#7fa8cc;--text3:#3d6080;
+  --brd:#1a3358;--brd2:#224070;
+  --acc:#f5a623;--ac2:#e8870a;--ac3:#ffcc70;
+  --grn:#22c55e;--red:#ef4444;--blu:#38bdf8;--pur:#c084fc;
+  --txt:#eaf0fb;--tx2:#7fa8cc;--tx3:#3d6080;
   --t1:#22c55e;--t2:#f5a623;--t3:#ef4444;
-  --radius:18px;--r-sm:12px;--shadow:0 12px 40px rgba(0,0,0,.5);--max-w:520px;
+  --r:18px;--rs:12px;--mw:520px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-height:100vh;margin:0 auto;max-width:var(--max-w);padding-bottom:90px;overflow-x:hidden;position:relative;}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 85% 5%,rgba(245,166,35,.07),transparent 60%),radial-gradient(ellipse 50% 60% at 15% 90%,rgba(56,189,248,.05),transparent 60%);}
-@media(min-width:521px){body{border-left:1px solid var(--border);border-right:1px solid var(--border);box-shadow:0 0 60px rgba(0,0,0,.8);}.bottom-nav{max-width:var(--max-w);}}
-@media(max-width:360px){.tab-btn{padding:8px 7px;font-size:10px;}.res-kwh{font-size:32px;}.jg-big{font-size:22px;}.card{padding:12px;}}
-
-/* ── INSTALL BANNER ── */
-#install-banner{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);z-index:10000;background:linear-gradient(135deg,#0d2240,#0a1a30);border-bottom:2px solid var(--accent);display:none;align-items:center;gap:12px;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,.5);}
-#install-banner.show{display:flex;animation:slideDown .4s ease;}
+body{font-family:var(--fu);background:var(--bg);color:var(--txt);min-height:100vh;margin:0 auto;max-width:var(--mw);padding-bottom:90px;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 85% 5%,rgba(245,166,35,.07),transparent 60%),radial-gradient(ellipse 50% 60% at 15% 90%,rgba(56,189,248,.05),transparent 60%)}
+@media(min-width:521px){body{border-left:1px solid var(--brd);border-right:1px solid var(--brd)}.bottom-nav{max-width:var(--mw)}}
+@media(max-width:360px){.tab-btn{padding:8px 7px;font-size:10px}.card{padding:12px}}
+/* CONFIRM MODAL */
+#cm{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:30000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+#cm.open{display:flex;animation:pIn .2s ease}
+#cm-box{background:var(--card2);border:1px solid var(--brd2);border-radius:20px;padding:24px 20px;max-width:310px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+#cm-ic{font-size:30px;text-align:center;margin-bottom:10px}
+#cm-ti{font-size:15px;font-weight:800;color:var(--txt);text-align:center;margin-bottom:6px}
+#cm-su{font-size:12px;color:var(--tx2);line-height:1.6;text-align:center;margin-bottom:20px}
+.cm-btns{display:flex;gap:10px}
+.cm-btns button{flex:1;padding:12px;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fu)}
+.cm-btns button:active{transform:scale(.96)}
+#cm-no{background:var(--bg3);color:var(--tx2);border:1px solid var(--brd)}
+#cm-yes{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff}
+/* INSTALL BANNER */
+#ib{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--mw);z-index:10000;background:linear-gradient(135deg,#0d2240,#0a1a30);border-bottom:2px solid var(--acc);display:none;align-items:center;gap:12px;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#ib.show{display:flex;animation:slideDown .4s ease}
 @keyframes slideDown{from{transform:translateX(-50%) translateY(-100%)}to{transform:translateX(-50%) translateY(0)}}
-.ib-logo{width:34px;height:34px;flex-shrink:0;}
-.ib-text{flex:1;}
-.ib-title{font-size:13px;font-weight:700;color:var(--accent);}
-.ib-sub{font-size:10px;color:var(--text2);margin-top:2px;}
-.ib-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;border:none;border-radius:10px;padding:8px 14px;cursor:pointer;white-space:nowrap;font-family:var(--font-ui);flex-shrink:0;}
-.ib-close{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;}
-
-/* ── SPLASH ── */
-#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease,transform .6s ease;}
-#splash.hide{opacity:0;transform:scale(1.04);pointer-events:none;}
-.sp-logo{width:92px;height:92px;margin-bottom:20px;animation:logoIn .8s cubic-bezier(.34,1.56,.64,1) both;}
+.ib-logo{width:34px;height:34px;flex-shrink:0}
+.ib-txt{flex:1}
+.ib-ti{font-size:13px;font-weight:800;color:var(--acc)}
+.ib-su{font-size:10px;color:var(--tx2);margin-top:2px}
+.ib-btn{background:linear-gradient(135deg,var(--acc),var(--ac2));color:#000;font-weight:800;font-size:12px;border:none;border-radius:10px;padding:8px 14px;cursor:pointer;font-family:var(--fu);flex-shrink:0}
+.ib-cl{background:none;border:none;color:var(--tx3);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0}
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease,transform .6s ease}
+#splash.hide{opacity:0;transform:scale(1.04);pointer-events:none}
+.sp-logo{width:92px;height:92px;margin-bottom:20px;animation:logoIn .8s cubic-bezier(.34,1.56,.64,1) both}
 @keyframes logoIn{from{opacity:0;transform:scale(.5) rotate(-10deg)}to{opacity:1;transform:scale(1) rotate(0)}}
-.sp-name{font-size:clamp(28px,8vw,44px);font-weight:800;letter-spacing:-1.5px;background:linear-gradient(135deg,#ffe066,#f5a623,#e8870a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;animation:fu .6s .3s both;}
-.sp-tag{font-size:clamp(11px,3vw,14px);color:var(--text2);text-align:center;line-height:1.7;max-width:260px;margin-bottom:6px;animation:fu .6s .45s both;}
-.sp-tag strong{color:var(--accent);}
-.sp-mono{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:36px;animation:fu .6s .55s both;}
+.sp-name{font-size:clamp(28px,8vw,44px);font-weight:800;letter-spacing:-1.5px;background:linear-gradient(135deg,#ffe066,#f5a623,#e8870a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;animation:fu .6s .3s both}
+.sp-tag{font-size:clamp(11px,3vw,14px);color:var(--tx2);text-align:center;line-height:1.7;max-width:260px;margin-bottom:6px;animation:fu .6s .45s both}
+.sp-tag strong{color:var(--acc)}
+.sp-ver{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:34px;animation:fu .6s .55s both}
 @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.sp-track{width:150px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:12px;}
-.sp-fill{height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,var(--accent2),var(--accent3));animation:ld 1.8s .3s cubic-bezier(.4,0,.2,1) forwards;}
+.sp-track{width:150px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.sp-fill{height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,var(--ac2),var(--ac3));animation:ld 1.8s .3s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes ld{to{width:100%}}
-.sp-loading{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;font-family:var(--font-mono);animation:bk 1.2s ease-in-out infinite;}
+.sp-load{font-size:10px;color:var(--tx3);letter-spacing:2px;text-transform:uppercase;font-family:var(--fm);animation:bk 1.2s ease-in-out infinite}
 @keyframes bk{50%{opacity:.2}}
-.sp-sig{position:absolute;bottom:32px;text-align:center;font-size:11px;color:var(--text3);line-height:1.8;}
-.sp-sig span{color:var(--accent);font-weight:700;}
-
-/* ── HEADER ── */
-.header{background:rgba(6,13,26,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:14px 16px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
-.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.logo-wrap{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:36px;height:36px;flex-shrink:0;}
-.logo-tb h1{font-size:19px;font-weight:800;letter-spacing:-.6px;background:linear-gradient(90deg,#ffe066,#f5a623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
-.logo-tb p{font-size:9px;color:var(--text3);margin-top:2px;}
-.hbtn{background:var(--card2);border:1px solid var(--border);color:var(--text2);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer;font-family:var(--font-ui);}
-.hbtn:active{transform:scale(.93);}
-.nav-tabs{display:flex;overflow-x:auto;scrollbar-width:none;}
-.nav-tabs::-webkit-scrollbar{display:none;}
-.tab-btn{flex-shrink:0;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text3);padding:10px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-ui);white-space:nowrap;}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
-
-/* ── LAYOUT ── */
-.content{padding:14px;position:relative;z-index:1;}
-.panel{display:none;}
-.panel.active{display:block;animation:pIn .2s ease;}
+.sp-sig{position:absolute;bottom:30px;text-align:center;font-size:11px;color:var(--tx3);line-height:1.8}
+.sp-sig span{color:var(--acc);font-weight:700}
+/* HEADER */
+.hdr{background:rgba(6,13,26,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:14px 16px 0;border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:100}
+.hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.logo-w{display:flex;align-items:center;gap:10px}
+.logo-ico{width:36px;height:36px;flex-shrink:0}
+.logo-tb h1{font-size:19px;font-weight:800;letter-spacing:-.6px;background:linear-gradient(90deg,#ffe066,#f5a623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+.logo-tb p{font-size:9px;color:var(--tx3);margin-top:2px}
+.hbtn{background:var(--card2);border:1px solid var(--brd);color:var(--tx2);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer;font-family:var(--fu)}
+.hbtn:active{transform:scale(.93)}
+.nav-tabs{display:flex;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--tx3);padding:10px 11px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--fu);white-space:nowrap}
+.tab-btn.active{color:var(--acc);border-bottom-color:var(--acc)}
+/* LAYOUT */
+.content{padding:14px;position:relative;z-index:1}
+.panel{display:none}.panel.active{display:block;animation:pIn .2s ease}
 @keyframes pIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── CARD ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,166,35,.3),transparent);}
-.card-title{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-
-/* ── FORM ── */
-.ig{margin-bottom:12px;}
-.il{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;letter-spacing:.3px;}
-.ifield{width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;color:var(--text);font-size:16px;font-family:var(--font-mono);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
-.ifield:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,166,35,.12);}
-.ifield::placeholder{color:var(--text3);}
-select.ifield{cursor:pointer;}
-.tog-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--bg2);border-radius:var(--r-sm);border:1.5px solid var(--border);margin-bottom:12px;}
-.tog-lbl{font-size:12px;color:var(--text);font-weight:500;}
-.tog{position:relative;width:46px;height:26px;}
-.tog input{opacity:0;width:0;height:0;position:absolute;}
-.tog-s{position:absolute;inset:0;background:var(--bg3);border-radius:13px;cursor:pointer;transition:.3s;border:1px solid var(--border2);}
-.tog-s::before{content:'';position:absolute;width:20px;height:20px;left:3px;top:2px;background:var(--text3);border-radius:50%;transition:.3s;}
-input:checked+.tog-s{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(245,166,35,.3);}
-input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
-
-/* ── BUTTONS ── */
-.btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:15px;border:none;border-radius:14px;cursor:pointer;font-family:var(--font-ui);transition:all .2s;box-shadow:0 4px 16px rgba(245,166,35,.25);}
-.btn:active{transform:scale(.97);}
-.btn-sec{width:100%;padding:12px;background:transparent;color:var(--text2);font-weight:600;font-size:13px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;font-family:var(--font-ui);transition:all .2s;margin-top:8px;}
-.btn-sec:active{background:var(--card2);}
-.btn-del{width:100%;padding:12px;background:rgba(239,68,68,.08);color:var(--red);font-weight:600;font-size:13px;border:1.5px solid rgba(239,68,68,.25);border-radius:14px;cursor:pointer;font-family:var(--font-ui);transition:all .2s;margin-top:8px;}
-.btn-del:active{background:rgba(239,68,68,.15);}
-
-/* ── RESULT ── */
-.result-box{background:linear-gradient(160deg,#091e3a,#071528);border:1.5px solid var(--border2);border-radius:var(--radius);padding:16px;margin-top:14px;display:none;position:relative;overflow:hidden;}
-.result-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
-.result-box.show{display:block;animation:pIn .3s ease;}
-.res-main{text-align:center;padding:16px 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px;}
-.res-kwh{font-family:var(--font-mono);font-size:46px;font-weight:700;background:linear-gradient(135deg,var(--accent3),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;filter:drop-shadow(0 0 18px rgba(245,166,35,.3));}
-.res-sub{font-size:12px;color:var(--text2);margin-top:6px;}
-.bar-wrap{margin:14px 0 6px;}
-.bar-lbls{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-bottom:5px;}
-.bar-track{height:12px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);overflow:hidden;position:relative;}
-.bt1{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:6px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
-.bt2{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#f5a623,#e8870a);transition:width .6s cubic-bezier(.34,1.56,.64,1) .08s;}
-.bsep{position:absolute;top:0;height:100%;width:1px;background:rgba(255,255,255,.15);}
-.bk{margin-top:14px;}
-.bk-head{font-size:9px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;font-weight:700;}
-.bk-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(26,51,88,.6);font-size:12px;}
-.bk-row:last-child{border-bottom:none;}
-.bk-l{color:var(--text2);}
-.bk-v{font-family:var(--font-mono);font-weight:700;font-size:11px;}
-.neg{color:var(--red);}.pos{color:var(--green);}
-
-/* ── ALERTS ── */
-.al{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:12px;margin-top:10px;font-size:12px;line-height:1.6;}
-.al-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
-.al-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#4ade80;}
-.al-warn{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);color:var(--accent);}
-.al-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#f87171;}
-.al-info{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:var(--blue);}
-
-/* ── TARIFF ── */
-.tr-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;margin-bottom:8px;}
-.tr-row:last-child{margin-bottom:0;}
-.tr-t1{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);}
-.tr-t2{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.18);}
-.tr-t3{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);}
-.tr-lbl{font-size:12px;font-weight:700;}
-.tr-sub{font-size:10px;color:var(--text2);margin-top:2px;}
-.tr-price{font-family:var(--font-mono);font-size:20px;font-weight:700;}
-.tr-unit{font-size:9px;color:var(--text3);margin-top:2px;text-align:right;}
-
-/* ── JAUGE ── */
-.jg{margin-bottom:16px;}
-.jg-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;}
-.jg-big{font-family:var(--font-mono);font-size:32px;font-weight:700;color:var(--accent);line-height:1;}
-.jg-sub{font-size:11px;color:var(--text2);margin-top:4px;}
-.jg-track{height:16px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);overflow:hidden;position:relative;}
-.jt1{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);transition:width .6s cubic-bezier(.34,1.56,.64,1);}
-.jt2{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#f5a623,#e8870a);transition:width .6s cubic-bezier(.34,1.56,.64,1) .08s;}
-.jg-marks{display:flex;justify-content:space-between;padding-top:5px;font-size:9px;color:var(--text3);}
-
-/* ── STATS ── */
-.st-row{display:flex;gap:8px;margin-bottom:12px;}
-.stat-m{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;}
-.st-v{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--accent);}
-.st-l{font-size:9px;color:var(--text3);margin-top:3px;font-weight:500;}
-
-/* ── RECHARGE ITEM ── */
-.ri{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border:1px solid var(--border);}
-.ri:first-child{border-color:rgba(245,166,35,.3);}
-.ri-l{flex:1;min-width:0;}
-.ri-date{font-size:10px;color:var(--text3);margin-bottom:2px;}
-.ri-m{font-size:14px;font-weight:700;color:var(--text);}
-.ri-r{text-align:right;flex-shrink:0;}
-.ri-k{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--accent);line-height:1;}
-.ri-kl{font-size:9px;color:var(--text3);}
-.dbtn{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 6px;flex-shrink:0;}
-.dbtn:active{color:var(--red);}
-
-/* ── OBJ CARDS ── */
-.oc-wrap{display:flex;gap:8px;margin-bottom:14px;}
-.oc{flex:1;padding:12px 6px;border-radius:12px;border:2px solid var(--border);text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2);}
-.oc.sel{border-color:var(--accent);background:rgba(245,166,35,.07);box-shadow:0 0 12px rgba(245,166,35,.15);}
-.oc .oi{font-size:20px;margin-bottom:4px;}
-.oc .ol{font-size:10px;font-weight:700;color:var(--text2);line-height:1.4;}
-.oc.sel .ol{color:var(--accent);}
-.oc:active{transform:scale(.95);}
-
-/* ── PLANIFIER ── */
-.plan-source-card{background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(56,189,248,.04));border:1px solid rgba(34,197,94,.2);border-radius:14px;padding:14px;margin-bottom:14px;}
-.plan-source-title{font-size:10px;font-weight:700;color:var(--green);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px;}
-.plan-stat-row{display:flex;gap:8px;}
-.plan-stat{flex:1;background:rgba(6,13,26,.5);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid rgba(34,197,94,.15);}
-.plan-stat .val{font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--accent);}
-.plan-stat .lbl{font-size:9px;color:var(--text3);margin-top:3px;}
-.plan-no-data{text-align:center;padding:18px;color:var(--text3);font-size:12px;line-height:1.7;}
-.plan-result-amount{text-align:center;padding:16px 0 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
-.plan-fcfa{font-family:var(--font-mono);font-size:40px;font-weight:700;color:var(--accent);line-height:1;filter:drop-shadow(0 0 18px rgba(245,166,35,.3));}
-.plan-fcfa-lbl{font-size:11px;color:var(--text2);margin-top:6px;}
-.plan-alt{margin-top:10px;padding:10px 14px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:10px;display:flex;justify-content:space-between;align-items:center;}
-.plan-alt-lbl{font-size:11px;color:var(--blue);}
-.plan-alt-val{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--blue);}
-.fiab{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font-size:11px;margin-top:10px;}
-.fiab-high{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#4ade80;}
-.fiab-med{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);color:var(--accent);}
-.fiab-low{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);color:#f87171;}
-
-/* ── BADGE ── */
-.bdg{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
-.b-t1{background:rgba(34,197,94,.12);color:var(--t1);border:1px solid rgba(34,197,94,.25);}
-.b-t2{background:rgba(245,166,35,.12);color:var(--t2);border:1px solid rgba(245,166,35,.25);}
-.b-t3{background:rgba(239,68,68,.12);color:var(--t3);border:1px solid rgba(239,68,68,.25);}
-
-/* ── SHEET ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;backdrop-filter:blur(4px);}
-.overlay.open{display:flex;}
-.sheet{width:100%;max-width:var(--max-w);margin:0 auto;background:var(--bg2);border-radius:24px 24px 0 0;border-top:1px solid var(--border);max-height:92vh;overflow-y:auto;animation:shUp .3s cubic-bezier(.34,1.1,.64,1);}
+/* CARD */
+.card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 12px 40px rgba(0,0,0,.5);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,166,35,.3),transparent)}
+.card-ti{font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+/* CONV TABS */
+.ctabs{display:flex;gap:0;margin-bottom:14px;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--brd)}
+.ctab{flex:1;padding:8px 6px;border-radius:8px;border:none;background:transparent;color:var(--tx3);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--fu);text-align:center}
+.ctab.active{background:var(--card);color:var(--acc);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+/* FORM */
+.ig{margin-bottom:12px}
+.il{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:6px;display:block;letter-spacing:.3px}
+.ifield{width:100%;background:var(--bg2);border:1.5px solid var(--brd);border-radius:var(--rs);padding:12px 14px;color:var(--txt);font-size:16px;font-family:var(--fm);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.ifield:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
+.ifield::placeholder{color:var(--tx3)}
+select.ifield{cursor:pointer}
+.tog-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--bg2);border-radius:var(--rs);border:1.5px solid var(--brd);margin-bottom:12px}
+.tog-lbl{font-size:12px;color:var(--txt);font-weight:500;line-height:1.4;padding-right:10px}
+.tog{position:relative;width:46px;height:26px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-s{position:absolute;inset:0;background:var(--bg3);border-radius:13px;cursor:pointer;transition:.3s;border:1px solid var(--brd2)}
+.tog-s::before{content:'';position:absolute;width:20px;height:20px;left:3px;top:2px;background:var(--tx3);border-radius:50%;transition:.3s}
+input:checked+.tog-s{background:var(--acc);border-color:var(--acc)}
+input:checked+.tog-s::before{transform:translateX(20px);background:#000}
+/* BUTTONS */
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--acc),var(--ac2));color:#000;font-weight:800;font-size:15px;border:none;border-radius:14px;cursor:pointer;font-family:var(--fu);transition:all .2s;box-shadow:0 4px 16px rgba(245,166,35,.25)}
+.btn:active{transform:scale(.97)}
+.btn-sec{width:100%;padding:12px;background:transparent;color:var(--tx2);font-weight:600;font-size:13px;border:1.5px solid var(--brd);border-radius:14px;cursor:pointer;font-family:var(--fu);margin-top:8px}
+.btn-sec:active{background:var(--card2)}
+.btn-del{width:100%;padding:12px;background:rgba(239,68,68,.08);color:var(--red);font-weight:600;font-size:13px;border:1.5px solid rgba(239,68,68,.25);border-radius:14px;cursor:pointer;font-family:var(--fu);margin-top:8px}
+.btn-del:active{background:rgba(239,68,68,.15)}
+/* RESULT */
+.rbox{background:linear-gradient(160deg,#091e3a,#071528);border:1.5px solid var(--brd2);border-radius:var(--r);padding:16px;margin-top:14px;display:none;position:relative;overflow:hidden}
+.rbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--acc),transparent)}
+.rbox.show{display:block;animation:pIn .3s ease}
+.res-big{font-family:var(--fm);font-size:46px;font-weight:700;background:linear-gradient(135deg,var(--ac3),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;filter:drop-shadow(0 0 18px rgba(245,166,35,.3))}
+.res-sub{font-size:12px;color:var(--tx2);margin-top:6px}
+/* BAR */
+.bwrap{margin:12px 0 4px}
+.blbls{display:flex;justify-content:space-between;font-size:9px;color:var(--tx3);margin-bottom:5px}
+.btrack{height:12px;border-radius:6px;background:var(--bg2);border:1px solid var(--brd);overflow:hidden;position:relative}
+.bt1{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:6px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.bt2{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#f5a623,#e8870a);transition:width .6s cubic-bezier(.34,1.56,.64,1) .08s}
+.bsep{position:absolute;top:0;height:100%;width:1px;background:rgba(255,255,255,.15)}
+/* BK */
+.bk{margin-top:12px}
+.bk-hd{font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:8px;font-weight:700}
+.bk-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(26,51,88,.6);font-size:12px}
+.bk-row:last-child{border-bottom:none}
+.bk-l{color:var(--tx2)}.bk-v{font-family:var(--fm);font-weight:700;font-size:11px}
+.neg{color:var(--red)}.pos{color:var(--grn)}
+/* ALERTS */
+.al{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:11px;margin-top:10px;font-size:12px;line-height:1.6}
+.al-ic{font-size:14px;flex-shrink:0;margin-top:1px}
+.al-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#4ade80}
+.al-warn{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);color:var(--acc)}
+.al-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#f87171}
+.al-info{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:var(--blu)}
+.al-pur{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.25);color:var(--pur)}
+/* TARIFF */
+.tr-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;margin-bottom:8px}
+.tr-row:last-child{margin-bottom:0}
+.tr-t1{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18)}
+.tr-t2{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.18)}
+.tr-t3{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18)}
+.tr-n{font-size:12px;font-weight:700}.tr-s{font-size:10px;color:var(--tx2);margin-top:2px}
+.tr-p{font-family:var(--fm);font-size:20px;font-weight:700}.tr-u{font-size:9px;color:var(--tx3);margin-top:2px;text-align:right}
+/* JAUGE */
+.jg{margin-bottom:16px}
+.jg-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px}
+.jg-big{font-family:var(--fm);font-size:32px;font-weight:700;color:var(--acc);line-height:1}
+.jg-sub{font-size:11px;color:var(--tx2);margin-top:4px}
+.jg-track{height:16px;border-radius:8px;background:var(--bg2);border:1px solid var(--brd);overflow:hidden;position:relative}
+.jt1{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.jt2{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#f5a623,#e8870a);transition:width .6s cubic-bezier(.34,1.56,.64,1) .08s}
+.jg-marks{display:flex;justify-content:space-between;padding-top:5px;font-size:9px;color:var(--tx3)}
+/* STATS */
+.st-row{display:flex;gap:8px;margin-bottom:12px}
+.stat-m{flex:1;background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:12px 8px;text-align:center}
+.st-v{font-family:var(--fm);font-size:14px;font-weight:700;color:var(--acc)}
+.st-l{font-size:9px;color:var(--tx3);margin-top:3px;font-weight:500}
+/* RI */
+.ri{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border:1px solid var(--brd)}
+.ri:first-child{border-color:rgba(245,166,35,.3)}
+.ri-l{flex:1;min-width:0}.ri-d{font-size:10px;color:var(--tx3);margin-bottom:2px}.ri-m{font-size:14px;font-weight:700;color:var(--txt)}
+.ri-r{text-align:right;flex-shrink:0}.ri-k{font-family:var(--fm);font-size:18px;font-weight:700;color:var(--acc);line-height:1}.ri-kl{font-size:9px;color:var(--tx3)}
+.dbtn{background:none;border:none;color:var(--tx3);font-size:16px;cursor:pointer;padding:4px 6px;flex-shrink:0}
+.dbtn:active{color:var(--red)}
+/* OBJ */
+.oc-wrap{display:flex;gap:8px;margin-bottom:14px}
+.oc{flex:1;padding:12px 6px;border-radius:12px;border:2px solid var(--brd);text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
+.oc.sel{border-color:var(--acc);background:rgba(245,166,35,.07)}
+.oc .oi{font-size:20px;margin-bottom:4px}.oc .ol{font-size:10px;font-weight:700;color:var(--tx2);line-height:1.4}
+.oc.sel .ol{color:var(--acc)}.oc:active{transform:scale(.95)}
+/* PLAN TABS */
+.ptabs{display:flex;gap:0;margin-bottom:14px;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--brd)}
+.ptab{flex:1;padding:9px 6px;border-radius:8px;border:none;background:transparent;color:var(--tx3);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--fu);text-align:center;line-height:1.3}
+.ptab.active{background:var(--card);color:var(--acc);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+/* SRC CARD */
+.src-card{background:linear-gradient(135deg,rgba(34,197,94,.05),rgba(56,189,248,.03));border:1px solid rgba(34,197,94,.18);border-radius:14px;padding:13px;margin-bottom:14px}
+.src-ti{font-size:10px;font-weight:700;color:var(--grn);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.src-stats{display:flex;gap:8px}
+.src-s{flex:1;background:rgba(6,13,26,.5);border-radius:10px;padding:9px 6px;text-align:center;border:1px solid rgba(34,197,94,.12)}
+.src-v{font-family:var(--fm);font-size:15px;font-weight:700;color:var(--acc)}
+.src-l{font-size:9px;color:var(--tx3);margin-top:3px}
+/* VERDICT */
+.verd{border-radius:14px;padding:14px;text-align:center;margin-bottom:12px}
+.v-ok{background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.05));border:1.5px solid rgba(34,197,94,.3)}
+.v-warn{background:linear-gradient(135deg,rgba(245,166,35,.1),rgba(245,166,35,.05));border:1.5px solid rgba(245,166,35,.3)}
+.v-err{background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.05));border:1.5px solid rgba(239,68,68,.3)}
+.v-ic{font-size:26px;margin-bottom:5px}.v-ti{font-size:14px;font-weight:800;margin-bottom:4px}.v-su{font-size:11px;opacity:.85;line-height:1.5}
+/* FOURCHETTE */
+.frc{display:flex;gap:7px;margin:10px 0}
+.fc{flex:1;border-radius:11px;padding:11px 8px;text-align:center}
+.fc-min{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2)}
+.fc-mid{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2)}
+.fc-max{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2)}
+.fc-v{font-family:var(--fm);font-size:14px;font-weight:700;line-height:1;margin-bottom:4px}
+.fc-l{font-size:9px;color:var(--tx3);line-height:1.3}
+/* FIAB */
+.fiab{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font-size:11px;margin-top:10px;font-weight:500}
+.fi-h{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#4ade80}
+.fi-m{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);color:var(--acc)}
+.fi-l{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);color:#f87171}
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.b-t1{background:rgba(34,197,94,.12);color:var(--t1);border:1px solid rgba(34,197,94,.25)}
+.b-t2{background:rgba(245,166,35,.12);color:var(--t2);border:1px solid rgba(245,166,35,.25)}
+.b-t3{background:rgba(239,68,68,.12);color:var(--t3);border:1px solid rgba(239,68,68,.25)}
+/* SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.sheet{width:100%;max-width:var(--mw);margin:0 auto;background:var(--bg2);border-radius:24px 24px 0 0;border-top:1px solid var(--brd);max-height:92vh;overflow-y:auto;animation:shUp .3s cubic-bezier(.34,1.1,.64,1)}
 @keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sh-in{padding:20px 20px 48px;}
-.sh-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
-.sh-title{font-size:17px;font-weight:800;margin-bottom:6px;}
-.sh-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
-.ab-block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
-.ab-title{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;}
-.ab-block p{font-size:12px;color:var(--text2);line-height:1.75;}
-
-/* ── DATA TABLE ── */
-.data-table{width:100%;border-collapse:collapse;font-size:11px;}
-.data-table th{background:var(--bg3);color:var(--text2);font-weight:700;padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase;}
-.data-table td{padding:8px 10px;border-bottom:1px solid rgba(26,51,88,.5);color:var(--text);font-family:var(--font-mono);font-size:11px;}
-.data-table tr:last-child td{border-bottom:none;}
-.data-table tr:nth-child(even) td{background:rgba(10,21,40,.4);}
-
-/* ── SUGG ── */
-.sugg{padding:14px;background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(245,166,35,.04));border:1px solid rgba(34,197,94,.2);border-radius:14px;margin-top:10px;}
-.sugg-title{font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px;}
-.sugg p{font-size:12px;color:var(--text2);line-height:1.6;}
-.sugg strong{color:var(--text);}
-
-/* ── MONTH TABS ── */
-.month-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;}
-.month-tabs::-webkit-scrollbar{display:none;}
-.mtab{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-family:var(--font-ui);transition:all .2s;white-space:nowrap;}
-.mtab.active{background:var(--accent);color:#000;border-color:var(--accent);}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);background:rgba(6,13,26,.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 max(20px,env(safe-area-inset-bottom));z-index:100;}
-.nb{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 14px;border-radius:12px;transition:all .2s;border:none;background:none;}
-.nb-ic{font-size:20px;transition:transform .25s;}
-.nb-lb{font-size:9px;color:var(--text3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-family:var(--font-ui);}
-.nb.active .nb-lb{color:var(--accent);}
-.nb.active .nb-ic{transform:translateY(-2px);filter:drop-shadow(0 0 6px rgba(245,166,35,.5));}
-.nb:active{transform:scale(.9);}
-
-/* ── MISC ── */
-.empty{text-align:center;padding:36px 20px;color:var(--text3);}
-.empty .ei{font-size:36px;margin-bottom:10px;}
-.empty p{font-size:12px;line-height:1.7;}
-.slbl{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin:4px 0 10px;padding-left:4px;}
-.dvd{height:1px;background:var(--border);margin:14px 0;}
-.note{font-size:11px;color:var(--text3);line-height:1.6;margin-top:6px;}
-.sec-bdg{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);font-size:11px;color:#4ade80;margin-top:10px;font-weight:500;}
-.sig{text-align:center;padding:20px 14px;color:var(--text3);font-size:10px;letter-spacing:.5px;line-height:2;border-top:1px solid var(--border);margin-top:8px;}
-.sig strong{color:var(--accent);font-weight:700;}
-.cpill{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border-radius:14px;margin-bottom:8px;font-size:12px;line-height:1.6;}
-.toast{position:fixed;bottom:max(100px,calc(88px + env(safe-area-inset-bottom)));left:50%;transform:translateX(-50%);background:var(--card2);color:var(--text);border:1px solid var(--border);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:1000;white-space:nowrap;font-family:var(--font-ui);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;animation:tIn .2s ease;}
+.sh-in{padding:20px 20px 48px}
+.sh-handle{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:0 auto 18px}
+.sh-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:20px}
+.ab-block{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:10px}
+.ab-ti{font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px}
+.ab-block p{font-size:12px;color:var(--tx2);line-height:1.75}
+/* DATA TABLE */
+.dt{width:100%;border-collapse:collapse;font-size:11px}
+.dt th{background:var(--bg3);color:var(--tx2);font-weight:700;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase}
+.dt td{padding:8px 10px;border-bottom:1px solid rgba(26,51,88,.5);color:var(--txt);font-family:var(--fm);font-size:11px}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:nth-child(even) td{background:rgba(10,21,40,.4)}
+/* SUGG */
+.sugg{padding:12px;background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(245,166,35,.04));border:1px solid rgba(34,197,94,.2);border-radius:13px;margin-top:10px}
+.sugg-t{font-size:11px;font-weight:700;color:var(--grn);margin-bottom:6px}
+.sugg p{font-size:11px;color:var(--tx2);line-height:1.6}
+.sugg strong{color:var(--txt)}
+/* MONTH TABS */
+.month-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.month-tabs::-webkit-scrollbar{display:none}
+.mtab{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:var(--bg2);color:var(--tx2);font-family:var(--fu);white-space:nowrap}
+.mtab.active{background:var(--acc);color:#000;border-color:var(--acc)}
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--mw);background:rgba(6,13,26,.97);backdrop-filter:blur(16px);border-top:1px solid var(--brd);display:flex;justify-content:space-around;padding:8px 0 max(20px,env(safe-area-inset-bottom));z-index:100}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 14px;border-radius:12px;border:none;background:none}
+.nb-ic{font-size:20px;transition:transform .25s}
+.nb-lb{font-size:9px;color:var(--tx3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-family:var(--fu)}
+.nb.active .nb-lb{color:var(--acc)}
+.nb.active .nb-ic{transform:translateY(-2px);filter:drop-shadow(0 0 6px rgba(245,166,35,.5))}
+.nb:active{transform:scale(.9)}
+/* MISC */
+.empty{text-align:center;padding:36px 20px;color:var(--tx3)}
+.empty .ei{font-size:36px;margin-bottom:10px}
+.empty p{font-size:12px;line-height:1.7}
+.slbl{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin:4px 0 10px;padding-left:4px}
+.dvd{height:1px;background:var(--brd);margin:14px 0}
+.note{font-size:11px;color:var(--tx3);line-height:1.6;margin-top:6px}
+.sec-bdg{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);font-size:11px;color:#4ade80;margin-top:10px;font-weight:500}
+.sig{text-align:center;padding:20px 14px;color:var(--tx3);font-size:10px;line-height:2;border-top:1px solid var(--brd);margin-top:8px}
+.sig strong{color:var(--acc);font-weight:700}
+.cpill{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;margin-bottom:8px;font-size:12px;line-height:1.6}
+.toast{position:fixed;bottom:max(100px,calc(88px + env(safe-area-inset-bottom)));left:50%;transform:translateX(-50%);background:var(--card2);color:var(--txt);border:1px solid var(--brd);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:20000;white-space:nowrap;font-family:var(--fu);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;animation:tIn .2s ease}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-/* ── MODALE DE CONFIRMATION PERSONNALISÉE ── */
-#confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:20000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
-#confirm-overlay.open{display:flex;animation:pIn .2s ease;}
-#confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px 20px;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6);}
-#confirm-icon{font-size:32px;text-align:center;margin-bottom:12px;}
-#confirm-msg{font-size:14px;color:var(--text);line-height:1.65;text-align:center;margin-bottom:6px;font-weight:600;}
-#confirm-sub{font-size:12px;color:var(--text2);line-height:1.6;text-align:center;margin-bottom:20px;}
-.confirm-btns{display:flex;gap:10px;}
-.confirm-btns button{flex:1;padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-ui);transition:all .15s;}
-.confirm-btns button:active{transform:scale(.96);}
-#confirm-cancel{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
-#confirm-ok{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff;}
 </style>
 </head>
 <body>
 
-<!-- ══ MODALE DE CONFIRMATION ══ -->
-<div id="confirm-overlay">
-  <div id="confirm-box">
-    <div id="confirm-icon"></div>
-    <div id="confirm-msg"></div>
-    <div id="confirm-sub"></div>
-    <div class="confirm-btns">
-      <button id="confirm-cancel" onclick="confirmAnswer(false)">Annuler</button>
-      <button id="confirm-ok" onclick="confirmAnswer(true)">Confirmer</button>
+<!-- CONFIRM MODAL -->
+<div id="cm">
+  <div id="cm-box">
+    <div id="cm-ic"></div>
+    <div id="cm-ti"></div>
+    <div id="cm-su"></div>
+    <div class="cm-btns">
+      <button id="cm-no" onclick="cmAns(false)">Annuler</button>
+      <button id="cm-yes" onclick="cmAns(true)">Confirmer</button>
     </div>
   </div>
 </div>
 
-<!-- ══ INSTALL BANNER ══ -->
-<div id="install-banner">
-  <!-- Logo inline direct — aucune dépendance -->
+<!-- INSTALL BANNER -->
+<div id="ib">
   <svg class="ib-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <defs><linearGradient id="ib_bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient><linearGradient id="ib_bt" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#ffe066"/><stop offset="50%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c96f00"/></linearGradient></defs>
     <circle cx="100" cy="100" r="96" fill="none" stroke="#f5a623" stroke-width="2" opacity=".5"/>
@@ -308,18 +291,14 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
     <path d="M118 28 L76 108 L102 108 L82 172 L130 84 L103 84 Z" fill="url(#ib_bt)"/>
     <path d="M118 28 L96 84 L103 84 Z" fill="rgba(255,240,150,.55)"/>
   </svg>
-  <div class="ib-text">
-    <div class="ib-title">Installer Ergonome</div>
-    <div class="ib-sub">Ajouter à l'écran d'accueil</div>
-  </div>
+  <div class="ib-txt"><div class="ib-ti">Installer Ergonome</div><div class="ib-su">Ajouter à l'écran d'accueil</div></div>
   <button class="ib-btn" onclick="triggerInstall()">Installer</button>
-  <button class="ib-close" onclick="dismissBanner()">✕</button>
+  <button class="ib-cl" onclick="dismissBanner()">✕</button>
 </div>
 
-<!-- ══ SPLASH ══ -->
+<!-- SPLASH -->
 <div id="splash">
   <div class="sp-logo">
-    <!-- SVG complet inline — fonctionne sur tous les navigateurs mobiles -->
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
       <defs>
         <linearGradient id="sp_bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient>
@@ -351,18 +330,17 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
   </div>
   <div class="sp-name">Ergonome</div>
   <div class="sp-tag">Maîtrisez votre consommation Senelec.<br><strong>Calculez, suivez, optimisez</strong> —<br>sans jamais dépasser votre tranche.</div>
-  <div class="sp-mono">Woyofal · Calculateur · v7.1</div>
+  <div class="sp-ver">Woyofal · Calculateur · v7.2</div>
   <div class="sp-track"><div class="sp-fill"></div></div>
-  <div class="sp-loading">Initialisation…</div>
+  <div class="sp-load">Initialisation…</div>
   <div class="sp-sig">Développé par <span>Mouhamadou Moustapha SY</span><br>Étudiant AgroTIC · USSEIN · Sénégal</div>
 </div>
 
-<!-- ══ HEADER ══ -->
-<div class="header">
-  <div class="header-top">
-    <div class="logo-wrap">
-      <div class="logo-icon">
-        <!-- SVG complet inline dans le header — indépendant du splash -->
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="logo-w">
+      <div class="logo-ico">
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
           <defs>
             <linearGradient id="h_bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient>
@@ -381,67 +359,94 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
           <path d="M118 28 L96 84 L103 84 Z" fill="rgba(255,240,150,.5)"/>
         </svg>
       </div>
-      <div class="logo-tb">
-        <h1>Ergonome</h1>
-        <p>Calculateur Woyofal · Senelec 2026</p>
-      </div>
+      <div class="logo-tb"><h1>Ergonome</h1><p>Calculateur Woyofal · Senelec 2026</p></div>
     </div>
     <button class="hbtn" onclick="openSheet('sh_set')">⚙️</button>
   </div>
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="showP('p1',this)">💱 FCFA→kWh</button>
+    <button class="tab-btn active" onclick="showP('p1',this)">💱 Convertir</button>
     <button class="tab-btn" onclick="showP('p2',this)">📊 Suivi</button>
     <button class="tab-btn" onclick="showP('p3',this)">🎯 Planifier</button>
     <button class="tab-btn" onclick="showP('p4',this)">📁 Données</button>
   </div>
 </div>
 
-<!-- ══ CONTENT ══ -->
 <div class="content">
 
-<!-- P1 -->
+<!-- P1 CONVERTISSEUR -->
 <div id="p1" class="panel active">
   <div class="card">
-    <div class="card-title">💱 Simuler une recharge</div>
-    <div class="ig"><label class="il">Montant de la recharge (FCFA)</label><input type="number" class="ifield" id="p1m" placeholder="Ex : 5 000" inputmode="numeric" autocomplete="off"></div>
-    <div class="ig"><label class="il">kWh déjà consommés ce mois</label><input type="number" class="ifield" id="p1d" placeholder="0" inputmode="numeric" value="0" autocomplete="off"></div>
-    <div class="tog-row"><span class="tog-lbl">Première recharge du mois ?</span><label class="tog"><input type="checkbox" id="p1p" checked><span class="tog-s"></span></label></div>
-    <button class="btn" onclick="calcP1()">⚡ Calculer mes kWh</button>
-    <div id="p1r" class="result-box">
-      <div class="res-main"><div class="res-kwh" id="r_kwh">0</div><div class="res-sub">kilowattheures obtenus</div></div>
-      <div class="bar-wrap">
-        <div class="bar-lbls"><span>0</span><span>150 kWh ▸ T1</span><span>250 kWh ▸ T2</span></div>
-        <div class="bar-track"><div class="bt1" id="bt1" style="width:0%"></div><div class="bt2" id="bt2" style="width:0%;left:60%"></div><div class="bsep" style="left:60%"></div></div>
+    <div class="card-ti">💱 Convertisseur</div>
+    <div class="ctabs">
+      <button class="ctab active" id="ct_cfa" onclick="switchConv('cfa')">FCFA → kWh</button>
+      <button class="ctab" id="ct_kwh" onclick="switchConv('kwh')">kWh → FCFA</button>
+    </div>
+    <!-- FCFA → kWh -->
+    <div id="cv_cfa">
+      <div class="ig"><label class="il">Montant à recharger (FCFA)</label><input type="number" class="ifield" id="c1m" placeholder="Ex : 5 000" inputmode="numeric" autocomplete="off"></div>
+      <div class="ig"><label class="il">kWh déjà consommés ce mois</label><input type="number" class="ifield" id="c1d" placeholder="0" inputmode="numeric" value="0" autocomplete="off"></div>
+      <div class="tog-row"><span class="tog-lbl">Première recharge du mois ?</span><label class="tog"><input type="checkbox" id="c1p" checked><span class="tog-s"></span></label></div>
+      <button class="btn" onclick="calcCFA()">⚡ Calculer mes kWh</button>
+      <div id="c1r" class="rbox">
+        <div style="text-align:center;padding:14px 0 12px;border-bottom:1px solid var(--brd);margin-bottom:12px">
+          <div class="res-big" id="c1_kwh">0</div><div class="res-sub">kilowattheures obtenus</div>
+        </div>
+        <div class="bwrap">
+          <div class="blbls"><span>0</span><span>150 kWh ▸ T1</span><span>250 kWh ▸ T2</span></div>
+          <div class="btrack"><div class="bt1" id="c1_bt1" style="width:0%"></div><div class="bt2" id="c1_bt2" style="width:0%;left:60%"></div><div class="bsep" style="left:60%"></div></div>
+        </div>
+        <div class="bk">
+          <div class="bk-hd">Détail du calcul</div>
+          <div class="bk-row"><span class="bk-l">Montant rechargé</span><span class="bk-v" id="c1_m" style="color:var(--txt)">—</span></div>
+          <div class="bk-row"><span class="bk-l">— Redevance mensuelle</span><span class="bk-v neg" id="c1_rev">—</span></div>
+          <div class="bk-row"><span class="bk-l">— Taxe communale (2,5%)</span><span class="bk-v neg" id="c1_tx">—</span></div>
+          <div class="bk-row"><span class="bk-l">= Budget énergie net</span><span class="bk-v pos" id="c1_net">—</span></div>
+          <div class="bk-row"><span class="bk-l">↳ kWh Tranche 1 (82 F)</span><span class="bk-v" id="c1_k1" style="color:var(--t1)">—</span></div>
+          <div class="bk-row" id="c1_k2r"><span class="bk-l">↳ kWh Tranche 2 (136,49 F)</span><span class="bk-v" id="c1_k2" style="color:var(--t2)">—</span></div>
+        </div>
+        <div id="c1_al"></div><div id="c1_sg"></div>
       </div>
-      <div class="bk">
-        <div class="bk-head">Détail du calcul</div>
-        <div class="bk-row"><span class="bk-l">Montant rechargé</span><span class="bk-v" id="bm" style="color:var(--text)">—</span></div>
-        <div class="bk-row"><span class="bk-l">— Redevance mensuelle</span><span class="bk-v neg" id="br">—</span></div>
-        <div class="bk-row"><span class="bk-l">— Taxe communale (2,5%)</span><span class="bk-v neg" id="btx">—</span></div>
-        <div class="bk-row"><span class="bk-l">= Budget énergie net</span><span class="bk-v pos" id="bnet">—</span></div>
-        <div class="bk-row"><span class="bk-l">↳ kWh Tranche 1 (82 F)</span><span class="bk-v" id="bk1" style="color:var(--t1)">—</span></div>
-        <div class="bk-row" id="bk2_row"><span class="bk-l">↳ kWh Tranche 2 (136,49 F)</span><span class="bk-v" id="bk2" style="color:var(--t2)">—</span></div>
+    </div>
+    <!-- kWh → FCFA -->
+    <div id="cv_kwh" style="display:none">
+      <div class="ig"><label class="il">Quantité de kWh souhaitée</label><input type="number" class="ifield" id="c2k" placeholder="Ex : 80" inputmode="decimal" step="0.1" autocomplete="off"></div>
+      <div class="ig"><label class="il">kWh déjà consommés ce mois</label><input type="number" class="ifield" id="c2d" placeholder="0" inputmode="numeric" value="0" autocomplete="off"></div>
+      <div class="tog-row"><span class="tog-lbl">Première recharge du mois ?</span><label class="tog"><input type="checkbox" id="c2p" checked><span class="tog-s"></span></label></div>
+      <button class="btn" onclick="calcKWH()">💰 Calculer le montant à payer</button>
+      <div id="c2r" class="rbox">
+        <div style="text-align:center;padding:14px 0 12px;border-bottom:1px solid var(--brd);margin-bottom:12px">
+          <div class="res-big" id="c2_fcfa">0</div><div class="res-sub">FCFA à recharger</div>
+        </div>
+        <div class="bk">
+          <div class="bk-hd">Détail</div>
+          <div class="bk-row"><span class="bk-l">kWh demandés</span><span class="bk-v" id="c2_k" style="color:var(--txt)">—</span></div>
+          <div class="bk-row"><span class="bk-l">kWh en Tranche 1 (82 F)</span><span class="bk-v" id="c2_k1" style="color:var(--t1)">—</span></div>
+          <div class="bk-row" id="c2_k2r"><span class="bk-l">kWh en Tranche 2 (136,49 F)</span><span class="bk-v" id="c2_k2" style="color:var(--t2)">—</span></div>
+          <div class="bk-row"><span class="bk-l">+ Taxe communale (2,5%)</span><span class="bk-v neg" id="c2_tx">—</span></div>
+          <div class="bk-row"><span class="bk-l">+ Redevance mensuelle</span><span class="bk-v neg" id="c2_rev">—</span></div>
+          <div class="bk-row"><span class="bk-l">= Total à recharger</span><span class="bk-v pos" id="c2_tot">—</span></div>
+        </div>
+        <div id="c2_al"></div>
       </div>
-      <div id="p1al"></div><div id="p1sugg"></div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title">📋 Grille tarifaire 2026</div>
-    <div class="tr-row tr-t1"><div><div class="tr-lbl" style="color:var(--t1)">🟢 Tranche 1</div><div class="tr-sub">0 – 150 kWh / mois</div></div><div><div class="tr-price" style="color:var(--t1)">82 F</div><div class="tr-unit">par kWh</div></div></div>
-    <div class="tr-row tr-t2"><div><div class="tr-lbl" style="color:var(--t2)">🟡 Tranche 2</div><div class="tr-sub">151 – 250 kWh / mois</div></div><div><div class="tr-price" style="color:var(--t2)">136,49 F</div><div class="tr-unit">par kWh</div></div></div>
-    <div class="tr-row tr-t3"><div><div class="tr-lbl" style="color:var(--t3)">🔴 Tranche 3</div><div class="tr-sub">> 250 kWh — facturé T2 + TVA 18%</div></div><div><div class="tr-price" style="color:var(--t3)">136,49 F</div><div class="tr-unit">+ TVA</div></div></div>
+    <div class="card-ti">📋 Grille tarifaire 2026</div>
+    <div class="tr-row tr-t1"><div><div class="tr-n" style="color:var(--t1)">🟢 Tranche 1</div><div class="tr-s">0 – 150 kWh / mois</div></div><div><div class="tr-p" style="color:var(--t1)">82 F</div><div class="tr-u">par kWh</div></div></div>
+    <div class="tr-row tr-t2"><div><div class="tr-n" style="color:var(--t2)">🟡 Tranche 2</div><div class="tr-s">151 – 250 kWh / mois</div></div><div><div class="tr-p" style="color:var(--t2)">136,49 F</div><div class="tr-u">par kWh</div></div></div>
+    <div class="tr-row tr-t3"><div><div class="tr-n" style="color:var(--t3)">🔴 Tranche 3</div><div class="tr-s">> 250 kWh — facturé T2 + TVA 18%</div></div><div><div class="tr-p" style="color:var(--t3)">136,49 F</div><div class="tr-u">+ TVA</div></div></div>
     <p class="note" style="margin-top:12px">Taxe communale 2,5% sur chaque recharge. Redevance mensuelle sur la 1ère recharge du mois uniquement.</p>
   </div>
-  <div class="sig">Développé par <strong>Mouhamadou Moustapha SY</strong> · Étudiant AgroTIC · USSEIN · Sénégal · <strong>Ergonome v7.1</strong></div>
+  <div class="sig">Développé par <strong>Mouhamadou Moustapha SY</strong> · Étudiant AgroTIC · USSEIN · Sénégal · <strong>Ergonome v7.2</strong></div>
 </div>
 
-<!-- P2 -->
+<!-- P2 SUIVI -->
 <div id="p2" class="panel">
   <div class="card">
-    <div class="card-title">📊 Consommation mensuelle</div>
+    <div class="card-ti">📊 Consommation mensuelle</div>
     <div class="slbl">Choisir le mois</div>
     <div class="month-tabs" id="month_tabs"></div>
-    <div id="p2ml" style="font-size:11px;color:var(--text3);margin-bottom:12px;"></div>
+    <div id="p2ml" style="font-size:11px;color:var(--tx3);margin-bottom:12px"></div>
     <div class="jg">
       <div class="jg-top"><div><div class="jg-big" id="jkwh">0</div><div class="jg-sub">kWh rechargés ce mois</div></div><div id="jbdg"></div></div>
       <div class="jg-track"><div class="jt1" id="jt1" style="width:0%"></div><div class="jt2" id="jt2" style="width:0%;left:60%"></div></div>
@@ -455,9 +460,9 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
     <div id="jal"></div><div id="p2sugg"></div>
   </div>
   <div class="card">
-    <div class="card-title">➕ Enregistrer une recharge</div>
+    <div class="card-ti">➕ Enregistrer une recharge</div>
     <div class="ig"><label class="il">Montant rechargé (FCFA)</label><input type="number" class="ifield" id="p2m" placeholder="Ex : 10 000" inputmode="numeric" autocomplete="off"></div>
-    <div class="ig"><label class="il">Date de la recharge</label><input type="date" class="ifield" id="p2d"><p class="note" style="margin-top:4px">💡 Tu peux entrer n'importe quelle date passée pour reconstituer ton historique.</p></div>
+    <div class="ig"><label class="il">Date de la recharge</label><input type="date" class="ifield" id="p2d"><p class="note" style="margin-top:4px">💡 Tu peux entrer une date passée pour reconstituer ton historique.</p></div>
     <button class="btn" onclick="addR()">➕ Ajouter cette recharge</button>
   </div>
   <div class="slbl">Historique — mois sélectionné</div>
@@ -465,77 +470,104 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
   <button class="btn-del" id="btn_rst" onclick="rstMois()" style="display:none">🗑️ Réinitialiser ce mois</button>
 </div>
 
-<!-- P3 -->
+<!-- P3 PLANIFIER -->
 <div id="p3" class="panel">
-  <div id="plan_source" class="plan-source-card">
-    <div class="plan-source-title">📊 Données du mois en cours — depuis Suivi</div>
-    <div id="plan_no_data" class="plan-no-data" style="display:none"><div style="font-size:26px;margin-bottom:8px">📂</div>Aucune recharge enregistrée ce mois.<br><strong style="color:var(--accent)">Commence par l'onglet 📊 Suivi.</strong></div>
-    <div id="plan_data_summary">
-      <div class="plan-stat-row">
-        <div class="plan-stat"><div class="val" id="pl_kwh_total">—</div><div class="lbl">kWh rechargés</div></div>
-        <div class="plan-stat"><div class="val" id="pl_jours_ecoules">—</div><div class="lbl">jours écoulés</div></div>
-        <div class="plan-stat"><div class="val" id="pl_conso_jour_auto">—</div><div class="lbl">kWh/jour moy.</div></div>
-      </div>
+  <div id="src_card" class="src-card">
+    <div class="src-ti">📊 Ce mois en cours — depuis le Suivi</div>
+    <div id="src_nd" style="display:none;text-align:center;padding:16px;color:var(--tx3);font-size:12px;line-height:1.7">
+      <div style="font-size:26px;margin-bottom:8px">📂</div>
+      Aucune recharge ce mois.<br><strong style="color:var(--acc)">Va dans 📊 Suivi pour enregistrer tes recharges.</strong>
+    </div>
+    <div id="src_st" class="src-stats">
+      <div class="src-s"><div class="src-v" id="sl_k">—</div><div class="src-l">kWh rechargés</div></div>
+      <div class="src-s"><div class="src-v" id="sl_j">—</div><div class="src-l">jours écoulés</div></div>
+      <div class="src-s"><div class="src-v" id="sl_c">—</div><div class="src-l">kWh/jour moy.</div></div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title">🎯 Paramètres de planification</div>
-    <div style="margin-bottom:14px">
-      <label class="il">Dans quelle tranche veux-tu rester ?</label>
-      <div class="oc-wrap">
-        <div class="oc sel" id="oc_t1" onclick="selO('t1')"><div class="oi">🟢</div><div class="ol">Tranche 1<br><span style="font-size:9px;font-weight:400">≤ 150 kWh</span></div></div>
-        <div class="oc" id="oc_t2" onclick="selO('t2')"><div class="oi">🟡</div><div class="ol">Tranche 2<br><span style="font-size:9px;font-weight:400">≤ 250 kWh</span></div></div>
-        <div class="oc" id="oc_t3" onclick="selO('t3')"><div class="oi">🔴</div><div class="ol">Sans limite<br><span style="font-size:9px;font-weight:400">Calculer tout</span></div></div>
+    <div class="card-ti">🎯 Dans quelle tranche veux-tu rester ?</div>
+    <div class="oc-wrap">
+      <div class="oc sel" id="oc_t1" onclick="selO('t1')"><div class="oi">🟢</div><div class="ol">Tranche 1<br><span style="font-size:9px;font-weight:400">≤ 150 kWh</span></div></div>
+      <div class="oc" id="oc_t2" onclick="selO('t2')"><div class="oi">🟡</div><div class="ol">Tranche 2<br><span style="font-size:9px;font-weight:400">≤ 250 kWh</span></div></div>
+      <div class="oc" id="oc_t3" onclick="selO('t3')"><div class="oi">🔴</div><div class="ol">Sans limite<br><span style="font-size:9px;font-weight:400">Calculer tout</span></div></div>
+    </div>
+    <div class="ptabs">
+      <button class="ptab active" id="ptab_s" onclick="switchPT('sim')">💰 Simuler une recharge</button>
+      <button class="ptab" id="ptab_p" onclick="switchPT('plan')">📅 Plan de charge</button>
+    </div>
+    <!-- TAB SIM -->
+    <div id="pt_sim">
+      <div class="ig"><label class="il">Montant que tu souhaites recharger (FCFA)</label><input type="number" class="ifield" id="sm_m" placeholder="Ex : 5 000" inputmode="numeric" autocomplete="off"></div>
+      <div class="tog-row">
+        <span class="tog-lbl">J'ai lu mon solde sur le compteur<br><span style="font-size:10px;color:var(--tx3);font-weight:400">Active pour des calculs exacts ✓</span></span>
+        <label class="tog"><input type="checkbox" id="sm_hs" onchange="toggleSolde('sm')"><span class="tog-s"></span></label>
       </div>
+      <div id="sm_sg" style="display:none" class="ig">
+        <label class="il">Solde actuel sur le compteur (kWh)</label>
+        <input type="number" class="ifield" id="sm_s" placeholder="Ex : 28.5" inputmode="decimal" step="0.1" autocomplete="off">
+        <p class="note" style="margin-top:4px">⚡ 1 appui sur le bouton du compteur pour lire ce solde.</p>
+      </div>
+      <button class="btn" onclick="simuler()">💰 Analyser cette recharge</button>
+      <div id="sm_res" class="rbox"><div id="sm_ct"></div></div>
     </div>
-    <div class="ig"><label class="il">Consommation journalière (kWh/jour)</label><input type="number" class="ifield" id="pl_conso_input" placeholder="Ex : 4.5" inputmode="decimal" step="0.1" autocomplete="off"><p class="note" style="margin-top:4px" id="pl_conso_hint"></p></div>
-    <div class="ig"><label class="il">Jours restants dans le mois</label><input type="number" class="ifield" id="pl_jours_input" placeholder="Ex : 12" inputmode="numeric" autocomplete="off"></div>
-    <div class="tog-row" style="margin-bottom:12px"><span class="tog-lbl">J'ai lu le solde sur mon compteur</span><label class="tog"><input type="checkbox" id="pl_has_solde" onchange="toggleSolde()"><span class="tog-s"></span></label></div>
-    <div class="ig" id="pl_solde_group" style="display:none">
-      <label class="il">Solde actuel sur le compteur (kWh)</label>
-      <input type="number" class="ifield" id="pl_solde_input" placeholder="Ex : 28" inputmode="decimal" step="0.1" autocomplete="off">
-      <p class="note" style="margin-top:4px">⚡ 1 appui sur le bouton du compteur pour lire ce solde. Calculs exacts garantis.</p>
+    <!-- TAB PLAN -->
+    <div id="pt_plan" style="display:none">
+      <div class="ig">
+        <label class="il">Consommation journalière (kWh/jour)</label>
+        <input type="number" class="ifield" id="pl_cj" placeholder="Ex : 4.5" inputmode="decimal" step="0.1" autocomplete="off">
+        <p class="note" style="margin-top:4px" id="pl_hint"></p>
+      </div>
+      <div class="ig"><label class="il">Jours restants dans le mois</label><input type="number" class="ifield" id="pl_jr" placeholder="Ex : 12" inputmode="numeric" autocomplete="off"></div>
+      <div class="tog-row">
+        <span class="tog-lbl">J'ai lu mon solde sur le compteur<br><span style="font-size:10px;color:var(--tx3);font-weight:400">Active pour des calculs exacts ✓</span></span>
+        <label class="tog"><input type="checkbox" id="pl_hs" onchange="toggleSolde('pl')"><span class="tog-s"></span></label>
+      </div>
+      <div id="pl_sg" style="display:none" class="ig">
+        <label class="il">Solde actuel sur le compteur (kWh)</label>
+        <input type="number" class="ifield" id="pl_s" placeholder="Ex : 28.5" inputmode="decimal" step="0.1" autocomplete="off">
+        <p class="note" style="margin-top:4px">⚡ 1 appui sur le bouton du compteur pour lire ce solde.</p>
+      </div>
+      <button class="btn" onclick="planifier()">📅 Calculer mon plan de charge</button>
+      <div id="pl_res" class="rbox"><div id="pl_ct"></div></div>
     </div>
-    <button class="btn" onclick="planifier()">🎯 Calculer mon plan de recharge</button>
-    <div id="p3r" class="result-box"><div id="p3_content"></div></div>
   </div>
   <div class="card">
-    <div class="card-title">💡 Conseils d'optimisation</div>
+    <div class="card-ti">💡 Conseils d'optimisation</div>
     <div class="cpill" style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#4ade80"><span style="font-size:15px;flex-shrink:0">⚡</span><span><strong>1ère recharge du mois :</strong> effectue-la dès le 1er — la redevance ne se paie qu'une seule fois et tu actives ta T1 au meilleur tarif.</span></div>
-    <div class="cpill" style="background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);color:var(--blue)"><span style="font-size:15px;flex-shrink:0">📅</span><span><strong>Fin de mois en T2 :</strong> si tu dépasses 150 kWh, attends le 1er du mois suivant pour recharger — tu repars en T1.</span></div>
-    <div class="cpill" style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);color:var(--accent)"><span style="font-size:15px;flex-shrink:0">🌡️</span><span><strong>Saison chaude :</strong> ventilateur et clim consomment beaucoup. Anticipe avec une recharge préventive en début de mois.</span></div>
-    <div class="cpill" style="background:rgba(192,132,252,.07);border:1px solid rgba(192,132,252,.2);color:var(--purple)"><span style="font-size:15px;flex-shrink:0">🔌</span><span><strong>Appareils gourmands :</strong> fer à repasser (1 000–2 000W) et chauffe-eau peuvent franchir une tranche en quelques heures.</span></div>
+    <div class="cpill" style="background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);color:var(--blu)"><span style="font-size:15px;flex-shrink:0">📅</span><span><strong>Fin de mois en T2 :</strong> si tu dépasses 150 kWh, attends le 1er du mois suivant — tu repars en T1.</span></div>
+    <div class="cpill" style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);color:var(--acc)"><span style="font-size:15px;flex-shrink:0">🌡️</span><span><strong>Saison chaude :</strong> ventilateur et clim consomment beaucoup. Anticipe avec une recharge préventive.</span></div>
+    <div class="cpill" style="background:rgba(192,132,252,.07);border:1px solid rgba(192,132,252,.2);color:var(--pur)"><span style="font-size:15px;flex-shrink:0">🔌</span><span><strong>Appareils gourmands :</strong> fer à repasser et chauffe-eau peuvent franchir une tranche en quelques heures.</span></div>
   </div>
 </div>
 
-<!-- P4 -->
+<!-- P4 DONNÉES -->
 <div id="p4" class="panel">
   <div class="card">
-    <div class="card-title">📁 Toutes mes recharges</div>
-    <div class="ig"><label class="il">Filtrer par mois</label><select class="ifield" id="data_filter" onchange="renderDataTable()"><option value="all">Tous les mois</option></select></div>
-    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);" id="dtw"><table class="data-table"><thead><tr><th>Date</th><th>Montant</th><th>kWh</th><th>Tr.</th><th></th></tr></thead><tbody id="dtb"></tbody></table></div>
-    <div id="data_empty" class="empty" style="display:none"><div class="ei">📊</div><p>Aucune donnée enregistrée.</p></div>
-    <div id="data_totaux" style="margin-top:12px;display:none">
+    <div class="card-ti">📁 Toutes mes recharges</div>
+    <div class="ig"><label class="il">Filtrer par mois</label><select class="ifield" id="df" onchange="renderDT()"><option value="all">Tous les mois</option></select></div>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--brd)" id="dtw"><table class="dt"><thead><tr><th>Date</th><th>Montant</th><th>kWh</th><th>Tr.</th><th></th></tr></thead><tbody id="dtb"></tbody></table></div>
+    <div id="dt_empty" class="empty" style="display:none"><div class="ei">📊</div><p>Aucune donnée.</p></div>
+    <div id="dt_tot" style="margin-top:12px;display:none">
       <div class="dvd"></div>
-      <div class="bk-row"><span class="bk-l">Total FCFA rechargés</span><span class="bk-v" id="dt_fcfa" style="color:var(--accent)">—</span></div>
-      <div class="bk-row"><span class="bk-l">Total kWh accumulés</span><span class="bk-v" id="dt_kwh" style="color:var(--green)">—</span></div>
-      <div class="bk-row"><span class="bk-l">Nombre de recharges</span><span class="bk-v" id="dt_nb">—</span></div>
+      <div class="bk-row"><span class="bk-l">Total FCFA rechargés</span><span class="bk-v" id="dt_f" style="color:var(--acc)">—</span></div>
+      <div class="bk-row"><span class="bk-l">Total kWh accumulés</span><span class="bk-v" id="dt_k" style="color:var(--grn)">—</span></div>
+      <div class="bk-row"><span class="bk-l">Nombre de recharges</span><span class="bk-v" id="dt_n">—</span></div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title">📈 Statistiques globales</div>
+    <div class="card-ti">📈 Statistiques globales</div>
     <div class="st-row">
-      <div class="stat-m"><div class="st-v" id="gs_mois">—</div><div class="st-l">mois suivis</div></div>
+      <div class="stat-m"><div class="st-v" id="gs_m">—</div><div class="st-l">mois suivis</div></div>
       <div class="stat-m"><div class="st-v" id="gs_moy">—</div><div class="st-l">kWh/mois moy.</div></div>
-      <div class="stat-m"><div class="st-v" id="gs_cout">—</div><div class="st-l">FCFA/kWh moy.</div></div>
+      <div class="stat-m"><div class="st-v" id="gs_c">—</div><div class="st-l">FCFA/kWh moy.</div></div>
     </div>
     <div id="gs_sugg"></div>
   </div>
 </div>
 
-</div><!-- /content -->
+</div>
 
-<!-- ══ BOTTOM NAV ══ -->
+<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <button class="nb active" id="nb1" onclick="showP('p1',null,'nb1')"><span class="nb-ic">💱</span><span class="nb-lb">Convertir</span></button>
   <button class="nb" id="nb2" onclick="showP('p2',null,'nb2')"><span class="nb-ic">📊</span><span class="nb-lb">Suivi</span></button>
@@ -543,15 +575,15 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
   <button class="nb" id="nb4" onclick="showP('p4',null,'nb4')"><span class="nb-ic">📁</span><span class="nb-lb">Données</span></button>
 </div>
 
-<!-- ══ SETTINGS SHEET ══ -->
+<!-- SETTINGS -->
 <div class="overlay" id="sh_set" onclick="closeClick(event,'sh_set')">
   <div class="sheet">
     <div class="sh-in">
       <div class="sh-handle"></div>
       <div class="sh-title">⚙️ Paramètres — Ergonome</div>
-      <div class="sh-desc">Toutes les données sont stockées <strong>intégralement dans cette application</strong>, sur votre appareil uniquement.</div>
+      <div class="sh-desc">Données stockées <strong>dans l'application sur votre appareil</strong> via IndexedDB. Aucune transmission externe.</div>
       <div class="slbl">Tarification</div>
-      <div class="ig"><label class="il">Redevance mensuelle (FCFA)</label><input type="number" class="ifield" id="sr" value="429" inputmode="numeric"><p class="note">Prélevée sur la 1ère recharge du mois. Valeurs observées : 429 à 1 155 FCFA — vérifiez votre reçu.</p></div>
+      <div class="ig"><label class="il">Redevance mensuelle (FCFA)</label><input type="number" class="ifield" id="sr" value="429" inputmode="numeric"><p class="note">Sur la 1ère recharge du mois. Valeurs observées : 429 à 1 155 FCFA.</p></div>
       <div class="ig"><label class="il">Prix Tranche 1 (FCFA/kWh)</label><input type="number" class="ifield" id="st1" value="82" inputmode="decimal" step="0.01"></div>
       <div class="ig"><label class="il">Prix Tranche 2 (FCFA/kWh)</label><input type="number" class="ifield" id="st2" value="136.49" inputmode="decimal" step="0.01"></div>
       <div class="ig"><label class="il">Taxe communale (%)</label><input type="number" class="ifield" id="stx" value="2.5" inputmode="decimal" step="0.1"></div>
@@ -559,181 +591,119 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000;}
       <button class="btn-sec" onclick="rstSet()">↩️ Valeurs par défaut</button>
       <div class="dvd"></div>
       <div class="slbl">À propos d'Ergonome</div>
-      <div class="ab-block"><div class="ab-title">⚡ Ergonome v7.1</div><p>Calculateur intelligent Woyofal pour les consommateurs sénégalais. Comprendre, suivre et optimiser sa consommation électrique Senelec pour toujours acheter au meilleur tarif.</p></div>
-      <div class="ab-block"><div class="ab-title">🔄 Planifier — Comment ça marche</div><p>Le Planifier est alimenté <strong style="color:var(--text)">automatiquement</strong> par les données du Suivi. Il calcule ta consommation journalière moyenne depuis tes recharges enregistrées. Tu n'indiques que ta tranche objectif, ta conso journalière (pré-remplie), et les jours restants. L'app calcule exactement combien recharger.</p></div>
-      <div class="ab-block"><div class="ab-title">💾 Stockage des données</div><p>Les données sont stockées via <strong style="color:var(--text)">IndexedDB</strong> — une base de données intégrée dans le navigateur, indépendante du cache. Le bouton de réinitialisation efface tout et remet l'application dans son état initial.</p><div class="sec-bdg"><span>🔒</span><span>IndexedDB · Local · Hors ligne · Aucun serveur</span></div></div>
-      <div class="ab-block"><div class="ab-title">👨‍💻 Développeur</div><p><strong style="color:var(--accent)">Mouhamadou Moustapha SY</strong><br>Étudiant en 2ème année de Licence AgroTIC<br>USSEIN — Université du Sine Saloum El-Hadj Ibrahima Niass · Sénégal<br><br><span style="color:var(--text3);font-size:11px">Ergonome v7.1 · Tarifs CRSE décision n°2025-140 · Janvier 2026</span></p></div>
+      <div class="ab-block"><div class="ab-ti">⚡ Ergonome v7.2</div><p>Calculateur Woyofal intelligent pour les consommateurs sénégalais. Comprendre, suivre et optimiser sa consommation pour toujours acheter au meilleur tarif.</p></div>
+      <div class="ab-block"><div class="ab-ti">💱 Convertisseur (v7.2)</div><p>Deux sens : <strong style="color:var(--txt)">FCFA → kWh</strong> et <strong style="color:var(--txt)">kWh → FCFA</strong>, en tenant compte des tranches, redevance et taxes.</p></div>
+      <div class="ab-block"><div class="ab-ti">🎯 Planifier (v7.2)</div><p>Alimenté automatiquement par le Suivi. Deux fonctions avec fourchette min/max systématique :<br><br>
+      <strong style="color:var(--acc)">💰 Simuler :</strong> entre un montant → verdict + fourchette complète.<br>
+      <strong style="color:var(--acc)">📅 Plan de charge :</strong> entre ta conso/jour et les jours restants → montants recommandés + meilleur moment pour recharger.</p></div>
+      <div class="ab-block"><div class="ab-ti">💾 Stockage IndexedDB</div><p>Les données sont dans <strong style="color:var(--txt)">IndexedDB</strong> — base de données intégrée, indépendante du cache navigateur. Fonctionne hors ligne.</p><div class="sec-bdg"><span>🔒</span><span>IndexedDB · Local · Hors ligne · Aucun serveur</span></div></div>
+      <div class="ab-block"><div class="ab-ti">👨‍💻 Développeur</div><p><strong style="color:var(--acc)">Mouhamadou Moustapha SY</strong><br>Étudiant en 2ème année de Licence AgroTIC<br>USSEIN · Sénégal<br><br><span style="color:var(--tx3);font-size:11px">Ergonome v7.2 · Tarifs CRSE décision n°2025-140 · Janvier 2026</span></p></div>
       <div class="dvd"></div>
       <div class="slbl">Réinitialisation</div>
       <div class="ab-block">
-        <div class="ab-title">🗑️ Effacer toutes les données</div>
-        <p style="margin-bottom:10px;font-size:12px;color:var(--text2);line-height:1.6">Supprime toutes les recharges et les paramètres. Remet l'application dans son état initial comme à la première utilisation. Action <strong style="color:var(--red)">irréversible</strong>.</p>
-        <button class="btn-del" id="btn_del_all" onclick="delAll()">🗑️ Effacer toutes les données et réinitialiser</button>
+        <div class="ab-ti">🗑️ Effacer toutes les données</div>
+        <p style="margin-bottom:10px;font-size:12px;color:var(--tx2);line-height:1.6">Supprime toutes les recharges et paramètres. Remet l'application dans son état initial. Action <strong style="color:var(--red)">irréversible</strong>.</p>
+        <button class="btn-del" onclick="delAll()">🗑️ Effacer toutes les données et réinitialiser</button>
       </div>
       <button class="btn-sec" onclick="closeSheet('sh_set')" style="margin-top:12px">✕ Fermer</button>
     </div>
   </div>
 </div>
 
-<!-- ══ JAVASCRIPT ══ -->
 <script>
-/* ── SECURITY ── */
-(function(){
-  'use strict';
-  try{Object.freeze(Object.prototype);}catch(e){}
-  try{window.eval=function(){throw new Error('eval disabled');};}catch(e){}
-})();
+/* ── LOGO SVG injecté en JS — universel sur tous navigateurs mobiles ── */
 
-/* ════════════════════════════
-   INDEXEDDB STORAGE
-════════════════════════════ */
-const DB_NAME='ergonome_db', DB_VER=1;
-const ST_DATA='recharges', ST_CFG='config';
+
+/* ══ INDEXEDDB ══ */
+const DBN='ergonome_v72',DBV=1,STR='recharges',STC='config';
 let db=null;
-
 function openDB(){
   return new Promise((res,rej)=>{
-    const req=indexedDB.open(DB_NAME,DB_VER);
+    const req=indexedDB.open(DBN,DBV);
     req.onupgradeneeded=e=>{
       const d=e.target.result;
-      if(!d.objectStoreNames.contains(ST_DATA))
-        d.createObjectStore(ST_DATA,{keyPath:'id',autoIncrement:true});
-      if(!d.objectStoreNames.contains(ST_CFG))
-        d.createObjectStore(ST_CFG,{keyPath:'key'});
+      if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
     };
     req.onsuccess=e=>{db=e.target.result;res(db);};
     req.onerror=()=>rej(req.error);
   });
 }
-function tx(store,mode='readonly'){return db.transaction(store,mode).objectStore(store);}
-function dbGet(store,key){return new Promise((r,j)=>{const q=tx(store).get(key);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);});}
-function dbPut(store,val){return new Promise((r,j)=>{const q=tx(store,'readwrite').put(val);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);});}
-function dbDel(store,key){return new Promise((r,j)=>{const q=tx(store,'readwrite').delete(key);q.onsuccess=()=>r();q.onerror=()=>j(q.error);});}
-function dbAll(store){return new Promise((r,j)=>{const q=tx(store).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error);});}
-function dbClear(store){return new Promise((r,j)=>{const q=tx(store,'readwrite').clear();q.onsuccess=()=>r();q.onerror=()=>j(q.error);});}
+const tx=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
+const dbGet=(s,k)=>new Promise((r,j)=>{const q=tx(s).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);});
+const dbPut=(s,v)=>new Promise((r,j)=>{const q=tx(s,'readwrite').put(v);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);});
+const dbDel=(s,k)=>new Promise((r,j)=>{const q=tx(s,'readwrite').delete(k);q.onsuccess=()=>r();q.onerror=()=>j(q.error);});
+const dbAll=(s)=>new Promise((r,j)=>{const q=tx(s).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error);});
+const dbClear=(s)=>new Promise((r,j)=>{const q=tx(s,'readwrite').clear();q.onsuccess=()=>r();q.onerror=()=>j(q.error);});
 
 /* ── STATE ── */
 let CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
 let DATA=[];
-let OBJ='t1';
-let VIEW_MOIS=currMois();
+let OBJ='t1',VM=currMois();
 
 async function loadState(){
-  try{const c=await dbGet(ST_CFG,'main');if(c)CFG=Object.assign({},CFG,c.value);}catch(e){}
-  try{DATA=await dbAll(ST_DATA);DATA.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){DATA=[];}
+  try{const c=await dbGet(STC,'main');if(c)CFG=Object.assign({},CFG,c.value);}catch(e){}
+  try{DATA=await dbAll(STR);DATA.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){DATA=[];}
 }
-async function saveCFG(){try{await dbPut(ST_CFG,{key:'main',value:CFG});}catch(e){}}
+async function saveCFG(){try{await dbPut(STC,{key:'main',value:CFG});}catch(e){}}
 
-/* ── RESET TOTAL — robuste même sans service worker ── */
+/* ── CONFIRM MODAL — remplace window.confirm() bloqué dans iframes ── */
+let _cmCb=null;
+function askConfirm(icon,title,sub,okLbl,onOk){
+  document.getElementById('cm-ic').textContent=icon;
+  document.getElementById('cm-ti').textContent=title;
+  document.getElementById('cm-su').textContent=sub;
+  document.getElementById('cm-yes').textContent=okLbl;
+  _cmCb=onOk;
+  document.getElementById('cm').classList.add('open');
+}
+function cmAns(yes){
+  document.getElementById('cm').classList.remove('open');
+  if(yes&&_cmCb){const cb=_cmCb;_cmCb=null;cb();}else _cmCb=null;
+}
+
+/* ── DELETE ALL ── */
 function delAll(){
-  askConfirm(
-    '🗑️',
-    'Effacer toutes les données ?',
+  askConfirm('🗑️','Effacer toutes les données ?',
     'Toutes les recharges et paramètres seront supprimés. L\'application reviendra à son état initial. Action irréversible.',
-    'Effacer',
-    ()=>{_doDelAll();}
+    'Effacer', async()=>{
+      try{await dbClear(STR);await dbClear(STC);}catch(e){}
+      try{localStorage.clear();sessionStorage.clear();}catch(e){}
+      try{if(typeof caches!=='undefined'){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}}catch(e){}
+      try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.unregister()));}}catch(e){}
+      CFG={rev:429,t1:82,t2:136.49,taxe:2.5};DATA=[];OBJ='t1';VM=currMois();
+      closeSheet('sh_set');
+      toast('✅ Données effacées — rechargement…');
+      setTimeout(()=>{try{window.location.href=window.location.pathname+'?r='+Date.now();}catch(e){location.reload();}},1200);
+    }
   );
 }
-function _doDelAll(){
-  const btn=document.getElementById('btn_del_all');
-  btn.disabled=true;
-  btn.textContent='⏳ Effacement en cours…';
 
-  // Étape 1 : vider IndexedDB
-  const step1=Promise.all([
-    dbClear(ST_DATA).catch(()=>{}),
-    dbClear(ST_CFG).catch(()=>{})
-  ]);
-
-  // Étape 2 : vider localStorage et sessionStorage
-  step1.then(()=>{
-    try{localStorage.clear();}catch(e){}
-    try{sessionStorage.clear();}catch(e){}
-
-    // Étape 3 : supprimer les caches SW si disponibles
-    const step3 = typeof caches !== 'undefined'
-      ? caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{})
-      : Promise.resolve();
-
-    // Étape 4 : désenregistrer SW si disponible
-    const step4 = navigator.serviceWorker
-      ? navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.unregister()))).catch(()=>{})
-      : Promise.resolve();
-
-    return Promise.all([step3,step4]);
-
-  }).then(()=>{
-    // Étape 5 : reset état mémoire
-    CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
-    DATA=[];OBJ='t1';VIEW_MOIS=currMois();
-
-    toast('✅ Données effacées — rechargement…');
-
-    // Étape 6 : recharger la page après 1.2s
-    setTimeout(()=>{
-      try{
-        // Forcer le rechargement sans cache
-        window.location.href=window.location.href.split('?')[0]+'?t='+Date.now();
-      }catch(e){
-        window.location.reload(true);
-      }
-    },1200);
-
-  }).catch(err=>{
-    btn.disabled=false;
-    btn.textContent='🗑️ Effacer toutes les données et réinitialiser';
-    toast('⚠️ Erreur : '+err.message);
-  });
-}
-
-/* ── PWA INSTALL ── */
-let deferredPrompt=null;
+/* ── PWA ── */
+let dPr=null;
 window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();deferredPrompt=e;
-  if(!sessionStorage.getItem('erg_dis'))
-    document.getElementById('install-banner').classList.add('show');
+  e.preventDefault();dPr=e;
+  if(!sessionStorage.getItem('erg_dis'))document.getElementById('ib').classList.add('show');
 });
-function triggerInstall(){
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(r=>{
-    if(r.outcome==='accepted')toast('✅ Ergonome installé !');
-    deferredPrompt=null;dismissBanner();
-  });
-}
-function dismissBanner(){document.getElementById('install-banner').classList.remove('show');sessionStorage.setItem('erg_dis','1');}
-window.addEventListener('appinstalled',()=>{dismissBanner();deferredPrompt=null;});
+function triggerInstall(){if(!dPr)return;dPr.prompt();dPr.userChoice.then(r=>{if(r.outcome==='accepted')toast('✅ Ergonome installé !');dPr=null;dismissBanner();});}
+function dismissBanner(){document.getElementById('ib').classList.remove('show');sessionStorage.setItem('erg_dis','1');}
+window.addEventListener('appinstalled',()=>{dismissBanner();dPr=null;});
 
 /* ── UTILS ── */
 function san(s){return String(s).replace(/[<>"'&]/g,c=>({"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","&":"&amp;"}[c]));}
 function sf(v,d){const n=parseFloat(v);return isNaN(n)?d:n;}
 function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
-function fmtD(n,d=1){return parseFloat(n.toFixed(d)).toLocaleString('fr-FR');}
+function fD(n,d=1){return parseFloat(n.toFixed(d)).toLocaleString('fr-FR');}
 let _tt;
 function toast(msg){if(_tt)clearTimeout(_tt);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);_tt=setTimeout(()=>t.remove(),2800);}
-
-/* ── MODALE DE CONFIRMATION (remplace confirm() bloqué dans iframes) ── */
-let _confirmCb=null;
-function askConfirm(icon,msg,sub,okLabel,onOk){
-  document.getElementById('confirm-icon').textContent=icon;
-  document.getElementById('confirm-msg').textContent=msg;
-  document.getElementById('confirm-sub').textContent=sub;
-  document.getElementById('confirm-ok').textContent=okLabel;
-  _confirmCb=onOk;
-  document.getElementById('confirm-overlay').classList.add('open');
-}
-function confirmAnswer(yes){
-  document.getElementById('confirm-overlay').classList.remove('open');
-  if(yes&&_confirmCb){const cb=_confirmCb;_confirmCb=null;cb();}
-  else _confirmCb=null;
-}
+function al(el,type,icon,msg){el.innerHTML=`<div class="al al-${type}"><span class="al-ic">${icon}</span><span>${msg}</span></div>`;}
 
 /* ── DATE ── */
 function todayStr(){return new Date().toISOString().split('T')[0];}
-function currMois(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;}
+function currMois(){const n=new Date();return`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;}
 function moisLbl(m){const[y,mo]=m.split('-');return new Date(+y,+mo-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});}
 function getAllMonths(){const s=new Set(DATA.map(r=>r.date.substring(0,7)));s.add(currMois());return Array.from(s).sort().reverse();}
-function joursEcoules(mois){const now=new Date(),[y,m]=mois.split('-').map(Number);return(y===now.getFullYear()&&m===now.getMonth()+1)?now.getDate():new Date(y,m,0).getDate();}
+function joursEcoules(mois){const n=new Date(),[y,m]=mois.split('-').map(Number);return(y===n.getFullYear()&&m===n.getMonth()+1)?n.getDate():new Date(y,m,0).getDate();}
 
 /* ── NAV ── */
 function showP(id,tb,nb){
@@ -745,12 +715,10 @@ function showP(id,tb,nb){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   const nm=nb||{'p1':'nb1','p2':'nb2','p3':'nb3','p4':'nb4'}[id];
   if(nm)document.getElementById(nm)?.classList.add('active');
-  if(id==='p2'){buildMonthTabs();refreshSuivi();}
-  if(id==='p3')refreshPlanifier();
-  if(id==='p4'){buildDataFilter();renderDataTable();}
+  if(id==='p2'){buildMT();refreshS();}
+  if(id==='p3')refreshPSrc();
+  if(id==='p4'){buildDF();renderDT();}
 }
-
-/* ── SHEET ── */
 function openSheet(id){
   if(id==='sh_set'){document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;}
   document.getElementById(id).classList.add('open');
@@ -767,215 +735,393 @@ async function saveSet(){
 function rstSet(){CFG={rev:429,t1:82,t2:136.49,taxe:2.5};saveCFG();document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;toast('↩️ Valeurs par défaut');}
 
 /* ── CORE CALC ── */
-function calcKwh(montant,dejaKwh,premiere){
-  const taxeR=CFG.taxe/100,rev=premiere?CFG.rev:0;
+function calcKwh(montant,deja,premiere){
+  const tr=CFG.taxe/100,rev=premiere?CFG.rev:0;
   let budget=montant-rev;
   if(budget<=0)return{kwh:0,kwhT1:0,kwhT2:0,rev,taxe:0,net:0};
-  const budgetNet=budget/(1+taxeR),taxe=budget-budgetNet;
-  const resteT1=Math.max(0,150-Math.min(dejaKwh,150));
-  const resteT2=Math.max(0,100-Math.max(0,Math.min(dejaKwh,250)-150));
-  let buf=budgetNet,kT1=0,kT2=0;
-  if(resteT1>0){const c=resteT1*CFG.t1;if(buf>=c){kT1=resteT1;buf-=c;}else{kT1=buf/CFG.t1;buf=0;}}
-  if(buf>0&&resteT2>0){const c=resteT2*CFG.t2;if(buf>=c){kT2=resteT2;buf-=c;}else{kT2=buf/CFG.t2;buf=0;}}
-  if(buf>0)kT2+=buf/CFG.t2;
-  return{kwh:kT1+kT2,kwhT1:kT1,kwhT2:kT2,rev,taxe:Math.round(taxe),net:Math.round(budgetNet)};
-}
-function fcfaPourKwh(kwhV,dejaKwh,premiere){
-  if(kwhV<=0)return 0;let lo=0,hi=500000;
-  for(let i=0;i<50;i++){const mid=(lo+hi)/2;calcKwh(mid,dejaKwh,premiere).kwh<kwhV?lo=mid:hi=mid;}
-  return Math.ceil(hi);
+  const net=budget/(1+tr),taxe=budget-net;
+  const rT1=Math.max(0,150-Math.min(deja,150));
+  const rT2=Math.max(0,100-Math.max(0,Math.min(deja,250)-150));
+  let buf=net,k1=0,k2=0;
+  if(rT1>0){const c=rT1*CFG.t1;if(buf>=c){k1=rT1;buf-=c;}else{k1=buf/CFG.t1;buf=0;}}
+  if(buf>0&&rT2>0){const c=rT2*CFG.t2;if(buf>=c){k2=rT2;buf-=c;}else{k2=buf/CFG.t2;buf=0;}}
+  if(buf>0)k2+=buf/CFG.t2;
+  return{kwh:k1+k2,kwhT1:k1,kwhT2:k2,rev,taxe:Math.round(taxe),net:Math.round(net)};
 }
 
-/* ── P1 ── */
-function calcP1(){
-  const m=sf(document.getElementById('p1m').value,0),dj=Math.max(0,sf(document.getElementById('p1d').value,0)),pr=document.getElementById('p1p').checked;
+function calcFcfa(kwh,deja,premiere){
+  if(kwh<=0)return{montant:0,kwhT1:0,kwhT2:0,rev:premiere?CFG.rev:0,taxe:0};
+  const rT1=Math.max(0,150-Math.min(deja,150));
+  const rT2=Math.max(0,100-Math.max(0,Math.min(deja,250)-150));
+  let kr=kwh,k1=0,k2=0,ef=0;
+  if(kr>0&&rT1>0){const k=Math.min(kr,rT1);k1=k;ef+=k*CFG.t1;kr-=k;}
+  if(kr>0&&rT2>0){const k=Math.min(kr,rT2);k2=k;ef+=k*CFG.t2;kr-=k;}
+  if(kr>0){k2+=kr;ef+=kr*CFG.t2;}
+  const tr=CFG.taxe/100,rev=premiere?CFG.rev:0;
+  const tot=Math.ceil(ef*(1+tr)+rev);
+  return{montant:tot,kwhT1:k1,kwhT2:k2,rev,taxe:Math.round(ef*tr)};
+}
+
+function maxFcfa(deja,seuil,premiere){
+  const mg=Math.max(0,seuil-deja);if(mg<=0)return 0;
+  let lo=0,hi=500000;
+  for(let i=0;i<50;i++){const mid=(lo+hi)/2;calcKwh(mid,deja,premiere).kwh<mg?lo=mid:hi=mid;}
+  return Math.floor(hi);
+}
+
+/* ── CONVERTISSEUR TABS ── */
+function switchConv(t){
+  const isCfa=t==='cfa';
+  document.getElementById('cv_cfa').style.display=isCfa?'block':'none';
+  document.getElementById('cv_kwh').style.display=isCfa?'none':'block';
+  document.getElementById('ct_cfa').classList.toggle('active',isCfa);
+  document.getElementById('ct_kwh').classList.toggle('active',!isCfa);
+}
+
+/* ── P1 FCFA→kWh ── */
+function calcCFA(){
+  const m=sf(document.getElementById('c1m').value,0),dj=Math.max(0,sf(document.getElementById('c1d').value,0)),pr=document.getElementById('c1p').checked;
   if(m<=0){toast('⚠️ Entre un montant valide');return;}
   const r=calcKwh(m,dj,pr),nv=dj+r.kwh;
-  document.getElementById('r_kwh').textContent=fmtD(r.kwh);
-  document.getElementById('bm').textContent=fmt(m)+' FCFA';
-  document.getElementById('br').textContent=pr?'−'+fmt(r.rev)+' FCFA':'0 FCFA';
-  document.getElementById('btx').textContent='−'+fmt(r.taxe)+' FCFA';
-  document.getElementById('bnet').textContent=fmt(r.net)+' FCFA';
-  document.getElementById('bk1').textContent=fmtD(r.kwhT1)+' kWh';
-  const bk2r=document.getElementById('bk2_row');
-  if(r.kwhT2>0.01){bk2r.style.display='flex';document.getElementById('bk2').textContent=fmtD(r.kwhT2)+' kWh';}else bk2r.style.display='none';
-  document.getElementById('bt1').style.width=Math.min(60,(Math.min(nv,150)/250)*100)+'%';
-  document.getElementById('bt2').style.width=(nv>150?Math.min(40,((Math.min(nv,250)-150)/250)*100):0)+'%';
-  const al=document.getElementById('p1al');
-  if(nv>250)setAl(al,'err','🔴','Tu dépasses <strong>250 kWh</strong>. TVA 18% activée.');
-  else if(nv>150)setAl(al,'warn','🟡','Tranche 2 (136,49 F/kWh). Reste '+fmtD(250-nv)+' kWh avant T3.');
-  else setAl(al,'ok','✅','Tranche 1 (82 F/kWh). Reste '+fmtD(150-nv)+' kWh avant T2.');
-  const s=document.getElementById('p1sugg');
-  if(nv>150){const ec=(nv-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);s.innerHTML='<div class="sugg" style="margin-top:10px"><div class="sugg-title">💡 Suggestion</div><p>En rechargeant en début de mois (T1), tu économises ~<strong>'+fmt(ec)+' FCFA</strong> sur ces '+fmtD(nv-150)+' kWh en T2.</p></div>';}
-  else s.innerHTML='';
-  document.getElementById('p1r').classList.add('show');
+  document.getElementById('c1_kwh').textContent=fD(r.kwh);
+  document.getElementById('c1_m').textContent=fmt(m)+' FCFA';
+  document.getElementById('c1_rev').textContent=pr?'−'+fmt(r.rev)+' FCFA':'0 FCFA';
+  document.getElementById('c1_tx').textContent='−'+fmt(r.taxe)+' FCFA';
+  document.getElementById('c1_net').textContent=fmt(r.net)+' FCFA';
+  document.getElementById('c1_k1').textContent=fD(r.kwhT1)+' kWh';
+  const k2r=document.getElementById('c1_k2r');
+  if(r.kwhT2>0.01){k2r.style.display='flex';document.getElementById('c1_k2').textContent=fD(r.kwhT2)+' kWh';}else k2r.style.display='none';
+  document.getElementById('c1_bt1').style.width=Math.min(60,(Math.min(nv,150)/250)*100)+'%';
+  document.getElementById('c1_bt2').style.width=(nv>150?Math.min(40,((Math.min(nv,250)-150)/250)*100):0)+'%';
+  const ale=document.getElementById('c1_al');
+  if(nv>250)al(ale,'err','🔴','Tu dépasses <strong>250 kWh</strong>. TVA 18% activée.');
+  else if(nv>150)al(ale,'warn','🟡',`Tranche 2 (136,49 F/kWh). Reste ${fD(250-nv)} kWh avant T3.`);
+  else al(ale,'ok','✅',`Tranche 1 (82 F/kWh). Reste ${fD(150-nv)} kWh avant T2.`);
+  const sg=document.getElementById('c1_sg');
+  if(nv>150){const ec=(nv-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);sg.innerHTML=`<div class="sugg" style="margin-top:10px"><div class="sugg-t">💡 Suggestion</div><p>En rechargeant en début de mois (T1), tu économises ~<strong>${fmt(ec)} FCFA</strong> sur ces ${fD(nv-150)} kWh en T2.</p></div>`;}else sg.innerHTML='';
+  document.getElementById('c1r').classList.add('show');
 }
-function setAl(el,type,icon,msg){el.innerHTML='<div class="al al-'+type+'"><span class="al-icon">'+icon+'</span><span>'+msg+'</span></div>';}
+
+/* ── P1 kWh→FCFA ── */
+function calcKWH(){
+  const k=sf(document.getElementById('c2k').value,0),dj=Math.max(0,sf(document.getElementById('c2d').value,0)),pr=document.getElementById('c2p').checked;
+  if(k<=0){toast('⚠️ Entre une quantité de kWh valide');return;}
+  const r=calcFcfa(k,dj,pr),nv=dj+k;
+  document.getElementById('c2_fcfa').textContent=fmt(r.montant);
+  document.getElementById('c2_k').textContent=fD(k)+' kWh';
+  document.getElementById('c2_k1').textContent=fD(r.kwhT1)+' kWh';
+  const k2r=document.getElementById('c2_k2r');
+  if(r.kwhT2>0.01){k2r.style.display='flex';document.getElementById('c2_k2').textContent=fD(r.kwhT2)+' kWh';}else k2r.style.display='none';
+  document.getElementById('c2_tx').textContent='+'+fmt(r.taxe)+' FCFA';
+  document.getElementById('c2_rev').textContent=pr?'+'+fmt(r.rev)+' FCFA':'0 FCFA';
+  document.getElementById('c2_tot').textContent=fmt(r.montant)+' FCFA';
+  const ale=document.getElementById('c2_al');
+  if(nv>250)al(ale,'err','🔴','Ces kWh te placent en Tranche 3. TVA 18% incluse.');
+  else if(nv>150)al(ale,'warn','🟡','Ces kWh te placent en Tranche 2 (136,49 F/kWh).');
+  else al(ale,'ok','✅','Ces kWh restent en Tranche 1 (82 F/kWh). Bon tarif !');
+  document.getElementById('c2r').classList.add('show');
+}
 
 /* ── P2 SUIVI ── */
-function buildMonthTabs(){document.getElementById('month_tabs').innerHTML=getAllMonths().map(m=>'<button class="mtab'+(m===VIEW_MOIS?' active':'')+'" onclick="selectMois(\''+m+'\')">'+moisLbl(m)+'</button>').join('');}
-function selectMois(m){VIEW_MOIS=m;buildMonthTabs();refreshSuivi();}
-function makeSugg(k){
+function buildMT(){document.getElementById('month_tabs').innerHTML=getAllMonths().map(m=>`<button class="mtab${m===VM?' active':''}" onclick="selMois('${m}')">${moisLbl(m)}</button>`).join('');}
+function selMois(m){VM=m;buildMT();refreshS();}
+
+function p2Sugg(k){
   if(!k)return'';
-  if(k>150&&k<=250){const ec=(k-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);return'<div class="sugg"><div class="sugg-title">💡 Suggestion</div><p>'+fmtD(k-150)+' kWh en T2 ce mois. En rechargeant plus tôt en T1, tu aurais économisé ~<strong>'+fmt(ec)+' FCFA</strong>.</p></div>';}
-  if(k>250)return'<div class="sugg"><div class="sugg-title">⚠️ Suggestion</div><p>Tu as dépassé 250 kWh. TVA 18% appliquée. Utilise le <strong>Planifier</strong> pour anticiper.</p></div>';
-  if(k>120&&k<=150)return'<div class="sugg"><div class="sugg-title">💡 Suggestion</div><p>Plus que <strong>'+fmtD(150-k)+' kWh</strong> avant T2. Surveille ta conso !</p></div>';
+  if(k>150&&k<=250){const ec=(k-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);return`<div class="sugg"><div class="sugg-t">💡 Suggestion</div><p>${fD(k-150)} kWh en T2 ce mois. En rechargeant plus tôt en T1, tu aurais économisé ~<strong>${fmt(ec)} FCFA</strong>.</p></div>`;}
+  if(k>250)return`<div class="sugg"><div class="sugg-t">⚠️ Suggestion</div><p>Tu as dépassé 250 kWh. TVA 18% appliquée. Utilise le <strong>Planifier</strong> pour anticiper.</p></div>`;
+  if(k>120&&k<=150)return`<div class="sugg"><div class="sugg-t">💡 Suggestion</div><p>Plus que <strong>${fD(150-k)} kWh</strong> avant T2. Surveille ta consommation !</p></div>`;
   return'';
 }
+
 async function addR(){
   const m=sf(document.getElementById('p2m').value,0),d=document.getElementById('p2d').value;
   if(m<=0||!d){toast('⚠️ Montant et date requis');return;}
   if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('⚠️ Date invalide');return;}
   const mois=d.substring(0,7);
   const premiere=DATA.filter(r=>r.date.startsWith(mois)).length===0;
-  const dejaKwh=DATA.filter(r=>r.date.startsWith(mois)&&r.date<d).reduce((s,r)=>s+r.kwh,0);
-  const r=calcKwh(m,dejaKwh,premiere);
+  const deja=DATA.filter(r=>r.date.startsWith(mois)&&r.date<d).reduce((s,r)=>s+r.kwh,0);
+  const r=calcKwh(m,deja,premiere);
   const newR={date:d,montant:m,kwh:parseFloat(r.kwh.toFixed(2)),premiere};
-  const id=await dbPut(ST_DATA,newR);newR.id=id;
+  const id=await dbPut(STR,newR);newR.id=id;
   DATA.push(newR);DATA.sort((a,b)=>a.date.localeCompare(b.date));
-  VIEW_MOIS=mois;buildMonthTabs();refreshSuivi();
+  VM=mois;buildMT();refreshS();
   document.getElementById('p2m').value='';
   toast('✅ Recharge enregistrée !');
 }
-function refreshSuivi(){
-  const mois=VIEW_MOIS,items=DATA.filter(r=>r.date.startsWith(mois));
-  const totKwh=items.reduce((s,r)=>s+r.kwh,0),totF=items.reduce((s,r)=>s+r.montant,0);
+
+function refreshS(){
+  const mois=VM,items=DATA.filter(r=>r.date.startsWith(mois));
+  const totK=items.reduce((s,r)=>s+r.kwh,0),totF=items.reduce((s,r)=>s+r.montant,0);
   document.getElementById('p2ml').textContent='📅 '+moisLbl(mois);
-  document.getElementById('jkwh').textContent=fmtD(totKwh);
+  document.getElementById('jkwh').textContent=fD(totK);
   document.getElementById('sf').textContent=fmt(totF);
   document.getElementById('snb').textContent=items.length;
-  document.getElementById('jt1').style.width=Math.min(60,(Math.min(totKwh,150)/250)*100)+'%';
-  document.getElementById('jt2').style.width=(totKwh>150?Math.min(40,((Math.min(totKwh,250)-150)/250)*100):0)+'%';
-  const al=document.getElementById('jal');
-  if(totKwh<=150){document.getElementById('jbdg').innerHTML='<span class="bdg b-t1">🟢 Tranche 1</span>';document.getElementById('ss').textContent=fmtD(150-totKwh);if(totKwh>120)setAl(al,'warn','⚠️','Plus que <strong>'+fmtD(150-totKwh)+' kWh</strong> avant T2 !');else al.innerHTML='';}
-  else if(totKwh<=250){document.getElementById('jbdg').innerHTML='<span class="bdg b-t2">🟡 Tranche 2</span>';document.getElementById('ss').textContent=fmtD(250-totKwh);if(totKwh>220)setAl(al,'err','🔴','Plus que <strong>'+fmtD(250-totKwh)+' kWh</strong> avant TVA 18% !');else setAl(al,'warn','🟡','T2 (136,49 F/kWh). Reste <strong>'+fmtD(250-totKwh)+' kWh</strong> avant T3.');}
-  else{document.getElementById('jbdg').innerHTML='<span class="bdg b-t3">🔴 Tranche 3</span>';document.getElementById('ss').textContent='—';setAl(al,'err','🔴','Tranche 3 + TVA 18%. Attends le 1er du mois suivant pour repartir en T1.');}
-  document.getElementById('p2sugg').innerHTML=makeSugg(totKwh);
+  document.getElementById('jt1').style.width=Math.min(60,(Math.min(totK,150)/250)*100)+'%';
+  document.getElementById('jt2').style.width=(totK>150?Math.min(40,((Math.min(totK,250)-150)/250)*100):0)+'%';
+  const ale=document.getElementById('jal');
+  if(totK<=150){document.getElementById('jbdg').innerHTML='<span class="bdg b-t1">🟢 Tranche 1</span>';document.getElementById('ss').textContent=fD(150-totK);if(totK>120)al(ale,'warn','⚠️',`Plus que <strong>${fD(150-totK)} kWh</strong> avant T2 !`);else ale.innerHTML='';}
+  else if(totK<=250){document.getElementById('jbdg').innerHTML='<span class="bdg b-t2">🟡 Tranche 2</span>';document.getElementById('ss').textContent=fD(250-totK);if(totK>220)al(ale,'err','🔴',`Plus que <strong>${fD(250-totK)} kWh</strong> avant TVA 18% !`);else al(ale,'warn','🟡',`T2 (136,49 F/kWh). Reste <strong>${fD(250-totK)} kWh</strong> avant T3.`);}
+  else{document.getElementById('jbdg').innerHTML='<span class="bdg b-t3">🔴 Tranche 3</span>';document.getElementById('ss').textContent='—';al(ale,'err','🔴','T3 + TVA 18%. Attends le 1er du mois suivant pour repartir en T1.');}
+  document.getElementById('p2sugg').innerHTML=p2Sugg(totK);
   renderH(mois);
   document.getElementById('btn_rst').style.display=items.length?'block':'none';
 }
+
 function renderH(mois){
   const el=document.getElementById('p2h'),items=DATA.filter(r=>r.date.startsWith(mois)).slice().reverse();
   if(!items.length){el.innerHTML='<div class="empty"><div class="ei">📂</div><p>Aucune recharge pour ce mois.</p></div>';return;}
-  el.innerHTML=items.map(r=>{const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});return'<div class="ri"><div class="ri-l"><div class="ri-date">'+san(ds)+(r.premiere?' · <span style="color:var(--accent);font-weight:700">1ère ⭐</span>':'')+'</div><div class="ri-m">'+fmt(r.montant)+' FCFA</div></div><div class="ri-r"><div class="ri-k">'+fmtD(r.kwh)+'</div><div class="ri-kl">kWh</div></div><button class="dbtn" onclick="delRec('+r.id+')">🗑</button></div>';}).join('');
+  el.innerHTML=items.map(r=>{
+    const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+    return`<div class="ri"><div class="ri-l"><div class="ri-d">${san(ds)}${r.premiere?' · <span style="color:var(--acc);font-weight:700">1ère ⭐</span>':''}</div><div class="ri-m">${fmt(r.montant)} FCFA</div></div><div class="ri-r"><div class="ri-k">${fD(r.kwh)}</div><div class="ri-kl">kWh</div></div><button class="dbtn" onclick="delRec(${r.id})">🗑</button></div>`;
+  }).join('');
 }
-async function delRec(id){const r=DATA.find(x=>x.id===id);if(!r)return;await dbDel(ST_DATA,id);DATA=DATA.filter(x=>x.id!==id);buildMonthTabs();refreshSuivi();}
+
+async function delRec(id){
+  const r=DATA.find(x=>x.id===id);if(!r)return;
+  await dbDel(STR,id);DATA=DATA.filter(x=>x.id!==id);
+  buildMT();refreshS();
+}
+
 function rstMois(){
-  askConfirm(
-    '🗑️',
-    'Réinitialiser ce mois ?',
-    'Toutes les recharges du mois sélectionné seront supprimées.',
+  askConfirm('🗑️','Réinitialiser ce mois ?',
+    'Toutes les recharges du mois sélectionné seront supprimées définitivement.',
     'Réinitialiser',
     async()=>{
-      const items=DATA.filter(r=>r.date.startsWith(VIEW_MOIS));
-      for(const r of items)await dbDel(ST_DATA,r.id);
-      DATA=DATA.filter(r=>!r.date.startsWith(VIEW_MOIS));
-      buildMonthTabs();refreshSuivi();toast('🗑️ Mois réinitialisé');
+      const items=DATA.filter(r=>r.date.startsWith(VM));
+      for(const r of items)await dbDel(STR,r.id);
+      DATA=DATA.filter(r=>!r.date.startsWith(VM));
+      buildMT();refreshS();toast('🗑️ Mois réinitialisé');
     }
   );
 }
 
 /* ── P3 PLANIFIER ── */
 function selO(t){OBJ=t;['t1','t2','t3'].forEach(x=>document.getElementById('oc_'+x).classList.remove('sel'));document.getElementById('oc_'+t).classList.add('sel');}
-function toggleSolde(){document.getElementById('pl_solde_group').style.display=document.getElementById('pl_has_solde').checked?'block':'none';}
-function getSuiviCurrMois(){const mois=currMois(),items=DATA.filter(r=>r.date.startsWith(mois)),totKwh=items.reduce((s,r)=>s+r.kwh,0),je=joursEcoules(mois);return{totKwh,je,consoJourAuto:je>0?totKwh/je:0,nb:items.length,hasData:items.length>0};}
-function refreshPlanifier(){
-  const d=getSuiviCurrMois();
-  document.getElementById('plan_no_data').style.display=d.hasData?'none':'block';
-  document.getElementById('plan_data_summary').style.display=d.hasData?'block':'none';
-  if(!d.hasData)return;
-  document.getElementById('pl_kwh_total').textContent=fmtD(d.totKwh);
-  document.getElementById('pl_jours_ecoules').textContent=d.je;
-  document.getElementById('pl_conso_jour_auto').textContent=fmtD(d.consoJourAuto);
-  const ci=document.getElementById('pl_conso_input');
-  if(!ci.value&&d.consoJourAuto>0)ci.value=d.consoJourAuto.toFixed(1);
-  const hint=document.getElementById('pl_conso_hint');
-  if(d.nb>=3){hint.textContent='✅ Basé sur '+d.nb+' recharges — fiable. Ajuste si ce mois est atypique.';hint.style.color='var(--green)';}
-  else{hint.textContent='⚠️ '+d.nb+' recharge(s) — estimation approx. Ajuste si nécessaire.';hint.style.color='var(--accent)';}
+function switchPT(t){
+  const isSim=t==='sim';
+  document.getElementById('pt_sim').style.display=isSim?'block':'none';
+  document.getElementById('pt_plan').style.display=isSim?'none':'block';
+  document.getElementById('ptab_s').classList.toggle('active',isSim);
+  document.getElementById('ptab_p').classList.toggle('active',!isSim);
 }
-function planifier(){
-  const d=getSuiviCurrMois();
+function toggleSolde(p){document.getElementById(p+'_sg').style.display=document.getElementById(p+'_hs').checked?'block':'none';}
+
+function getSuiviData(){
+  const mois=currMois(),items=DATA.filter(r=>r.date.startsWith(mois));
+  const totK=items.reduce((s,r)=>s+r.kwh,0),je=joursEcoules(mois),nb=items.length;
+  return{totK,je,cjAuto:je>0?totK/je:0,nb,hasData:nb>0};
+}
+
+function refreshPSrc(){
+  const d=getSuiviData();
+  document.getElementById('src_nd').style.display=d.hasData?'none':'block';
+  document.getElementById('src_st').style.display=d.hasData?'flex':'none';
+  if(!d.hasData)return;
+  document.getElementById('sl_k').textContent=fD(d.totK);
+  document.getElementById('sl_j').textContent=d.je;
+  document.getElementById('sl_c').textContent=fD(d.cjAuto);
+  const ci=document.getElementById('pl_cj');
+  if(!ci.value&&d.cjAuto>0)ci.value=d.cjAuto.toFixed(1);
+  const h=document.getElementById('pl_hint');
+  if(d.nb>=3){h.innerHTML='✅ Basé sur '+d.nb+' recharges — fiable. Ajuste si ce mois est atypique.';h.style.color='var(--grn)';}
+  else{h.innerHTML='⚠️ '+d.nb+' recharge(s) seulement — estimation approximative.';h.style.color='var(--acc)';}
+}
+
+function getKwC(d,hasSolde,solde){
+  if(hasSolde&&solde>=0)return{val:Math.max(0,d.totK-solde),src:'exact (solde compteur)',fi:'h'};
+  return{val:d.cjAuto*d.je,src:'estimé',fi:d.nb>=3?'m':'l'};
+}
+
+// Suggestion meilleur moment
+function bestTimeSugg(kwhCons,seuil,totK){
+  const now=new Date(),day=now.getDate(),dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),dLeft=dInM-day;
+  let h='';
+  if(day<=5&&kwhCons<seuil*0.3)h=`<div class="al al-pur" style="margin-top:8px"><span class="al-ic">🕐</span><span><strong>Bon moment !</strong> Tu es en début de mois avec peu de kWh consommés. Recharger maintenant te donne accès à tout le quota T1 de ce mois.</span></div>`;
+  else if(kwhCons>=seuil*0.85&&dLeft>3)h=`<div class="al al-warn" style="margin-top:8px"><span class="al-ic">⏳</span><span><strong>Attention :</strong> Tu approches du seuil avec ${dLeft} jours restants. Attends le 1er du mois prochain pour repartir en T1 et économiser.</span></div>`;
+  else if(day>25&&kwhCons<seuil*0.6)h=`<div class="al al-info" style="margin-top:8px"><span class="al-ic">💡</span><span>Tu es en fin de mois. Une petite recharge maintenant te couvre les derniers jours, et au 1er tu repars à zéro en T1.</span></div>`;
+  else if(kwhCons<seuil&&dLeft>10)h=`<div class="al al-ok" style="margin-top:8px"><span class="al-ic">🕐</span><span>Il te reste ${dLeft} jours et tu es sous le seuil. Recharger maintenant est sans risque — tu resteras en T1.</span></div>`;
+  return h;
+}
+
+// Suggestion solde non activé
+function suggSolde(){
+  return`<div class="al al-info" style="margin-top:8px"><span class="al-ic">💡</span><span><strong>Astuce précision :</strong> Active le bouton "J'ai lu mon solde sur le compteur" pour obtenir des calculs exacts basés sur ce qu'il y a réellement sur ton compteur.</span></div>`;
+}
+
+// Fourchette HTML
+function fourchetteHTML(min,mid,max,seuil){
+  return`
+  <div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette recommandée</div>
+  <div class="frc" style="margin-top:8px">
+    <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${min?fmt(min)+' F':'—'}</div><div class="fc-l">Minimum utile<br>(~3 jours)</div></div>
+    <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mid?fmt(mid)+' F':'—'}</div><div class="fc-l">Recommandé<br>(marge sécurité)</div></div>
+    <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${max?fmt(max)+' F':'—'}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
+  </div>`;
+}
+
+/* SIMULER */
+function simuler(){
+  const d=getSuiviData();
   if(!d.hasData){toast('⚠️ Enregistre d\'abord des recharges dans le Suivi');return;}
-  const cJ=sf(document.getElementById('pl_conso_input').value,0),jR=sf(document.getElementById('pl_jours_input').value,0);
-  const hasSolde=document.getElementById('pl_has_solde').checked,solde=hasSolde?sf(document.getElementById('pl_solde_input').value,-1):-1;
-  if(cJ<=0){toast('⚠️ Entre ta consommation journalière');return;}
-  if(jR<=0){toast('⚠️ Entre les jours restants');return;}
+  const montant=sf(document.getElementById('sm_m').value,0);
+  if(montant<=0){toast('⚠️ Entre un montant valide');return;}
+  const hasSolde=document.getElementById('sm_hs').checked;
+  const solde=hasSolde?sf(document.getElementById('sm_s').value,-1):-1;
   if(hasSolde&&solde<0){toast('⚠️ Entre le solde lu sur le compteur');return;}
-  let kC,fiab;
-  if(hasSolde&&solde>=0){kC=Math.max(0,d.totKwh-solde);fiab='high';}else{kC=cJ*d.je;fiab=d.nb>=3?'med':'low';}
-  const kF=cJ*jR,proj=kC+kF,seuil=OBJ==='t1'?150:OBJ==='t2'?250:9999,mR=Math.max(0,seuil-kC);
-  const srcL=hasSolde&&solde>=0?'calcul exact (solde compteur)':'estimation (conso/jour × jours écoulés)';
-  let h='<div style="margin-bottom:14px"><div class="bk-head">Analyse de la situation</div>'
-    +'<div class="bk-row"><span class="bk-l">kWh rechargés ce mois</span><span class="bk-v" style="color:var(--accent)">'+fmtD(d.totKwh)+' kWh</span></div>'
-    +'<div class="bk-row"><span class="bk-l">kWh déjà consommés</span><span class="bk-v">'+fmtD(kC)+' kWh <span style="font-size:9px;color:var(--text3)">('+srcL+')</span></span></div>'
-    +'<div class="bk-row"><span class="bk-l">kWh à consommer encore</span><span class="bk-v">'+fmtD(kF)+' kWh</span></div>'
-    +'<div class="bk-row"><span class="bk-l">Projection fin de mois</span><span class="bk-v" style="color:'+(proj>seuil&&OBJ!=='t3'?'var(--red)':'var(--green)')+'">'+fmtD(proj)+' kWh</span></div>'
-    +'</div><div class="dvd"></div>';
+  const{val:kC,src:srcL,fi:fiab}=getKwC(d,hasSolde,solde);
+  const seuil=OBJ==='t1'?150:OBJ==='t2'?250:9999;
+  const r=calcKwh(montant,kC,false);
+  const kApres=kC+r.kwh;
+  // Fourchette
+  const mMax=seuil<9999&&kC<seuil?maxFcfa(kC,seuil,false):null;
+  const mMid=mMax?Math.floor(mMax*0.9):null;
+  const kMinCible=d.cjAuto>0?Math.min(d.cjAuto*3,seuil<9999?Math.max(0,seuil-kC):d.cjAuto*3):0;
+  const mMin=kMinCible>0?Math.ceil(calcFcfa(kMinCible,kC,false).montant):null;
+  let h='';
+  // Verdict
   if(OBJ==='t3'){
-    const kA=Math.max(0,kF-Math.max(0,d.totKwh-kC)),mS=kA>0?fcfaPourKwh(kA,kC,false)+500:0;
-    h+='<div class="al al-info"><span class="al-icon">📊</span><span>Mode sans limite. Projection : <strong>'+fmtD(proj)+' kWh</strong>.</span></div>';
-    if(mS>0)h+='<div style="margin-top:12px"><div class="bk-row"><span class="bk-l">Recharge suggérée pour couvrir le mois</span><span class="bk-v pos">~'+fmt(mS)+' FCFA</span></div></div>';
-  }else if(mR<=0){
-    h+='<div class="al al-err"><span class="al-icon">🔴</span><span><strong>Tu as déjà dépassé le seuil de '+seuil+' kWh.</strong> Plus possible de rester en '+(OBJ==='t1'?'Tranche 1':'Tranche 2')+'.</span></div>'
-      +'<div class="al al-info" style="margin-top:8px"><span class="al-icon">💡</span><span>Attends le <strong>1er du mois prochain</strong> pour repartir en T1 à 82 F/kWh.</span></div>';
-  }else if(proj>seuil){
-    const mMax=fcfaPourKwh(mR,kC,false),mC=Math.floor(mMax*.88),jC2=cJ>0?mR/cJ:0;
-    h+='<div class="al al-warn"><span class="al-icon">⚠️</span><span>À ce rythme tu dépasseras '+seuil+' kWh. Recharge limitée possible.</span></div>'
-      +'<div class="plan-result-amount" style="margin-top:14px"><div class="plan-fcfa">'+fmt(mC)+' F</div><div class="plan-fcfa-lbl">montant confort à recharger (marge −12%)</div></div>'
-      +'<div class="plan-alt"><span class="plan-alt-lbl">Maximum strict avant seuil '+seuil+' kWh</span><span class="plan-alt-val">'+fmt(mMax)+' FCFA</span></div>'
-      +'<div style="margin-top:12px"><div class="bk-row"><span class="bk-l">kWh dans la marge</span><span class="bk-v" style="color:var(--accent)">'+fmtD(mR)+' kWh</span></div>'
-      +'<div class="bk-row"><span class="bk-l">Ces kWh te couvrent</span><span class="bk-v">'+fmtD(jC2)+' jours</span></div></div>';
+    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Recharge acceptée</div><div class="v-su">Tu obtiendras <strong>${fD(r.kwh)} kWh</strong> supplémentaires. Aucune limite de tranche.</div></div>`;
+  }else if(kC>=seuil){
+    h+=`<div class="verd v-err"><div class="v-ic">🚫</div><div class="v-ti" style="color:#f87171">Seuil déjà dépassé</div><div class="v-su">Tu es à ${fD(kC)} kWh — au-dessus du seuil ${seuil} kWh.<br>Attends le 1er du mois prochain pour repartir en T1.</div></div>`;
+  }else if(kApres>seuil){
+    h+=`<div class="verd v-err"><div class="v-ic">⚠️</div><div class="v-ti" style="color:#f87171">Cette recharge dépasse le seuil</div><div class="v-su">Avec ${fmt(montant)} FCFA tu passes à <strong>${fD(kApres)} kWh</strong> — soit <strong>${fD(kApres-seuil)} kWh au-dessus</strong> du seuil ${seuil} kWh.</div></div>`;
   }else{
-    const sA=hasSolde&&solde>=0?solde:Math.max(0,d.totKwh-kC),kManq=Math.max(0,kF-sA);
-    const mRec=kManq>0?fcfaPourKwh(kManq,kC,false):0,mConf=kManq>0?Math.ceil(mRec*1.1):0;
-    const marge=seuil-proj,mMax=fcfaPourKwh(mR,kC,false);
-    h+='<div class="al al-ok"><span class="al-icon">✅</span><span><strong>Bonne situation !</strong> Tu peux finir le mois en '+(OBJ==='t1'?'Tranche 1':'Tranche 2')+'.</span></div>';
-    if(mConf>0)h+='<div class="plan-result-amount" style="margin-top:14px"><div class="plan-fcfa">'+fmt(mConf)+' F</div><div class="plan-fcfa-lbl">montant recommandé pour couvrir les '+jR+' jours restants</div></div><div class="plan-alt"><span class="plan-alt-lbl">Minimum strict</span><span class="plan-alt-val">'+fmt(mRec)+' FCFA</span></div>';
-    else h+='<div class="al al-ok" style="margin-top:10px"><span class="al-icon">🔋</span><span>Ton solde couvre déjà les '+jR+' jours restants.</span></div>';
-    h+='<div style="margin-top:12px"><div class="bk-row"><span class="bk-l">Marge restante avant seuil '+seuil+' kWh</span><span class="bk-v pos">'+fmtD(marge)+' kWh</span></div><div class="bk-row"><span class="bk-l">Budget max avant changer de tranche</span><span class="bk-v pos">~'+fmt(mMax)+' FCFA</span></div></div>';
+    const marge=seuil-kApres;
+    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Bonne recharge !</div><div class="v-su">Tu passes à <strong>${fD(kApres)} kWh</strong> — tu restes sous le seuil ${seuil} kWh.<br>Marge restante : <strong>${fD(marge)} kWh</strong>.</div></div>`;
   }
-  const fc={'high':'fiab-high','med':'fiab-med','low':'fiab-low'}[fiab];
-  const fm={'high':'🎯 Calcul exact — solde compteur utilisé','med':'📊 Estimation fiable — '+d.nb+' recharges enregistrées','low':'⚠️ Estimation approx. — enregistre plus de recharges dans le Suivi'}[fiab];
-  h+='<div class="fiab '+fc+'" style="margin-top:12px"><span>'+fm+'</span></div>';
-  document.getElementById('p3_content').innerHTML=h;
-  document.getElementById('p3r').classList.add('show');
+  // Fourchette dans tous les cas (sauf seuil déjà dépassé / sans limite)
+  if(OBJ!=='t3'&&kC<seuil)h+=fourchetteHTML(mMin,mMid,mMax,seuil);
+  // Positionnement du montant saisi
+  if(OBJ!=='t3'&&kC<seuil&&mMax){
+    const pos=montant>mMax?'<strong style="color:#f87171">au-dessus du maximum ⚠️</strong>':mMin&&montant<mMin?'<strong style="color:var(--acc)">en dessous du minimum conseillé</strong>':'<strong style="color:#4ade80">dans la fourchette optimale ✅</strong>';
+    h+=`<p style="font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.5">Ton montant de <strong style="color:var(--txt)">${fmt(montant)} FCFA</strong> se situe ${pos}</p>`;
+  }
+  // Détail
+  h+=`<div class="bk" style="margin-top:12px"><div class="bk-hd">Détail de la simulation</div>
+  <div class="bk-row"><span class="bk-l">kWh consommés (${srcL})</span><span class="bk-v">${fD(kC)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">kWh obtenus avec ${fmt(montant)} FCFA</span><span class="bk-v" style="color:var(--acc)">${fD(r.kwh)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">Total projeté après recharge</span><span class="bk-v" style="color:${kApres>seuil&&OBJ!=='t3'?'var(--red)':'var(--grn)'}">${fD(kApres)} kWh</span></div>
+  ${seuil<9999?`<div class="bk-row"><span class="bk-l">Seuil objectif</span><span class="bk-v">${seuil} kWh</span></div>`:''}
+  </div>`;
+  // Suggestion solde si pas activé
+  if(!hasSolde)h+=suggSolde();
+  // Meilleur moment
+  h+=bestTimeSugg(kC,seuil,d.totK);
+  // Fiabilité
+  const fm={'h':'🎯 Calcul exact — solde compteur utilisé','m':'📊 Estimation fiable','l':'⚠️ Estimation approx. — enregistre plus de recharges dans le Suivi'}[fiab];
+  h+=`<div class="fiab fi-${fiab}" style="margin-top:10px">${fm}</div>`;
+  document.getElementById('sm_ct').innerHTML=h;
+  document.getElementById('sm_res').classList.add('show');
+}
+
+/* PLANIFIER */
+function planifier(){
+  const d=getSuiviData();
+  if(!d.hasData){toast('⚠️ Enregistre d\'abord des recharges dans le Suivi');return;}
+  const cj=sf(document.getElementById('pl_cj').value,0),jr=sf(document.getElementById('pl_jr').value,0);
+  if(cj<=0){toast('⚠️ Entre ta consommation journalière');return;}
+  if(jr<=0){toast('⚠️ Entre les jours restants');return;}
+  const hasSolde=document.getElementById('pl_hs').checked;
+  const solde=hasSolde?sf(document.getElementById('pl_s').value,-1):-1;
+  if(hasSolde&&solde<0){toast('⚠️ Entre le solde lu sur le compteur');return;}
+  const{val:kC,src:srcL,fi:fiab}=getKwC(d,hasSolde,solde);
+  const seuil=OBJ==='t1'?150:OBJ==='t2'?250:9999;
+  const kF=cj*jr,proj=kC+kF;
+  const kSolde=hasSolde&&solde>=0?solde:Math.max(0,d.totK-kC);
+  const kManq=Math.max(0,kF-kSolde);
+  // Fourchette
+  const marge=seuil<9999?Math.max(0,seuil-kC):null;
+  const mMax=marge!==null&&marge>0?maxFcfa(kC,seuil,false):null;
+  const mMid=mMax?Math.floor(mMax*0.88):null;
+  const mMin=kManq>0?Math.ceil(calcFcfa(kManq,kC,false).montant):null;
+  const mMinConf=mMin?Math.ceil(mMin*1.1):null;
+  let h=`<div class="bk" style="margin-bottom:12px"><div class="bk-hd">Analyse automatique</div>
+  <div class="bk-row"><span class="bk-l">kWh consommés (${srcL})</span><span class="bk-v">${fD(kC)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">kWh à consommer (${jr} jours × ${fD(cj)} kWh/j)</span><span class="bk-v">${fD(kF)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">Projection fin de mois</span><span class="bk-v" style="color:${proj>seuil&&OBJ!=='t3'?'var(--red)':'var(--grn)'}">${fD(proj)} kWh</span></div>
+  </div>`;
+  if(OBJ==='t3'){
+    const ms=kManq>0?Math.ceil(calcFcfa(kManq,kC,false).montant)+500:0;
+    h+=`<div class="verd v-ok"><div class="v-ic">📊</div><div class="v-ti" style="color:#4ade80">Mode sans limite</div><div class="v-su">Projection : <strong>${fD(proj)} kWh</strong> fin de mois.</div></div>`;
+    if(ms>0)h+=`<div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Recharge suggérée pour couvrir le mois : <strong>~${fmt(ms)} FCFA</strong></span></div>`;
+  }else if(kC>=seuil){
+    h+=`<div class="verd v-err"><div class="v-ic">🚫</div><div class="v-ti" style="color:#f87171">Seuil déjà dépassé</div><div class="v-su">Tu es à ${fD(kC)} kWh. Attends le 1er du mois prochain pour repartir en T1.</div></div>`;
+  }else if(proj>seuil){
+    h+=`<div class="verd v-warn"><div class="v-ic">⚠️</div><div class="v-ti" style="color:var(--acc)">Risque de dépassement</div><div class="v-su">À ce rythme tu franchiras ${seuil} kWh. Voici ta fourchette de recharge.</div></div>`;
+    h+=`<div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette — à ne pas dépasser</div>
+    <div class="frc" style="margin-top:8px">
+      <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${mMin?fmt(mMin)+' F':'—'}</div><div class="fc-l">Minimum strict<br>(kWh manquants)</div></div>
+      <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mMid?fmt(mMid)+' F':'—'}</div><div class="fc-l">Recommandé<br>(marge −12%)</div></div>
+      <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${mMax?fmt(mMax)+' F':'—'}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
+    </div>
+    <div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Ou attends le 1er du mois suivant pour repartir en T1 à 82 F/kWh.</span></div>`;
+  }else{
+    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Tu peux finir en ${OBJ==='t1'?'Tranche 1':'Tranche 2'} !</div><div class="v-su">Projection : <strong>${fD(proj)} kWh</strong> — sous le seuil de ${seuil} kWh.</div></div>`;
+    h+=`<div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette recommandée</div>
+    <div class="frc" style="margin-top:8px">
+      <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${mMin?fmt(mMin)+' F':'—'}</div><div class="fc-l">Minimum strict<br>(kWh manquants)</div></div>
+      <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mMinConf?fmt(mMinConf)+' F':'—'}</div><div class="fc-l">Conseillé<br>(min +10% confort)</div></div>
+      <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${mMax?fmt(mMax)+' F':'—'}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
+    </div>`;
+    if(kSolde>=kF)h+=`<div class="al al-ok" style="margin-top:10px"><span class="al-ic">🔋</span><span>Ton solde actuel (<strong>${fD(kSolde)} kWh</strong>) couvre déjà les ${jr} jours restants. Recharge non urgente.</span></div>`;
+    h+=`<div class="bk" style="margin-top:10px"><div class="bk-row"><span class="bk-l">Marge restante avant seuil</span><span class="bk-v pos">${fD(Math.max(0,seuil-proj))} kWh</span></div></div>`;
+  }
+  // Suggestion solde si pas activé
+  if(!hasSolde)h+=suggSolde();
+  // Meilleur moment
+  h+=bestTimeSugg(kC,seuil,d.totK);
+  const fm={'h':'🎯 Calcul exact — solde compteur utilisé','m':'📊 Estimation fiable','l':'⚠️ Estimation approx. — enregistre plus de recharges dans le Suivi'}[fiab];
+  h+=`<div class="fiab fi-${fiab}" style="margin-top:10px">${fm}</div>`;
+  document.getElementById('pl_ct').innerHTML=h;
+  document.getElementById('pl_res').classList.add('show');
 }
 
 /* ── P4 DONNÉES ── */
-function buildDataFilter(){const months=getAllMonths(),sel=document.getElementById('data_filter'),cur=sel.value;sel.innerHTML='<option value="all">Tous les mois</option>'+months.map(m=>'<option value="'+m+'">'+moisLbl(m)+'</option>').join('');if(months.includes(cur))sel.value=cur;}
-function renderDataTable(){
-  const filter=document.getElementById('data_filter').value;
+function buildDF(){
+  const ms=getAllMonths(),sel=document.getElementById('df'),cur=sel.value;
+  sel.innerHTML='<option value="all">Tous les mois</option>'+ms.map(m=>`<option value="${m}">${moisLbl(m)}</option>`).join('');
+  if(ms.includes(cur))sel.value=cur;
+}
+function renderDT(){
+  const filter=document.getElementById('df').value;
   let items=filter==='all'?[...DATA]:DATA.filter(r=>r.date.startsWith(filter));
   items=items.slice().reverse();
-  const tbody=document.getElementById('dtb'),empty=document.getElementById('data_empty'),totaux=document.getElementById('data_totaux'),wrap=document.getElementById('dtw');
-  if(!items.length){wrap.style.display='none';empty.style.display='block';totaux.style.display='none';return;}
-  wrap.style.display='block';empty.style.display='none';totaux.style.display='block';
-  tbody.innerHTML=items.map(r=>{const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'});const tr=r.premiere?'<span style="color:var(--t1)">T1⭐</span>':'<span style="color:var(--t2)">T2</span>';return'<tr><td>'+san(ds)+'</td><td>'+fmt(r.montant)+' F</td><td style="color:var(--accent)">'+fmtD(r.kwh)+'</td><td>'+tr+'</td><td><button class="dbtn" onclick="delRec('+r.id+');buildDataFilter();renderDataTable();" style="font-size:12px">🗑</button></td></tr>';}).join('');
+  const tb=document.getElementById('dtb'),empty=document.getElementById('dt_empty'),tot=document.getElementById('dt_tot'),wrap=document.getElementById('dtw');
+  if(!items.length){wrap.style.display='none';empty.style.display='block';tot.style.display='none';return;}
+  wrap.style.display='block';empty.style.display='none';tot.style.display='block';
+  tb.innerHTML=items.map(r=>{
+    const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'});
+    const tr=r.premiere?'<span style="color:var(--t1)">T1⭐</span>':'<span style="color:var(--t2)">T2</span>';
+    return`<tr><td>${san(ds)}</td><td>${fmt(r.montant)} F</td><td style="color:var(--acc)">${fD(r.kwh)}</td><td>${tr}</td><td><button class="dbtn" onclick="delRec(${r.id});buildDF();renderDT();" style="font-size:12px">🗑</button></td></tr>`;
+  }).join('');
   const tK=items.reduce((s,r)=>s+r.kwh,0),tF=items.reduce((s,r)=>s+r.montant,0);
-  document.getElementById('dt_fcfa').textContent=fmt(tF)+' FCFA';
-  document.getElementById('dt_kwh').textContent=fmtD(tK)+' kWh';
-  document.getElementById('dt_nb').textContent=items.length+' recharges';
-  const months=new Set(DATA.map(r=>r.date.substring(0,7))),tKa=DATA.reduce((s,r)=>s+r.kwh,0),tFa=DATA.reduce((s,r)=>s+r.montant,0);
-  document.getElementById('gs_mois').textContent=months.size;
-  document.getElementById('gs_moy').textContent=months.size?fmtD(tKa/months.size):0;
-  document.getElementById('gs_cout').textContent=tKa?Math.round(tFa/tKa):0;
+  document.getElementById('dt_f').textContent=fmt(tF)+' FCFA';
+  document.getElementById('dt_k').textContent=fD(tK)+' kWh';
+  document.getElementById('dt_n').textContent=items.length+' recharges';
+  const ms=new Set(DATA.map(r=>r.date.substring(0,7))),tKa=DATA.reduce((s,r)=>s+r.kwh,0),tFa=DATA.reduce((s,r)=>s+r.montant,0);
+  document.getElementById('gs_m').textContent=ms.size;
+  document.getElementById('gs_moy').textContent=ms.size?fD(tKa/ms.size):0;
+  document.getElementById('gs_c').textContent=tKa?Math.round(tFa/tKa):0;
   const cM=tKa?tFa/tKa:0,cI=CFG.t1*(1+CFG.taxe/100),gs=document.getElementById('gs_sugg');
-  if(tKa>0){if(cM>cI+5){const ec=(cM-cI)*tKa;gs.innerHTML='<div class="sugg" style="margin-top:12px"><div class="sugg-title">💡 Suggestion</div><p>Coût moyen <strong>'+Math.round(cM)+' F/kWh</strong> vs <strong>'+Math.round(cI)+' F/kWh</strong> optimal T1. Économie potentielle : ~<strong>'+fmt(ec)+' FCFA</strong>.</p></div>';}else gs.innerHTML='<div class="al al-ok" style="margin-top:12px"><span class="al-icon">✅</span><span>Excellent ! Coût moyen <strong>'+Math.round(cM)+' F/kWh</strong> — proche du tarif T1 optimal.</span></div>';}else gs.innerHTML='';
+  if(tKa>0){
+    if(cM>cI+5){const ec=(cM-cI)*tKa;gs.innerHTML=`<div class="sugg" style="margin-top:12px"><div class="sugg-t">💡 Suggestion</div><p>Coût moyen <strong>${Math.round(cM)} F/kWh</strong> vs <strong>${Math.round(cI)} F/kWh</strong> optimal T1. Économie potentielle : ~<strong>${fmt(ec)} FCFA</strong>.</p></div>`;}
+    else gs.innerHTML=`<div class="al al-ok" style="margin-top:12px"><span class="al-ic">✅</span><span>Excellent ! Coût moyen <strong>${Math.round(cM)} F/kWh</strong> — proche du tarif T1 optimal.</span></div>`;
+  }else gs.innerHTML='';
 }
 
 /* ── SPLASH ── */
 function hideSplash(){const s=document.getElementById('splash');s.classList.add('hide');setTimeout(()=>s.style.display='none',650);}
 
 /* ── SERVICE WORKER ── */
-if('serviceWorker' in navigator)
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
 /* ── INIT ── */
 async function init(){
   try{await openDB();}catch(e){console.warn('IndexedDB non disponible:',e);}
   await loadState();
   document.getElementById('p2d').value=todayStr();
-  buildMonthTabs();refreshSuivi();buildDataFilter();
+  buildMT();refreshS();buildDF();
   setTimeout(hideSplash,1800);
   document.getElementById('splash').addEventListener('click',hideSplash);
 }

@@ -1,7 +1,7 @@
 {
   "name": "Ergonome — Calculateur Woyofal",
   "short_name": "Ergonome",
-  "description": "Calculateur Woyofal Senelec. Maîtrisez votre consommation électrique au Sénégal. Calculez, suivez et optimisez vos recharges pour rester dans la meilleure tranche tarifaire.",
+  "description": "Calculateur Woyofal Senelec. Maîtrisez votre consommation électrique au Sénégal.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -12,32 +12,10 @@
   "dir": "ltr",
   "categories": ["utilities", "finance", "productivity"],
   "icons": [
-    {
-      "src": "./icon-16.png",
-      "sizes": "16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "./icon-32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "./icon-180.png",
-      "sizes": "180x180",
-      "type": "image/png"
-    },
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    {"src": "./icon-16.png",  "sizes": "16x16",   "type": "image/png"},
+    {"src": "./icon-32.png",  "sizes": "32x32",   "type": "image/png"},
+    {"src": "./icon-180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }
