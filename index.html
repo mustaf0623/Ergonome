@@ -33,7 +33,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 @media(min-width:521px){body{border-left:1px solid var(--brd);border-right:1px solid var(--brd)}.bottom-nav{max-width:var(--mw)}}
 @media(max-width:360px){.tab-btn{padding:8px 7px;font-size:10px}.card{padding:12px}}
 /* CONFIRM MODAL */
-#cm{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:30000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  #cm{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:30000;display:none;align-items:center;justify-content:center;padding:20px;}
 #cm.open{display:flex;animation:pIn .2s ease}
 #cm-box{background:var(--card2);border:1px solid var(--brd2);border-radius:20px;padding:24px 20px;max-width:310px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.7)}
 #cm-ic{font-size:30px;text-align:center;margin-bottom:10px}
@@ -268,7 +268,8 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
   /* Correction du bug clavier iOS sur l'écran d'accueil */
 input, textarea, [contenteditable] {
   -webkit-user-select: text !important;
-  user-select: text !important;}
+  user-select: text !important;
+pointer-events: auto !important;}
 </style>
 </head>
 <body>
