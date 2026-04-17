@@ -3,7 +3,7 @@
    Compatible avec IndexedDB storage
    Network-first pour index.html, cache-first pour assets
 ═══════════════════════════════════════════ */
-const CACHE = 'ergonome-v72';
+const CACHE = 'ergonome-v7.2';
 const ASSETS = ['./index.html','./manifest.json','./icon-16.png','./icon-32.png','./icon-180.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', e => {
