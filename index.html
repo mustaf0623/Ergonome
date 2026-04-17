@@ -265,6 +265,10 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
 .cpill{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;margin-bottom:8px;font-size:12px;line-height:1.6}
 .toast{position:fixed;bottom:max(100px,calc(88px + env(safe-area-inset-bottom)));left:50%;transform:translateX(-50%);background:var(--card2);color:var(--txt);border:1px solid var(--brd);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:20000;white-space:nowrap;font-family:var(--fu);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;animation:tIn .2s ease}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  /* Correction du bug clavier iOS sur l'écran d'accueil */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text !important;
+  user-select: text !important;}
 </style>
 </head>
 <body>
