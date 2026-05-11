@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ergonome">
-<meta name="description" content="Ergonome — Calculateur Woyofal Senelec.">
+<meta name="description" content="Ergonome — Calculateur Woyofal Senelec v7.4.">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -33,7 +33,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 @media(min-width:521px){body{border-left:1px solid var(--brd);border-right:1px solid var(--brd)}.bottom-nav{max-width:var(--mw)}}
 @media(max-width:360px){.tab-btn{padding:8px 7px;font-size:10px}.card{padding:12px}}
 /* CONFIRM MODAL */
-  #cm{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:30000;display:none;align-items:center;justify-content:center;padding:20px;}
+#cm{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:30000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 #cm.open{display:flex;animation:pIn .2s ease}
 #cm-box{background:var(--card2);border:1px solid var(--brd2);border-radius:20px;padding:24px 20px;max-width:310px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.7)}
 #cm-ic{font-size:30px;text-align:center;margin-bottom:10px}
@@ -256,6 +256,66 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
 .empty{text-align:center;padding:36px 20px;color:var(--tx3)}
 .empty .ei{font-size:36px;margin-bottom:10px}
 .empty p{font-size:12px;line-height:1.7}
+/* RELEVÉS */
+.rel-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border:1px solid var(--brd)}
+.rel-item:first-child{border-color:rgba(56,189,248,.3)}
+.rel-l{flex:1;min-width:0}.rel-d{font-size:10px;color:var(--tx3);margin-bottom:2px}.rel-m{font-size:14px;font-weight:700;color:var(--txt)}
+.rel-r{text-align:right;flex-shrink:0}.rel-k{font-family:var(--fm);font-size:18px;font-weight:700;color:var(--blu);line-height:1}.rel-kl{font-size:9px;color:var(--tx3)}
+.rel-taux{font-size:10px;color:var(--grn);margin-top:2px;font-weight:600}
+/* PROFIL CALIBRATION */
+.profil-card{background:linear-gradient(135deg,rgba(56,189,248,.05),rgba(192,132,252,.03));border:1px solid rgba(56,189,248,.2);border-radius:14px;padding:13px;margin-bottom:12px}
+.profil-ti{font-size:10px;font-weight:700;color:var(--blu);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.cal-bar-wrap{margin:8px 0 6px}
+.cal-bar-track{height:10px;border-radius:5px;background:var(--bg2);border:1px solid var(--brd);overflow:hidden;position:relative}
+.cal-bar-fill{position:absolute;left:0;top:0;height:100%;border-radius:5px;transition:width .8s cubic-bezier(.34,1.2,.64,1)}
+.cal-ic-low{background:linear-gradient(90deg,#ef4444,#f87171)}
+.cal-ic-mid{background:linear-gradient(90deg,#f5a623,#fcd34d)}
+.cal-ic-high{background:linear-gradient(90deg,#22c55e,#4ade80)}
+.cal-pct{font-family:var(--fm);font-size:22px;font-weight:700;line-height:1}
+.cal-sub{font-size:10px;color:var(--tx2);margin-top:3px}
+.cal-stats{display:flex;gap:8px;margin-top:10px}
+.cal-s{flex:1;background:rgba(6,13,26,.5);border-radius:10px;padding:8px 6px;text-align:center;border:1px solid rgba(56,189,248,.1)}
+.cal-sv{font-family:var(--fm);font-size:13px;font-weight:700;color:var(--blu)}
+.cal-sl{font-size:9px;color:var(--tx3);margin-top:2px}
+/* DURÉE PERSONNALISÉE */
+.duree-card{background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(56,189,248,.03));border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:12px;margin-top:10px}
+.duree-big{font-family:var(--fm);font-size:28px;font-weight:700;color:var(--grn);line-height:1}
+.duree-date{font-size:11px;color:var(--tx2);margin-top:4px}
+.duree-ic{font-size:10px;margin-top:6px}
+/* ALERTE RECALIBRATION */
+.al-recal{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;color:var(--blu)}
+/* ÉCONOMIES */
+.eco-hero{background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.04));border:1.5px solid rgba(34,197,94,.3);border-radius:18px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.eco-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,.5),transparent)}
+.eco-montant{font-family:var(--fm);font-size:40px;font-weight:700;background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;filter:drop-shadow(0 0 12px rgba(34,197,94,.3))}
+.eco-sub{font-size:11px;color:var(--tx2);margin-top:5px;line-height:1.5}
+.eco-annuel{font-size:13px;font-weight:700;color:#4ade80;margin-top:8px}
+.action-card{background:linear-gradient(135deg,rgba(245,166,35,.08),rgba(245,166,35,.03));border:1.5px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;margin-bottom:10px;position:relative}
+.action-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,166,35,.4),transparent)}
+.action-urgence{position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+.urg-high{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.urg-med{background:rgba(245,166,35,.15);color:var(--acc);border:1px solid rgba(245,166,35,.3)}
+.urg-low{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+.action-ti{font-size:13px;font-weight:800;color:var(--acc);margin-bottom:6px;padding-right:60px}
+.action-desc{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:8px}
+.action-montant{font-family:var(--fm);font-size:22px;font-weight:700;color:var(--txt);line-height:1}
+.action-eco{font-size:11px;color:#4ade80;margin-top:3px;font-weight:600}
+.action-date{font-size:10px;color:var(--tx3);margin-top:4px}
+.eco-stat-row{display:flex;gap:8px;margin-bottom:12px}
+.eco-stat{flex:1;background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:12px 8px;text-align:center}
+.eco-sv{font-family:var(--fm);font-size:15px;font-weight:700;color:var(--grn)}
+.eco-sl{font-size:9px;color:var(--tx3);margin-top:3px}
+.lock-card{background:var(--bg2);border:1px dashed var(--brd);border-radius:14px;padding:20px;text-align:center;margin-bottom:10px}
+.lock-ic{font-size:28px;margin-bottom:8px}
+.lock-ti{font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:6px}
+.lock-sub{font-size:11px;color:var(--tx3);line-height:1.6}
+.prog-step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:12px}
+.prog-done{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#4ade80}
+.prog-curr{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.3);color:var(--acc)}
+.prog-lock{background:var(--bg2);border:1px solid var(--brd);color:var(--tx3)}
+.prog-ic{font-size:16px;flex-shrink:0}
+.eco-hist-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--brd);font-size:12px}
+.eco-hist-eco{font-family:var(--fm);font-size:13px;font-weight:700;color:#4ade80}
 .slbl{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin:4px 0 10px;padding-left:4px}
 .dvd{height:1px;background:var(--brd);margin:14px 0}
 .note{font-size:11px;color:var(--tx3);line-height:1.6;margin-top:6px}
@@ -265,11 +325,6 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
 .cpill{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;margin-bottom:8px;font-size:12px;line-height:1.6}
 .toast{position:fixed;bottom:max(100px,calc(88px + env(safe-area-inset-bottom)));left:50%;transform:translateX(-50%);background:var(--card2);color:var(--txt);border:1px solid var(--brd);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:20000;white-space:nowrap;font-family:var(--fu);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;animation:tIn .2s ease}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-  /* Correction du bug clavier iOS sur l'écran d'accueil */
-input, textarea, [contenteditable] {
-  -webkit-user-select: text !important;
-  user-select: text !important;
-pointer-events: auto !important;}
 </style>
 </head>
 <body>
@@ -289,13 +344,7 @@ pointer-events: auto !important;}
 
 <!-- INSTALL BANNER -->
 <div id="ib">
-  <svg class="ib-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <defs><linearGradient id="ib_bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient><linearGradient id="ib_bt" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#ffe066"/><stop offset="50%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c96f00"/></linearGradient></defs>
-    <circle cx="100" cy="100" r="96" fill="none" stroke="#f5a623" stroke-width="2" opacity=".5"/>
-    <circle cx="100" cy="100" r="83" fill="url(#ib_bg)"/>
-    <path d="M118 28 L76 108 L102 108 L82 172 L130 84 L103 84 Z" fill="url(#ib_bt)"/>
-    <path d="M118 28 L96 84 L103 84 Z" fill="rgba(255,240,150,.55)"/>
-  </svg>
+  <svg class="ib-logo" id="ib-logo" viewBox="0 0 200 200"></svg>
   <div class="ib-txt"><div class="ib-ti">Installer Ergonome</div><div class="ib-su">Ajouter à l'écran d'accueil</div></div>
   <button class="ib-btn" onclick="triggerInstall()">Installer</button>
   <button class="ib-cl" onclick="dismissBanner()">✕</button>
@@ -303,39 +352,10 @@ pointer-events: auto !important;}
 
 <!-- SPLASH -->
 <div id="splash">
-  <div class="sp-logo">
-    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
-      <defs>
-        <linearGradient id="sp_bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient>
-        <linearGradient id="sp_bt" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#ffe066"/><stop offset="40%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c96f00"/></linearGradient>
-        <linearGradient id="sp_wv" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#38bdf8" stop-opacity=".9"/><stop offset="100%" stop-color="#0ea5e9" stop-opacity=".4"/></linearGradient>
-        <linearGradient id="sp_rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
-        <filter id="sp_gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
-        <clipPath id="sp_cl"><circle cx="100" cy="100" r="82"/></clipPath>
-      </defs>
-      <circle cx="100" cy="100" r="96" fill="none" stroke="url(#sp_rg)" stroke-width="2" opacity=".65"/>
-      <circle cx="100" cy="100" r="89" fill="none" stroke="rgba(245,166,35,.12)" stroke-width="1"/>
-      <circle cx="100" cy="100" r="83" fill="url(#sp_bg)"/>
-      <g clip-path="url(#sp_cl)" opacity=".35">
-        <path d="M16 120 Q40 105 64 120 Q88 135 112 120 Q136 105 160 120 Q184 135 204 120" fill="none" stroke="url(#sp_wv)" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M16 132 Q40 117 64 132 Q88 147 112 132 Q136 117 160 132 Q184 147 204 132" fill="none" stroke="url(#sp_wv)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
-        <path d="M16 108 Q40 93 64 108 Q88 123 112 108 Q136 93 160 108 Q184 123 204 108" fill="none" stroke="url(#sp_wv)" stroke-width="1" stroke-linecap="round" opacity=".4"/>
-      </g>
-      <circle cx="42" cy="72" r="3" fill="#38bdf8" opacity=".65"/>
-      <circle cx="158" cy="72" r="3" fill="#f5a623" opacity=".65"/>
-      <line x1="42" y1="72" x2="60" y2="72" stroke="#38bdf8" stroke-width="1.2" opacity=".35"/>
-      <line x1="158" y1="72" x2="140" y2="72" stroke="#f5a623" stroke-width="1.2" opacity=".35"/>
-      <path d="M118 28 L76 108 L102 108 L82 172 L130 84 L103 84 Z" fill="url(#sp_bt)" filter="url(#sp_gl)"/>
-      <path d="M118 28 L96 84 L103 84 Z" fill="rgba(255,240,150,.55)"/>
-      <g stroke="rgba(245,166,35,.28)" stroke-width="1.5" stroke-linecap="round">
-        <line x1="100" y1="10" x2="100" y2="18"/><line x1="100" y1="182" x2="100" y2="190"/>
-        <line x1="10" y1="100" x2="18" y2="100"/><line x1="182" y1="100" x2="190" y2="100"/>
-      </g>
-    </svg>
-  </div>
+  <div class="sp-logo"><svg id="sp-logo" viewBox="0 0 200 200" style="width:100%;height:100%;display:block"></svg></div>
   <div class="sp-name">Ergonome</div>
   <div class="sp-tag">Maîtrisez votre consommation Senelec.<br><strong>Calculez, suivez, optimisez</strong> —<br>sans jamais dépasser votre tranche.</div>
-  <div class="sp-ver">Woyofal · Calculateur · v7.2</div>
+  <div class="sp-ver">Woyofal · Calculateur · v7.4</div>
   <div class="sp-track"><div class="sp-fill"></div></div>
   <div class="sp-load">Initialisation…</div>
   <div class="sp-sig">Développé par <span>Mouhamadou Moustapha SY</span><br>Étudiant AgroTIC · USSEIN · Sénégal</div>
@@ -345,25 +365,7 @@ pointer-events: auto !important;}
 <div class="hdr">
   <div class="hdr-top">
     <div class="logo-w">
-      <div class="logo-ico">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
-          <defs>
-            <linearGradient id="h_bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient>
-            <linearGradient id="h_bt" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#ffe066"/><stop offset="40%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c96f00"/></linearGradient>
-            <linearGradient id="h_wv" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#38bdf8" stop-opacity=".8"/><stop offset="100%" stop-color="#0ea5e9" stop-opacity=".3"/></linearGradient>
-            <linearGradient id="h_rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
-            <filter id="h_gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
-            <clipPath id="h_cl"><circle cx="100" cy="100" r="82"/></clipPath>
-          </defs>
-          <circle cx="100" cy="100" r="96" fill="none" stroke="url(#h_rg)" stroke-width="2" opacity=".55"/>
-          <circle cx="100" cy="100" r="83" fill="url(#h_bg)"/>
-          <g clip-path="url(#h_cl)" opacity=".3">
-            <path d="M16 120 Q40 105 64 120 Q88 135 112 120 Q136 105 160 120 Q184 135 204 120" fill="none" stroke="url(#h_wv)" stroke-width="2.5" stroke-linecap="round"/>
-          </g>
-          <path d="M118 28 L76 108 L102 108 L82 172 L130 84 L103 84 Z" fill="url(#h_bt)" filter="url(#h_gl)"/>
-          <path d="M118 28 L96 84 L103 84 Z" fill="rgba(255,240,150,.5)"/>
-        </svg>
-      </div>
+      <div class="logo-ico"><svg id="hdr-logo" viewBox="0 0 200 200" style="width:100%;height:100%;display:block"></svg></div>
       <div class="logo-tb"><h1>Ergonome</h1><p>Calculateur Woyofal · Senelec 2026</p></div>
     </div>
     <button class="hbtn" onclick="openSheet('sh_set')">⚙️</button>
@@ -373,6 +375,7 @@ pointer-events: auto !important;}
     <button class="tab-btn" onclick="showP('p2',this)">📊 Suivi</button>
     <button class="tab-btn" onclick="showP('p3',this)">🎯 Planifier</button>
     <button class="tab-btn" onclick="showP('p4',this)">📁 Données</button>
+    <button class="tab-btn" onclick="showP('p5',this)">💰 Économies</button>
   </div>
 </div>
 
@@ -432,6 +435,7 @@ pointer-events: auto !important;}
           <div class="bk-row"><span class="bk-l">= Total à recharger</span><span class="bk-v pos" id="c2_tot">—</span></div>
         </div>
         <div id="c2_al"></div>
+        <div id="c2_duree"></div>
       </div>
     </div>
   </div>
@@ -442,7 +446,7 @@ pointer-events: auto !important;}
     <div class="tr-row tr-t3"><div><div class="tr-n" style="color:var(--t3)">🔴 Tranche 3</div><div class="tr-s">> 250 kWh — facturé T2 + TVA 18%</div></div><div><div class="tr-p" style="color:var(--t3)">136,49 F</div><div class="tr-u">+ TVA</div></div></div>
     <p class="note" style="margin-top:12px">Taxe communale 2,5% sur chaque recharge. Redevance mensuelle sur la 1ère recharge du mois uniquement.</p>
   </div>
-  <div class="sig">Développé par <strong>Mouhamadou Moustapha SY</strong> · Étudiant AgroTIC · USSEIN · Sénégal · <strong>Ergonome v7.2</strong></div>
+  <div class="sig">Développé par <strong>Mouhamadou Moustapha SY</strong> · Étudiant AgroTIC · USSEIN · Sénégal · <strong>Ergonome v7.4</strong></div>
 </div>
 
 <!-- P2 SUIVI -->
@@ -474,6 +478,39 @@ pointer-events: auto !important;}
   <div id="p2h"><div class="empty"><div class="ei">📂</div><p>Aucune recharge pour ce mois.</p></div></div>
   <button class="btn-del" id="btn_rst" onclick="rstMois()" style="display:none">🗑️ Réinitialiser ce mois</button>
 </div>
+
+<!-- PROFIL DE CONSOMMATION -->
+<div id="profil_block" class="profil-card" style="display:none">
+  <div class="profil-ti">🎯 Profil de consommation — Calibration</div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:4px">
+    <div><div class="cal-pct" id="cal_pct">—</div><div class="cal-sub" id="cal_sub">Enregistre des relevés pour calibrer</div></div>
+    <div id="cal_status_bdg"></div>
+  </div>
+  <div class="cal-bar-wrap">
+    <div class="cal-bar-track"><div class="cal-bar-fill" id="cal_fill" style="width:0%"></div></div>
+  </div>
+  <div id="cal_msg" style="font-size:11px;color:var(--tx2);line-height:1.5;margin-top:4px"></div>
+  <div class="cal-stats">
+    <div class="cal-s"><div class="cal-sv" id="cal_taux">—</div><div class="cal-sl">kWh/jour moy.</div></div>
+    <div class="cal-s"><div class="cal-sv" id="cal_sigma">—</div><div class="cal-sl">écart-type σ</div></div>
+    <div class="cal-s"><div class="cal-sv" id="cal_n">—</div><div class="cal-sl">relevés</div></div>
+  </div>
+  <div id="recal_alert" class="al al-info" style="display:none;margin-top:10px">
+    <span class="al-ic">🔄</span><span id="recal_msg"></span>
+  </div>
+</div>
+
+<!-- SAISIE RELEVÉ -->
+<div class="card">
+  <div class="card-ti">🔋 Relevés compteur</div>
+  <div style="font-size:11px;color:var(--tx2);line-height:1.6;margin-bottom:12px">Appuie sur le bouton de ton compteur Woyofal pour lire le solde kWh restant. Saisis-le ici chaque semaine pour calibrer ton profil.</div>
+  <div class="ig"><label class="il">Solde lu sur le compteur (kWh)</label><input type="number" class="ifield" id="rel_kwh" placeholder="Ex : 47.3" inputmode="decimal" step="0.1" autocomplete="off"></div>
+  <div class="ig"><label class="il">Date du relevé</label><input type="date" class="ifield" id="rel_date"></div>
+  <button class="btn" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9);box-shadow:0 4px 16px rgba(56,189,248,.25)" onclick="addRel()">🔋 Enregistrer ce relevé</button>
+</div>
+<div class="slbl">Historique des relevés</div>
+<div id="rel_hist"><div class="empty"><div class="ei">🔋</div><p>Aucun relevé enregistré.<br>Commence par lire ton compteur.</p></div></div>
+
 
 <!-- P3 PLANIFIER -->
 <div id="p3" class="panel">
@@ -513,7 +550,7 @@ pointer-events: auto !important;}
         <p class="note" style="margin-top:4px">⚡ 1 appui sur le bouton du compteur pour lire ce solde.</p>
       </div>
       <button class="btn" onclick="simuler()">💰 Analyser cette recharge</button>
-      <div id="sm_res" class="rbox"><div id="sm_ct"></div></div>
+      <div id="sm_res" class="rbox"><div id="sm_ct"></div><div id="sm_duree"></div></div>
     </div>
     <!-- TAB PLAN -->
     <div id="pt_plan" style="display:none">
@@ -570,6 +607,47 @@ pointer-events: auto !important;}
   </div>
 </div>
 
+<!-- P5 ÉCONOMIES -->
+<div id="p5" class="panel">
+  <div id="eco_lock" style="display:none">
+    <div class="lock-card">
+      <div class="lock-ic">💰</div>
+      <div class="lock-ti">Mes Économies — en cours d'activation</div>
+      <div class="lock-sub">Ce module se déverrouille progressivement selon tes données.</div>
+    </div>
+    <div id="eco_steps"></div>
+  </div>
+  <div id="eco_content" style="display:none">
+    <!-- ALERTE PROACTIVE URGENTE -->
+    <div id="eco_alerte" style="display:none"></div>
+    <!-- PROCHAINE ACTION -->
+    <div id="eco_action"></div>
+    <!-- ÉCONOMIES RÉALISÉES -->
+    <div id="eco_hero" class="eco-hero" style="display:none">
+      <div style="font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">💰 Économies réalisées</div>
+      <div class="eco-montant" id="eco_total">0</div>
+      <div class="eco-sub" id="eco_sub"></div>
+      <div class="eco-annuel" id="eco_annuel"></div>
+    </div>
+    <!-- STATS ÉCONOMIES -->
+    <div class="eco-stat-row" id="eco_stats_row" style="display:none">
+      <div class="eco-stat"><div class="eco-sv" id="eco_nb_opt">—</div><div class="eco-sl">recharges optimisées</div></div>
+      <div class="eco-stat"><div class="eco-sv" id="eco_best_mois">—</div><div class="eco-sl">meilleur mois</div></div>
+      <div class="eco-stat"><div class="eco-sv" id="eco_score">—</div><div class="eco-sl">score T1</div></div>
+    </div>
+    <!-- PLAN DU MOIS EN COURS -->
+    <div id="eco_plan_mois" class="card" style="display:none">
+      <div class="card-ti">📅 Plan optimal — ce mois</div>
+      <div id="eco_plan_ct"></div>
+    </div>
+    <!-- HISTORIQUE ÉCONOMIES -->
+    <div id="eco_hist_block" class="card" style="display:none">
+      <div class="card-ti">📊 Historique des économies</div>
+      <div id="eco_hist_ct"></div>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <!-- BOTTOM NAV -->
@@ -578,6 +656,7 @@ pointer-events: auto !important;}
   <button class="nb" id="nb2" onclick="showP('p2',null,'nb2')"><span class="nb-ic">📊</span><span class="nb-lb">Suivi</span></button>
   <button class="nb" id="nb3" onclick="showP('p3',null,'nb3')"><span class="nb-ic">🎯</span><span class="nb-lb">Planifier</span></button>
   <button class="nb" id="nb4" onclick="showP('p4',null,'nb4')"><span class="nb-ic">📁</span><span class="nb-lb">Données</span></button>
+  <button class="nb" id="nb5" onclick="showP('p5',null,'nb5')"><span class="nb-ic">💰</span><span class="nb-lb">Économies</span></button>
 </div>
 
 <!-- SETTINGS -->
@@ -596,13 +675,14 @@ pointer-events: auto !important;}
       <button class="btn-sec" onclick="rstSet()">↩️ Valeurs par défaut</button>
       <div class="dvd"></div>
       <div class="slbl">À propos d'Ergonome</div>
-      <div class="ab-block"><div class="ab-ti">⚡ Ergonome v7.2</div><p>Calculateur Woyofal intelligent pour les consommateurs sénégalais. Comprendre, suivre et optimiser sa consommation pour toujours acheter au meilleur tarif.</p></div>
-      <div class="ab-block"><div class="ab-ti">💱 Convertisseur (v7.2)</div><p>Deux sens : <strong style="color:var(--txt)">FCFA → kWh</strong> et <strong style="color:var(--txt)">kWh → FCFA</strong>, en tenant compte des tranches, redevance et taxes.</p></div>
-      <div class="ab-block"><div class="ab-ti">🎯 Planifier (v7.2)</div><p>Alimenté automatiquement par le Suivi. Deux fonctions avec fourchette min/max systématique :<br><br>
-      <strong style="color:var(--acc)">💰 Simuler :</strong> entre un montant → verdict + fourchette complète.<br>
-      <strong style="color:var(--acc)">📅 Plan de charge :</strong> entre ta conso/jour et les jours restants → montants recommandés + meilleur moment pour recharger.</p></div>
+      <div class="ab-block"><div class="ab-ti">⚡ Ergonome v7.4</div><p>Calculateur Woyofal intelligent pour les consommateurs sénégalais. Comprendre, suivre et optimiser sa consommation pour toujours acheter au meilleur tarif.</p></div>
+      <div class="ab-block"><div class="ab-ti">💱 Convertisseur (v7.4)</div><p>Deux sens : <strong style="color:var(--txt)">FCFA → kWh</strong> et <strong style="color:var(--txt)">kWh → FCFA</strong>, enrichis de la <strong style="color:var(--acc)">durée personnalisée</strong> basée sur ton profil calibré.</p></div>
+      <div class="ab-block"><div class="ab-ti">💰 Mes Économies — Nouveau v7.4</div><p>Panel proactif d'anticipation des économies. Génère des <strong style="color:var(--acc)">suggestions d'achat avant que le besoin se présente</strong> : montant optimal, meilleur moment, alerte solde critique, plan du mois, projection annuelle. Se déverrouille progressivement avec les données.</p></div>
+      <div class="ab-block"><div class="ab-ti">🎯 Planifier (v7.4)</div><p>Alimenté automatiquement par le Suivi et le profil calibré. Deux fonctions enrichies :<br><br>
+      <strong style="color:var(--acc)">💰 Simuler :</strong> entre un montant → verdict + fourchette + <strong style="color:var(--grn)">durée personnalisée avec confiance</strong>.<br>
+      <strong style="color:var(--acc)">📅 Plan de charge :</strong> entre ta conso/jour (pré-remplie) et les jours restants → montants recommandés + meilleur moment.</p></div>
       <div class="ab-block"><div class="ab-ti">💾 Stockage IndexedDB</div><p>Les données sont dans <strong style="color:var(--txt)">IndexedDB</strong> — base de données intégrée, indépendante du cache navigateur. Fonctionne hors ligne.</p><div class="sec-bdg"><span>🔒</span><span>IndexedDB · Local · Hors ligne · Aucun serveur</span></div></div>
-      <div class="ab-block"><div class="ab-ti">👨‍💻 Développeur</div><p><strong style="color:var(--acc)">Mouhamadou Moustapha SY</strong><br>Étudiant en 2ème année de Licence AgroTIC<br>USSEIN · Sénégal<br><br><span style="color:var(--tx3);font-size:11px">Ergonome v7.2 · Tarifs CRSE décision n°2025-140 · Janvier 2026</span></p></div>
+      <div class="ab-block"><div class="ab-ti">👨‍💻 Développeur</div><p><strong style="color:var(--acc)">Mouhamadou Moustapha SY</strong><br>Étudiant en 2ème année de Licence AgroTIC<br>USSEIN · Sénégal<br><br><span style="color:var(--tx3);font-size:11px">Ergonome v7.4 · Tarifs CRSE décision n°2025-140 · Janvier 2026</span></p></div>
       <div class="dvd"></div>
       <div class="slbl">Réinitialisation</div>
       <div class="ab-block">
@@ -617,10 +697,46 @@ pointer-events: auto !important;}
 
 <script>
 /* ── LOGO SVG injecté en JS — universel sur tous navigateurs mobiles ── */
+function logoSVG(id){
+  const suffix = id.replace(/[^a-zA-Z0-9]/g,'');
+  return `<defs>
+<linearGradient id="Lbg-${suffix}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d2a50"/><stop offset="100%" stop-color="#061528"/></linearGradient>
+<linearGradient id="Lbt-${suffix}" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#ffe066"/><stop offset="40%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c96f00"/></linearGradient>
+<linearGradient id="Lwv-${suffix}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#38bdf8" stop-opacity=".9"/><stop offset="100%" stop-color="#0ea5e9" stop-opacity=".4"/></linearGradient>
+<linearGradient id="Lrg-${suffix}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+<filter id="Lgl-${suffix}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+<clipPath id="Lcl-${suffix}"><circle cx="100" cy="100" r="82"/></clipPath>
+</defs>
+<circle cx="100" cy="100" r="96" fill="none" stroke="url(#Lrg-${suffix})" stroke-width="2" opacity=".65"/>
+<circle cx="100" cy="100" r="89" fill="none" stroke="rgba(245,166,35,.12)" stroke-width="1"/>
+<circle cx="100" cy="100" r="83" fill="url(#Lbg-${suffix})"/>
+<g clip-path="url(#Lcl-${suffix})" opacity=".35">
+<path d="M16 120 Q40 105 64 120 Q88 135 112 120 Q136 105 160 120 Q184 135 204 120" fill="none" stroke="url(#Lwv-${suffix})" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M16 132 Q40 117 64 132 Q88 147 112 132 Q136 117 160 132 Q184 147 204 132" fill="none" stroke="url(#Lwv-${suffix})" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+</g>
+<circle cx="42" cy="72" r="3" fill="#38bdf8" opacity=".65"/>
+<circle cx="158" cy="72" r="3" fill="#f5a623" opacity=".65"/>
+<line x1="42" y1="72" x2="60" y2="72" stroke="#38bdf8" stroke-width="1.2" opacity=".35"/>
+<line x1="158" y1="72" x2="140" y2="72" stroke="#f5a623" stroke-width="1.2" opacity=".35"/>
+<path d="M118 28 L76 108 L102 108 L82 172 L130 84 L103 84 Z" fill="url(#Lbt-${suffix})" filter="url(#Lgl-${suffix})"/>
+<path d="M118 28 L96 84 L103 84 Z" fill="rgba(255,240,150,.55)"/>
+<g stroke="rgba(245,166,35,.28)" stroke-width="1.5" stroke-linecap="round">
+<line x1="100" y1="10" x2="100" y2="18"/>
+<line x1="100" y1="182" x2="100" y2="190"/>
+<line x1="10" y1="100" x2="18" y2="100"/>
+<line x1="182" y1="100" x2="190" y2="100"/>
+</g>`;
+}
 
+function injectLogos(){
+  ['sp-logo','hdr-logo','ib-logo'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=logoSVG(id);
+  });
+}
 
 /* ══ INDEXEDDB ══ */
-const DBN='ergonome_v72',DBV=1,STR='recharges',STC='config';
+const DBN='ergonome_v73',DBV=1,STR='recharges',STC='config',STL='releves';
 let db=null;
 function openDB(){
   return new Promise((res,rej)=>{
@@ -629,6 +745,7 @@ function openDB(){
       const d=e.target.result;
       if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
       if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
+      if(!d.objectStoreNames.contains(STL))d.createObjectStore(STL,{keyPath:'id',autoIncrement:true});
     };
     req.onsuccess=e=>{db=e.target.result;res(db);};
     req.onerror=()=>rej(req.error);
@@ -644,11 +761,13 @@ const dbClear=(s)=>new Promise((r,j)=>{const q=tx(s,'readwrite').clear();q.onsuc
 /* ── STATE ── */
 let CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
 let DATA=[];
+let RELEVES=[];
 let OBJ='t1',VM=currMois();
 
 async function loadState(){
   try{const c=await dbGet(STC,'main');if(c)CFG=Object.assign({},CFG,c.value);}catch(e){}
   try{DATA=await dbAll(STR);DATA.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){DATA=[];}
+  try{RELEVES=await dbAll(STL);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){RELEVES=[];}
 }
 async function saveCFG(){try{await dbPut(STC,{key:'main',value:CFG});}catch(e){}}
 
@@ -670,18 +789,183 @@ function cmAns(yes){
 /* ── DELETE ALL ── */
 function delAll(){
   askConfirm('🗑️','Effacer toutes les données ?',
-    'Toutes les recharges et paramètres seront supprimés. L\'application reviendra à son état initial. Action irréversible.',
+    'Toutes les recharges, relevés et paramètres seront supprimés. Action irréversible.',
     'Effacer', async()=>{
-      try{await dbClear(STR);await dbClear(STC);}catch(e){}
+      try{await dbClear(STR);await dbClear(STC);await dbClear(STL);}catch(e){}
       try{localStorage.clear();sessionStorage.clear();}catch(e){}
       try{if(typeof caches!=='undefined'){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}}catch(e){}
       try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.unregister()));}}catch(e){}
-      CFG={rev:429,t1:82,t2:136.49,taxe:2.5};DATA=[];OBJ='t1';VM=currMois();
+      CFG={rev:429,t1:82,t2:136.49,taxe:2.5};DATA=[];RELEVES=[];OBJ='t1';VM=currMois();
       closeSheet('sh_set');
       toast('✅ Données effacées — rechargement…');
       setTimeout(()=>{try{window.location.href=window.location.pathname+'?r='+Date.now();}catch(e){location.reload();}},1200);
     }
   );
+}
+
+/* ══ MOTEUR STATISTIQUE INFÉRENTIEL ══ */
+
+// Calcule les taux journaliers à partir des relevés consécutifs
+function getTauxJournaliers(){
+  if(RELEVES.length<2)return[];
+  const taux=[];
+  for(let i=1;i<RELEVES.length;i++){
+    const r1=RELEVES[i-1],r2=RELEVES[i];
+    const d1=new Date(r1.date+'T00:00:00'),d2=new Date(r2.date+'T00:00:00');
+    const jours=Math.round((d2-d1)/(1000*60*60*24));
+    if(jours>=3&&jours<=21&&r1.kwh>r2.kwh){ // consommation positive, période réaliste
+      const t=(r1.kwh-r2.kwh)/jours;
+      if(t>0&&t<30)taux.push({taux:t,jours,date:r2.date});
+    }
+  }
+  return taux;
+}
+
+// Calcule le profil statistique complet
+function getProfil(){
+  const taux=getTauxJournaliers();
+  const n=taux.length;
+  if(n===0)return{n:0,moyenne:0,sigma:0,ic:0,fiable:false,msg:'',pct:0,stable:false};
+  const vals=taux.map(t=>t.taux);
+  const moy=vals.reduce((s,v)=>s+v,0)/n;
+  const sigma=n>1?Math.sqrt(vals.reduce((s,v)=>s+(v-moy)**2,0)/(n-1)):moy*0.5;
+  // IC basé sur t-distribution approx et loi des grands nombres
+  const errStd=sigma/Math.sqrt(n);
+  const tCrit=n>=30?1.96:n>=10?2.1:n>=5?2.57:3.18; // t approx selon n
+  const ic95=tCrit*errStd;
+  // Score de calibration : commence à 0, sature vers 95%
+  // Formule : 1 - exp(-n/k) pondéré par stabilité σ
+  const stabFactor=Math.max(0,1-sigma/Math.max(moy,0.1));
+  const nFactor=1-Math.exp(-n/4);
+  const pct=Math.round(Math.min(95,nFactor*stabFactor*100+nFactor*20));
+  const stable=n>=8&&sigma<0.3;
+  // Messages contextuels
+  let msg='';
+  if(n<3)msg=`📊 ${n} relevé(s) enregistré(s). Il t'en faut au moins 3 pour démarrer. Continue chaque lundi !`;
+  else if(n<6)msg=`📈 ${6-n} relevé(s) de plus pour atteindre une précision acceptable.`;
+  else if(n<10&&!stable)msg=`🎯 Bon début ! ${10-n} relevés supplémentaires affineront encore la précision.`;
+  else if(stable)msg=`✅ Profil calibré — relevés mensuels suffisants désormais.`;
+  else msg=`📊 Profil en bonne voie. Continue les relevés hebdomadaires.`;
+  return{n,moyenne:moy,sigma,ic95,fiable:n>=3,pct,stable,errStd,vals,msg};
+}
+
+// Calcule la durée estimée pour un montant/kWh donné
+function getDureeEstimee(kwh){
+  const p=getProfil();
+  if(!p.fiable||p.moyenne<=0)return null;
+  const duree=kwh/p.moyenne;
+  const marge=p.ic95>0?(p.ic95/p.moyenne)*duree:duree*0.3;
+  const today=new Date();
+  const dateEpuis=new Date(today.getTime()+(duree)*24*60*60*1000);
+  const dateMin=new Date(today.getTime()+(duree-marge)*24*60*60*1000);
+  const dateMax=new Date(today.getTime()+(duree+marge)*24*60*60*1000);
+  const fmtDate=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+  const confiance=Math.min(95,Math.round(p.pct*0.95));
+  return{duree:Math.round(duree),marge:Math.round(marge),dateEpuis:fmtDate(dateEpuis),dateMin:fmtDate(dateMin),dateMax:fmtDate(dateMax),confiance,moyenne:p.moyenne,sigma:p.sigma};
+}
+
+// HTML de la carte durée personnalisée
+function dureeHTML(kwh){
+  const d=getDureeEstimee(kwh);
+  if(!d)return`<div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Enregistre au moins 3 <strong>relevés compteur</strong> dans le Suivi pour voir la durée personnalisée.</span></div>`;
+  const margeStr=d.marge>0?` (entre ${d.duree-d.marge} et ${d.duree+d.marge} j)`:'';
+  return`<div class="duree-card">
+    <div style="font-size:10px;font-weight:700;color:var(--grn);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⏱️ Durée pour TOI</div>
+    <div class="duree-big">${d.duree} jours</div>
+    <div class="duree-date">📅 Tient jusqu'au <strong>${d.dateEpuis}</strong>${margeStr}</div>
+    <div class="duree-ic" style="color:var(--tx2)">Basé sur ton taux moyen de <strong style="color:var(--grn)">${fD(d.moyenne)} kWh/jour</strong> — confiance <strong style="color:var(--acc)">${d.confiance}%</strong></div>
+  </div>`;
+}
+
+// Détecte si recalibration nécessaire
+function checkRecalibration(){
+  const p=getProfil();
+  if(p.n<3)return null;
+  // Vérifier dérive récente : comparer les 3 derniers taux vs moyenne globale
+  if(p.vals.length>=5){
+    const recents=p.vals.slice(-3);
+    const moyRecente=recents.reduce((s,v)=>s+v,0)/recents.length;
+    if(Math.abs(moyRecente-p.moyenne)>2*p.sigma&&p.sigma>0)
+      return`Ta consommation récente (${fD(moyRecente)} kWh/j) s'écarte de ta moyenne (${fD(p.moyenne)} kWh/j). Fais 3 relevés cette semaine pour recalibrer.`;
+  }
+  // Vérifier ancienneté du dernier relevé
+  if(RELEVES.length>0){
+    const last=new Date(RELEVES[RELEVES.length-1].date+'T00:00:00');
+    const joursDepuis=Math.round((new Date()-last)/(1000*60*60*24));
+    if(joursDepuis>45&&!p.stable)return`Ton dernier relevé date de ${joursDepuis} jours. Un relevé maintenant maintiendra la précision.`;
+    if(joursDepuis>90)return`Profil ancien (${joursDepuis} jours sans relevé). Fais 2-3 relevés pour vérifier que tes habitudes n'ont pas changé.`;
+  }
+  return null;
+}
+
+/* ══ GESTION DES RELEVÉS ══ */
+
+async function addRel(){
+  const kStr=document.getElementById('rel_kwh').value;
+  const d=document.getElementById('rel_date').value;
+  if(!kStr||parseFloat(kStr)<0){toast('⚠️ Saisis un solde valide (kWh)');return;}
+  if(!d){toast('⚠️ Choisis une date');return;}
+  const kwh=parseFloat(parseFloat(kStr).toFixed(2));
+  // Calculer taux si pas le premier relevé
+  let tauxCalc=null;
+  if(RELEVES.length>0){
+    const prev=RELEVES[RELEVES.length-1];
+    const d1=new Date(prev.date+'T00:00:00'),d2=new Date(d+'T00:00:00');
+    const jours=Math.round((d2-d1)/(1000*60*60*24));
+    if(jours>0&&prev.kwh>kwh)tauxCalc=parseFloat(((prev.kwh-kwh)/jours).toFixed(3));
+  }
+  const newR={date:d,kwh,tauxCalc};
+  const id=await dbPut(STL,newR);newR.id=id;
+  RELEVES.push(newR);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('rel_kwh').value='';
+  refreshProfil();renderRelH();
+  toast('🔋 Relevé enregistré !');
+  if(RELEVES.length===1)toast('✅ 1er relevé ! Fais-en un la semaine prochaine pour démarrer la calibration.');
+}
+
+async function delRel(id){
+  await dbDel(STL,id);
+  RELEVES=RELEVES.filter(r=>r.id!==id);
+  refreshProfil();renderRelH();
+}
+
+function renderRelH(){
+  const el=document.getElementById('rel_hist');
+  if(!RELEVES.length){el.innerHTML='<div class="empty"><div class="ei">🔋</div><p>Aucun relevé enregistré.<br>Commence par lire ton compteur.</p></div>';return;}
+  const items=[...RELEVES].reverse();
+  el.innerHTML=items.map((r,i)=>{
+    const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'});
+    const tauxHtml=r.tauxCalc?`<div class="rel-taux">→ ${fD(r.tauxCalc)} kWh/jour</div>`:'<div style="font-size:10px;color:var(--tx3)">Premier relevé</div>';
+    return`<div class="rel-item"><div class="rel-l"><div class="rel-d">${san(ds)}</div><div class="rel-m">Solde compteur</div>${tauxHtml}</div><div class="rel-r"><div class="rel-k">${fD(r.kwh)}</div><div class="rel-kl">kWh restants</div></div><button class="dbtn" onclick="delRel(${r.id})">🗑</button></div>`;
+  }).join('');
+}
+
+function refreshProfil(){
+  const p=getProfil();
+  const bloc=document.getElementById('profil_block');
+  if(RELEVES.length===0){bloc.style.display='none';return;}
+  bloc.style.display='block';
+  // Jauge
+  const fill=document.getElementById('cal_fill');
+  fill.style.width=p.pct+'%';
+  fill.className='cal-bar-fill '+(p.pct>=80?'cal-ic-high':p.pct>=45?'cal-ic-mid':'cal-ic-low');
+  document.getElementById('cal_pct').textContent=p.pct+'%';
+  document.getElementById('cal_pct').style.color=p.pct>=80?'var(--grn)':p.pct>=45?'var(--acc)':'var(--red)';
+  document.getElementById('cal_sub').textContent=p.stable?'Profil calibré ✅':'Calibration en cours…';
+  document.getElementById('cal_msg').textContent=p.msg;
+  document.getElementById('cal_taux').textContent=p.moyenne>0?fD(p.moyenne)+'':'—';
+  document.getElementById('cal_sigma').textContent=p.n>1?fD(p.sigma,2):'—';
+  document.getElementById('cal_n').textContent=p.n+' / '+(p.n<10?10:p.n);
+  // Badge statut
+  const bdg=document.getElementById('cal_status_bdg');
+  if(p.stable)bdg.innerHTML='<span class="bdg b-t1">✅ Calibré</span>';
+  else if(p.pct>=45)bdg.innerHTML='<span class="bdg b-t2">⚠️ En cours</span>';
+  else bdg.innerHTML='<span class="bdg b-t3">🔴 Insuffisant</span>';
+  // Alerte recalibration
+  const recal=checkRecalibration();
+  const recalDiv=document.getElementById('recal_alert');
+  if(recal){recalDiv.style.display='flex';document.getElementById('recal_msg').textContent=recal;}
+  else recalDiv.style.display='none';
 }
 
 /* ── PWA ── */
@@ -718,11 +1002,12 @@ function showP(id,tb,nb){
   if(tb)tb.classList.add('active');
   else{const i={'p1':0,'p2':1,'p3':2,'p4':3}[id];if(i!=null)document.querySelectorAll('.tab-btn')[i].classList.add('active');}
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  const nm=nb||{'p1':'nb1','p2':'nb2','p3':'nb3','p4':'nb4'}[id];
+  const nm=nb||{'p1':'nb1','p2':'nb2','p3':'nb3','p4':'nb4','p5':'nb5'}[id];
   if(nm)document.getElementById(nm)?.classList.add('active');
-  if(id==='p2'){buildMT();refreshS();}
+  if(id==='p2'){buildMT();refreshS();refreshProfil();renderRelH();}
   if(id==='p3')refreshPSrc();
   if(id==='p4'){buildDF();renderDT();}
+  if(id==='p5')renderEco();
 }
 function openSheet(id){
   if(id==='sh_set'){document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;}
@@ -824,6 +1109,7 @@ function calcKWH(){
   if(nv>250)al(ale,'err','🔴','Ces kWh te placent en Tranche 3. TVA 18% incluse.');
   else if(nv>150)al(ale,'warn','🟡','Ces kWh te placent en Tranche 2 (136,49 F/kWh).');
   else al(ale,'ok','✅','Ces kWh restent en Tranche 1 (82 F/kWh). Bon tarif !');
+  document.getElementById('c2_duree').innerHTML=dureeHTML(k);
   document.getElementById('c2r').classList.add('show');
 }
 
@@ -1017,6 +1303,7 @@ function simuler(){
   const fm={'h':'🎯 Calcul exact — solde compteur utilisé','m':'📊 Estimation fiable','l':'⚠️ Estimation approx. — enregistre plus de recharges dans le Suivi'}[fiab];
   h+=`<div class="fiab fi-${fiab}" style="margin-top:10px">${fm}</div>`;
   document.getElementById('sm_ct').innerHTML=h;
+  document.getElementById('sm_duree').innerHTML=dureeHTML(r.kwh);
   document.getElementById('sm_res').classList.add('show');
 }
 
@@ -1078,6 +1365,8 @@ function planifier(){
   h+=bestTimeSugg(kC,seuil,d.totK);
   const fm={'h':'🎯 Calcul exact — solde compteur utilisé','m':'📊 Estimation fiable','l':'⚠️ Estimation approx. — enregistre plus de recharges dans le Suivi'}[fiab];
   h+=`<div class="fiab fi-${fiab}" style="margin-top:10px">${fm}</div>`;
+  // Durée personnalisée sur kWh nécessaires
+  if(kManq>0)h+=dureeHTML(kF);
   document.getElementById('pl_ct').innerHTML=h;
   document.getElementById('pl_res').classList.add('show');
 }
@@ -1121,12 +1410,268 @@ function hideSplash(){const s=document.getElementById('splash');s.classList.add(
 /* ── SERVICE WORKER ── */
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
+/* ══════════════════════════════════════════
+   MOTEUR ÉCONOMIES — v7.4
+   Suggestions proactives et anticipées
+══════════════════════════════════════════ */
+
+// Calcule l'économie réalisée sur une recharge passée
+// Comparer coût réel vs coût si rechargé au pire moment (T2)
+function economieSurRecharge(r){
+  const kw=r.kwh,m=r.montant;
+  // Coût optimal T1 pur pour ces kWh
+  const coutOptimal=Math.ceil(kw*CFG.t1*(1+CFG.taxe/100)+(r.premiere?CFG.rev:0));
+  // Économie = différence (peut être 0 si déjà optimal)
+  return Math.max(0,m-coutOptimal);
+}
+
+// Calcule le montant optimal pour le reste du mois
+function getMontantOptimal(){
+  const p=getProfil();
+  const now=new Date(),mois=currMois();
+  const dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const dLeft=dInM-now.getDate();
+  const itemsMois=DATA.filter(r=>r.date.startsWith(mois));
+  const kDejaRech=itemsMois.reduce((s,r)=>s+r.kwh,0);
+  const taux=p.fiable?p.moyenne:(kDejaRech>0?kDejaRech/Math.max(1,joursEcoules(mois)):3);
+  const kRestant=taux*dLeft;
+  const kT1restant=Math.max(0,150-kDejaRech);
+  // Montant optimal = couvrir kRestant sans dépasser T1 si possible
+  const kCible=Math.min(kRestant,kT1restant>0?kT1restant:kRestant);
+  if(kCible<=0)return null;
+  const isPremiere=itemsMois.length===0;
+  const r=calcFcfa(kCible,kDejaRech,isPremiere);
+  const confiance=p.fiable?p.pct:30;
+  return{montant:r.montant,kwh:kCible,dLeft,kDejaRech,taux,kT1restant,confiance,isPremiere,mois};
+}
+
+// Calcule économie potentielle vs habitude de l'utilisateur
+function getEconomiePotentielle(montantOptimal){
+  if(!montantOptimal)return 0;
+  // Moyenne des recharges passées
+  if(DATA.length<2)return 0;
+  const moyRecharge=DATA.reduce((s,r)=>s+r.montant,0)/DATA.length;
+  return Math.max(0,Math.round(moyRecharge-montantOptimal.montant));
+}
+
+// Détecte urgence : dans combien de jours le solde estimé s'épuise
+function getUrgenceSolde(){
+  const p=getProfil();
+  if(!p.fiable||RELEVES.length===0)return null;
+  const dernierRel=RELEVES[RELEVES.length-1];
+  const joursDepuis=Math.round((new Date()-new Date(dernierRel.date+'T00:00:00'))/(1000*60*60*24));
+  const soldeEstime=Math.max(0,dernierRel.kwh-p.moyenne*joursDepuis);
+  if(soldeEstime<=0)return{jours:0,solde:0,urgent:true};
+  const joursRestants=Math.round(soldeEstime/p.moyenne);
+  return{jours:joursRestants,solde:parseFloat(soldeEstime.toFixed(1)),urgent:joursRestants<=5};
+}
+
+// Calcule le plan optimal du mois entier
+function getPlanMois(){
+  const p=getProfil();
+  const now=new Date(),mois=currMois();
+  const jour=now.getDate();
+  const dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const dLeft=dInM-jour;
+  const taux=p.fiable?p.moyenne:3;
+  const kMoisEstime=Math.round(taux*dInM);
+  const kDejaRech=DATA.filter(r=>r.date.startsWith(mois)).reduce((s,r)=>s+r.kwh,0);
+  const kRestant=Math.max(0,taux*dLeft);
+  const isPremiere=DATA.filter(r=>r.date.startsWith(mois)).length===0;
+  // Rester en T1 ?
+  const peutT1=kDejaRech+kRestant<=150;
+  const montantReco=kRestant>0?calcFcfa(Math.min(kRestant,Math.max(0,150-kDejaRech)),kDejaRech,isPremiere).montant:0;
+  // Économie vs recharger en T2
+  const coutSiT2=kRestant>0?Math.ceil(kRestant*CFG.t2*(1+CFG.taxe/100)):0;
+  const coutOptimal=kRestant>0?Math.ceil(kRestant*CFG.t1*(1+CFG.taxe/100)):0;
+  const eco=Math.max(0,coutSiT2-coutOptimal);
+  return{kMoisEstime,kDejaRech,kRestant:parseFloat(kRestant.toFixed(1)),peutT1,montantReco,eco,dLeft,jour,taux:parseFloat(taux.toFixed(2)),confiance:p.fiable?p.pct:30};
+}
+
+// Calcule les économies historiques réelles sur les recharges passées
+function getEconomiesHistorique(){
+  // Pour chaque mois, compare montant réel vs montant optimal théorique
+  const moisMap={};
+  DATA.forEach(r=>{
+    const m=r.date.substring(0,7);
+    if(!moisMap[m])moisMap[m]={recharges:[],totF:0,totK:0};
+    moisMap[m].recharges.push(r);
+    moisMap[m].totF+=r.montant;
+    moisMap[m].totK+=r.kwh;
+  });
+  const hist=[];
+  Object.entries(moisMap).forEach(([m,d])=>{
+    const coutOptimal=Math.ceil(d.totK*CFG.t1*(1+CFG.taxe/100)+CFG.rev);
+    const eco=Math.max(0,d.totF-coutOptimal);
+    const score=d.totK<=150?100:d.totK<=250?60:20;
+    hist.push({mois:m,totF:d.totF,totK:d.totK,coutOptimal,eco,score,nbRecharges:d.recharges.length});
+  });
+  return hist.sort((a,b)=>b.mois.localeCompare(a.mois));
+}
+
+// Génère l'alerte proactive si solde critique dans <5 jours
+function getAlerteProactive(){
+  const urgence=getUrgenceSolde();
+  if(!urgence)return null;
+  const opt=getMontantOptimal();
+  if(urgence.urgent||urgence.jours<=5){
+    const montant=opt?fmt(opt.montant)+' FCFA':'une recharge';
+    const deadline=urgence.jours<=2?'aujourd\'hui ou demain':`dans ${urgence.jours} jours`;
+    return{
+      niveau:urgence.jours<=2?'high':urgence.jours<=4?'med':'low',
+      titre:urgence.jours<=0?'⚡ Solde épuisé !':'⚡ Recharge nécessaire bientôt',
+      msg:`Solde estimé : <strong>${urgence.solde} kWh</strong> — s'épuise ${deadline}. Recharge <strong>${montant}</strong> maintenant pour éviter la coupure.`,
+      montant:opt?.montant,
+      eco:getEconomiePotentielle(opt)
+    };
+  }
+  return null;
+}
+
+/* ── RENDER ÉCONOMIES ── */
+function renderEco(){
+  const p=getProfil();
+  const hist=getEconomiesHistorique();
+  const nbRecharges=DATA.length;
+
+  // Niveaux de déverrouillage
+  const niv1=nbRecharges>=1; // Prochaine action basique
+  const niv2=p.n>=3;         // Suggestions personnalisées
+  const niv3=hist.length>=2; // Économies calculées + historique
+  const niv4=p.n>=8;         // Plan mois + projection annuelle
+
+  // Afficher contenu ou lock
+  if(!niv1){
+    document.getElementById('eco_lock').style.display='block';
+    document.getElementById('eco_content').style.display='none';
+    document.getElementById('eco_steps').innerHTML=`
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Enregistre ta <strong>1ère recharge</strong> dans le Suivi</span></div>
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Fais <strong>3 relevés compteur</strong> pour les suggestions personnalisées</span></div>
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Atteins <strong>2 mois</strong> de données pour voir tes économies calculées</span></div>
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Atteins <strong>8 relevés</strong> pour le plan optimal mensuel complet</span></div>`;
+    return;
+  }
+
+  document.getElementById('eco_lock').style.display='none';
+  document.getElementById('eco_content').style.display='block';
+
+  // Progression partielle si pas encore niv4
+  if(!niv4){
+    const steps=`
+      <div class="prog-step ${niv1?'prog-done':'prog-lock'}"><span class="prog-ic">${niv1?'✅':'🔒'}</span><span>1ère recharge enregistrée</span></div>
+      <div class="prog-step ${niv2?'prog-done':niv1?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv2?'✅':niv1?'⏳':'🔒'}</span><span>3 relevés compteur — <strong>${p.n}/3</strong>${niv2?' ✓':` (encore ${Math.max(0,3-p.n)})`}</span></div>
+      <div class="prog-step ${niv3?'prog-done':niv2?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv3?'✅':niv2?'⏳':'🔒'}</span><span>2 mois de recharges — <strong>${hist.length}/2</strong>${niv3?' ✓':niv2?` (encore ${Math.max(0,2-hist.length)} mois)`:'🔒'}</span></div>
+      <div class="prog-step ${niv4?'prog-done':niv3?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv4?'✅':niv3?'⏳':'🔒'}</span><span>8 relevés calibration — <strong>${p.n}/8</strong>${niv4?' ✓':niv3?` (encore ${Math.max(0,8-p.n)})`:'🔒'}</span></div>`;
+    document.getElementById('eco_steps').innerHTML=steps;
+    document.getElementById('eco_lock').style.display='block';
+  } else {
+    document.getElementById('eco_lock').style.display='none';
+  }
+
+  // ── ALERTE PROACTIVE URGENTE ──
+  const alerte=getAlerteProactive();
+  const alerteDiv=document.getElementById('eco_alerte');
+  if(alerte){
+    const col=alerte.niveau==='high'?'var(--red)':alerte.niveau==='med'?'var(--acc)':'var(--grn)';
+    const bg=alerte.niveau==='high'?'rgba(239,68,68,.08)':alerte.niveau==='med'?'rgba(245,166,35,.08)':'rgba(34,197,94,.08)';
+    const brd=alerte.niveau==='high'?'rgba(239,68,68,.3)':alerte.niveau==='med'?'rgba(245,166,35,.3)':'rgba(34,197,94,.3)';
+    alerteDiv.style.display='block';
+    alerteDiv.innerHTML=`<div style="background:${bg};border:1.5px solid ${brd};border-radius:14px;padding:14px;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:800;color:${col};margin-bottom:6px">${alerte.titre}</div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.6">${alerte.msg}</div>
+      ${alerte.eco>0?`<div style="font-size:11px;color:#4ade80;margin-top:6px;font-weight:600">💰 Économie potentielle : +${fmt(alerte.eco)} FCFA vs ton habitude</div>`:''}
+    </div>`;
+  } else alerteDiv.style.display='none';
+
+  // ── PROCHAINE ACTION ──
+  const opt=getMontantOptimal();
+  const actionDiv=document.getElementById('eco_action');
+  if(opt&&opt.kRestant>0){
+    const eco=getEconomiePotentielle(opt);
+    const urgence=getUrgenceSolde();
+    const joursStr=urgence?` — solde ~${urgence.jours}j`:'';
+    const urgNiv=urgence&&urgence.urgent?'high':urgence&&urgence.jours<=7?'med':'low';
+    const urgLbl=urgNiv==='high'?'Urgent':urgNiv==='med'?'Cette semaine':'Anticipation';
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-${urgNiv}">${urgLbl}</div>
+      <div class="action-ti">🎯 Prochaine recharge recommandée</div>
+      <div class="action-desc">Il reste <strong>${opt.dLeft} jours</strong> dans le mois. Tu consommes ~<strong>${fD(opt.taux)} kWh/jour</strong>. Pour rester en T1 et ne pas gaspiller${joursStr} :</div>
+      <div class="action-montant">${fmt(opt.montant)} <span style="font-size:14px;color:var(--tx2)">FCFA</span></div>
+      <div style="font-size:11px;color:var(--tx2);margin-top:3px">= ${fD(opt.kwh)} kWh · restera en T1 ✅</div>
+      ${eco>0?`<div class="action-eco">💰 Tu économises ~${fmt(eco)} FCFA vs ton habitude de recharge</div>`:''}
+      <div class="action-date">Confiance : ${opt.confiance}% · Basé sur ${p.n} relevé(s)</div>
+    </div>`;
+  } else if(opt&&opt.kT1restant<=0){
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-low">Ce mois</div>
+      <div class="action-ti">✅ T1 atteinte pour ce mois</div>
+      <div class="action-desc">Tu as consommé <strong>${fD(opt.kDejaRech)} kWh</strong> sur 150 kWh T1. Attends le 1er du mois prochain pour repartir au meilleur tarif.</div>
+      <div class="action-eco">💡 Recharge le 1er du mois prochain pour activer ta T1 dès le départ.</div>
+    </div>`;
+  } else {
+    actionDiv.innerHTML=`<div class="lock-card"><div class="lock-ic">🎯</div><div class="lock-ti">Suggestions personnalisées</div><div class="lock-sub">Enregistre des recharges dans le Suivi pour voir tes recommandations d'achat.</div></div>`;
+  }
+
+  // ── ÉCONOMIES RÉALISÉES ──
+  const ecoHeroDiv=document.getElementById('eco_hero');
+  if(niv3){
+    const totalEco=hist.reduce((s,h)=>s+h.eco,0);
+    const moyMensuelle=hist.length?Math.round(totalEco/hist.length):0;
+    const projAnnuelle=moyMensuelle*12;
+    ecoHeroDiv.style.display='block';
+    document.getElementById('eco_total').textContent=fmt(totalEco)+' F';
+    document.getElementById('eco_sub').textContent=`Économisé sur ${hist.length} mois vs recharges non optimisées`;
+    document.getElementById('eco_annuel').textContent=projAnnuelle>0?`📈 Projection annuelle : ~${fmt(projAnnuelle)} FCFA/an`:'';
+    document.getElementById('eco_stats_row').style.display='flex';
+    const nbOpt=hist.filter(h=>h.score>=80).length;
+    const bestMois=hist.reduce((b,h)=>h.eco>b.eco?h:b,hist[0]);
+    const scoreGlobal=hist.length?Math.round(hist.reduce((s,h)=>s+h.score,0)/hist.length):0;
+    document.getElementById('eco_nb_opt').textContent=nbOpt+'/'+hist.length;
+    document.getElementById('eco_best_mois').textContent=bestMois?fmt(bestMois.eco)+' F':'—';
+    document.getElementById('eco_score').textContent=scoreGlobal+'%';
+  } else ecoHeroDiv.style.display='none';
+
+  // ── PLAN DU MOIS ──
+  const planDiv=document.getElementById('eco_plan_mois');
+  if(niv4){
+    const plan=getPlanMois();
+    planDiv.style.display='block';
+    document.getElementById('eco_plan_ct').innerHTML=`
+      <div class="bk-row"><span class="bk-l">Jours restants</span><span class="bk-v">${plan.dLeft} j</span></div>
+      <div class="bk-row"><span class="bk-l">kWh estimés ce mois</span><span class="bk-v">${fD(plan.kMoisEstime)} kWh</span></div>
+      <div class="bk-row"><span class="bk-l">kWh déjà rechargés</span><span class="bk-v" style="color:var(--grn)">${fD(plan.kDejaRech)} kWh</span></div>
+      <div class="bk-row"><span class="bk-l">kWh restants à recharger</span><span class="bk-v" style="color:var(--acc)">${fD(plan.kRestant)} kWh</span></div>
+      <div class="bk-row"><span class="bk-l">Recharge optimale conseillée</span><span class="bk-v pos">${plan.montantReco?fmt(plan.montantReco)+' FCFA':'—'}</span></div>
+      <div class="bk-row"><span class="bk-l">Économie vs T2</span><span class="bk-v" style="color:#4ade80">${plan.eco?'+'+fmt(plan.eco)+' FCFA':'0 F'}</span></div>
+      <div style="margin-top:10px">
+        <div class="${plan.peutT1?'al al-ok':'al al-warn'}"><span class="al-ic">${plan.peutT1?'✅':'⚠️'}</span><span>${plan.peutT1?'Tu peux finir ce mois en Tranche 1 !':'Attention — risque de dépasser T1 ce mois.'}</span></div>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--tx3)">Confiance ${plan.confiance}% · Taux : ${plan.taux} kWh/jour</div>`;
+  } else planDiv.style.display='none';
+
+  // ── HISTORIQUE ÉCONOMIES ──
+  const histDiv=document.getElementById('eco_hist_block');
+  if(niv3&&hist.length>0){
+    histDiv.style.display='block';
+    document.getElementById('eco_hist_ct').innerHTML=hist.slice(0,6).map(h=>`
+      <div class="eco-hist-item">
+        <div><div style="font-weight:600;color:var(--txt)">${moisLbl(h.mois)}</div><div style="font-size:10px;color:var(--tx3)">${h.nbRecharges} recharge(s) · ${fD(h.totK)} kWh · Score T1: ${h.score}%</div></div>
+        <div class="eco-hist-eco">${h.eco>0?'+'+fmt(h.eco)+' F':'Optimal ✅'}</div>
+      </div>`).join('');
+  } else histDiv.style.display='none';
+}
+
+/* ── SERVICE WORKER ── */
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
 /* ── INIT ── */
 async function init(){
+  injectLogos();
   try{await openDB();}catch(e){console.warn('IndexedDB non disponible:',e);}
   await loadState();
   document.getElementById('p2d').value=todayStr();
-  buildMT();refreshS();buildDF();
+  document.getElementById('rel_date').value=todayStr();
+  buildMT();refreshS();refreshProfil();renderRelH();buildDF();
   setTimeout(hideSplash,1800);
   document.getElementById('splash').addEventListener('click',hideSplash);
 }
