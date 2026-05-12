@@ -1122,7 +1122,7 @@ function getProfil(){
   const stable=n>=8&&sigma<0.3;
   // Messages contextuels
   let msg='';
-  if(n<3)msg=`📊 ${n} relevé(s) enregistré(s). Il t'en faut au moins 3 pour démarrer. Continue chaque lundi !`;
+  if(n<2)msg=`📊 ${RELEVES.length} relevé(s) enregistré(s). Fais un 2ème relevé la semaine prochaine pour démarrer la calibration !`;
   else if(n<6)msg=`📈 ${6-n} relevé(s) de plus pour atteindre une précision acceptable.`;
   else if(n<10&&!stable)msg=`🎯 Bon début ! ${10-n} relevés supplémentaires affineront encore la précision.`;
   else if(stable)msg=`✅ Profil calibré — relevés mensuels suffisants désormais.`;
@@ -1714,16 +1714,27 @@ function getMontantOptimal(){
   const dLeft=dInM-now.getDate();
   const itemsMois=DATA.filter(r=>r.date.startsWith(mois));
   const kDejaRech=itemsMois.reduce((s,r)=>s+r.kwh,0);
-  const taux=p.fiable?p.moyenne:(kDejaRech>0?kDejaRech/Math.max(1,joursEcoules(mois)):3);
-  const kRestant=taux*dLeft;
   const kT1restant=Math.max(0,150-kDejaRech);
-  // Montant optimal = couvrir kRestant sans dépasser T1 si possible
-  const kCible=Math.min(kRestant,kT1restant>0?kT1restant:kRestant);
-  if(kCible<=0)return null;
+
+  // Taux journalier : profil calibré en priorité, sinon moyenne nationale ~3 kWh/jour
+  // Ne pas utiliser kDejaRech/joursEcoules car une grosse recharge unique fausse tout
+  const taux=p.fiable?p.moyenne:3;
+
+  const kRestant=taux*dLeft;
+  // Si l'utilisateur a déjà largement rechargé ce mois (kT1restant faible),
+  // montrer combien il peut encore recharger en T1 — même si c'est peu
+  const kCible=kT1restant>0?Math.min(kRestant,kT1restant):0;
+
+  // Cas : T1 épuisée ce mois → message spécifique géré ailleurs
+  if(kT1restant<=0)return{montant:0,kwh:0,dLeft,kDejaRech,taux,kT1restant:0,confiance:p.fiable?p.pct:30,mois,t1pleine:true};
+
+  // Cas : fin de mois proche (<3j) ou kRestant très faible → pas de recharge nécessaire
+  if(dLeft<=2||kCible<1)return{montant:0,kwh:0,dLeft,kDejaRech,taux,kT1restant,confiance:p.fiable?p.pct:30,mois,findemois:true};
+
   const isPremiere=itemsMois.length===0;
   const r=calcFcfa(kCible,kDejaRech,isPremiere);
   const confiance=p.fiable?p.pct:30;
-  return{montant:r.montant,kwh:kCible,dLeft,kDejaRech,taux,kT1restant,confiance,isPremiere,mois};
+  return{montant:r.montant,kwh:parseFloat(kCible.toFixed(1)),dLeft,kDejaRech,taux,kT1restant,confiance,isPremiere,mois};
 }
 
 // Calcule économie potentielle vs habitude de l'utilisateur
@@ -1817,9 +1828,9 @@ function renderEco(){
 
   // Niveaux de déverrouillage
   const niv1=nbRecharges>=1; // Prochaine action basique
-  const niv2=p.n>=3;         // Suggestions personnalisées
+  const niv2=RELEVES.length>=3;  // Suggestions personnalisées
   const niv3=hist.length>=2; // Économies calculées + historique
-  const niv4=p.n>=8;         // Plan mois + projection annuelle
+  const niv4=RELEVES.length>=9;  // Plan mois + projection annuelle (9 relevés = 8 taux)
 
   // Afficher contenu ou lock
   if(!niv1){
@@ -1840,9 +1851,9 @@ function renderEco(){
   if(!niv4){
     const steps=`
       <div class="prog-step ${niv1?'prog-done':'prog-lock'}"><span class="prog-ic">${niv1?'✅':'🔒'}</span><span>1ère recharge enregistrée</span></div>
-      <div class="prog-step ${niv2?'prog-done':niv1?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv2?'✅':niv1?'⏳':'🔒'}</span><span>3 relevés compteur — <strong>${p.n}/3</strong>${niv2?' ✓':` (encore ${Math.max(0,3-p.n)})`}</span></div>
+      <div class="prog-step ${niv2?'prog-done':niv1?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv2?'✅':niv1?'⏳':'🔒'}</span><span>3 relevés compteur — <strong>${RELEVES.length}/3</strong>${niv2?' ✓':` (encore ${Math.max(0,3-RELEVES.length)})`}</span></div>
       <div class="prog-step ${niv3?'prog-done':niv2?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv3?'✅':niv2?'⏳':'🔒'}</span><span>2 mois de recharges — <strong>${hist.length}/2</strong>${niv3?' ✓':niv2?` (encore ${Math.max(0,2-hist.length)} mois)`:'🔒'}</span></div>
-      <div class="prog-step ${niv4?'prog-done':niv3?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv4?'✅':niv3?'⏳':'🔒'}</span><span>8 relevés calibration — <strong>${p.n}/8</strong>${niv4?' ✓':niv3?` (encore ${Math.max(0,8-p.n)})`:'🔒'}</span></div>`;
+      <div class="prog-step ${niv4?'prog-done':niv3?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv4?'✅':niv3?'⏳':'🔒'}</span><span>9 relevés calibration — <strong>${RELEVES.length}/9</strong>${niv4?' ✓':niv3?` (encore ${Math.max(0,9-RELEVES.length)})`:'🔒'}</span></div>`;
     document.getElementById('eco_steps').innerHTML=steps;
     document.getElementById('eco_lock').style.display='block';
   } else {
@@ -1867,30 +1878,43 @@ function renderEco(){
   // ── PROCHAINE ACTION ──
   const opt=getMontantOptimal();
   const actionDiv=document.getElementById('eco_action');
-  if(opt&&opt.kRestant>0){
+  if(opt&&opt.t1pleine){
+    // T1 épuisée ce mois
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-low">Ce mois</div>
+      <div class="action-ti">✅ Tranche 1 couverte ce mois</div>
+      <div class="action-desc">Tu as déjà rechargé <strong>${fD(opt.kDejaRech)} kWh</strong> sur 150 kWh T1. Recharger maintenant te ferait passer en T2 (plus cher).</div>
+      <div class="action-eco">💡 Attends le 1er du mois prochain pour repartir au tarif T1 optimal.</div>
+    </div>`;
+  } else if(opt&&opt.findemois){
+    // Fin de mois ou peu de kWh restants
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-low">Fin de mois</div>
+      <div class="action-ti">🗓️ Presque fin de mois</div>
+      <div class="action-desc">Il reste <strong>${opt.dLeft} jour(s)</strong> — pas besoin de recharger maintenant. Attends le 1er du mois prochain pour repartir en T1.</div>
+    </div>`;
+  } else if(opt&&opt.montant>0){
     const eco=getEconomiePotentielle(opt);
     const urgence=getUrgenceSolde();
-    const joursStr=urgence?` — solde ~${urgence.jours}j`:'';
+    const joursStr=urgence?` — solde estimé : ~${urgence.jours}j`:'';
     const urgNiv=urgence&&urgence.urgent?'high':urgence&&urgence.jours<=7?'med':'low';
     const urgLbl=urgNiv==='high'?'Urgent':urgNiv==='med'?'Cette semaine':'Anticipation';
+    const confStr=opt.confiance<50?` · ⚠️ Estimation (pas encore de relevés)`:`· Confiance : ${opt.confiance}%`;
     actionDiv.innerHTML=`<div class="action-card">
       <div class="action-urgence urg-${urgNiv}">${urgLbl}</div>
       <div class="action-ti">🎯 Prochaine recharge recommandée</div>
-      <div class="action-desc">Il reste <strong>${opt.dLeft} jours</strong> dans le mois. Tu consommes ~<strong>${fD(opt.taux)} kWh/jour</strong>. Pour rester en T1 et ne pas gaspiller${joursStr} :</div>
+      <div class="action-desc">Il reste <strong>${opt.dLeft} jours</strong> dans le mois. Taux estimé : ~<strong>${fD(opt.taux)} kWh/jour</strong>${joursStr}. Pour rester en T1 :</div>
       <div class="action-montant">${fmt(opt.montant)} <span style="font-size:14px;color:var(--tx2)">FCFA</span></div>
-      <div style="font-size:11px;color:var(--tx2);margin-top:3px">= ${fD(opt.kwh)} kWh · restera en T1 ✅</div>
-      ${eco>0?`<div class="action-eco">💰 Tu économises ~${fmt(eco)} FCFA vs ton habitude de recharge</div>`:''}
-      <div class="action-date">Confiance : ${opt.confiance}% · Basé sur ${p.n} relevé(s)</div>
-    </div>`;
-  } else if(opt&&opt.kT1restant<=0){
-    actionDiv.innerHTML=`<div class="action-card">
-      <div class="action-urgence urg-low">Ce mois</div>
-      <div class="action-ti">✅ T1 atteinte pour ce mois</div>
-      <div class="action-desc">Tu as consommé <strong>${fD(opt.kDejaRech)} kWh</strong> sur 150 kWh T1. Attends le 1er du mois prochain pour repartir au meilleur tarif.</div>
-      <div class="action-eco">💡 Recharge le 1er du mois prochain pour activer ta T1 dès le départ.</div>
+      <div style="font-size:11px;color:var(--tx2);margin-top:3px">≈ ${fD(opt.kwh)} kWh · reste en T1 ✅</div>
+      ${eco>0?`<div class="action-eco">💰 Économie estimée : ~${fmt(eco)} FCFA vs ton habitude</div>`:''}
+      <div class="action-date">${confStr}</div>
     </div>`;
   } else {
-    actionDiv.innerHTML=`<div class="lock-card"><div class="lock-ic">🎯</div><div class="lock-ti">Suggestions personnalisées</div><div class="lock-sub">Enregistre des recharges dans le Suivi pour voir tes recommandations d'achat.</div></div>`;
+    // Cas inattendu — fallback neutre
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-ti">💡 Aucune recharge nécessaire</div>
+      <div class="action-desc">Ton suivi ce mois est bon. Continue à enregistrer tes recharges pour des recommandations de plus en plus précises.</div>
+    </div>`;
   }
 
   // ── ÉCONOMIES RÉALISÉES ──
