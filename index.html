@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ergonome">
-<meta name="description" content="Ergonome — Calculateur Woyofal Senelec v7.4.">
+<meta name="description" content="Ergonome — Calculateur Woyofal Senelec v7.5.">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -325,6 +325,45 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
 .cpill{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;margin-bottom:8px;font-size:12px;line-height:1.6}
 .toast{position:fixed;bottom:max(100px,calc(88px + env(safe-area-inset-bottom)));left:50%;transform:translateX(-50%);background:var(--card2);color:var(--txt);border:1px solid var(--brd);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:20000;white-space:nowrap;font-family:var(--fu);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;animation:tIn .2s ease}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* ══ MULTI-COMPTEURS v7.5 ══ */
+.cpt-bar{display:flex;align-items:center;gap:7px;padding:8px 0 10px;overflow-x:auto;scrollbar-width:none}
+.cpt-bar::-webkit-scrollbar{display:none}
+.cpt-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:20px;border:1.5px solid var(--brd);background:var(--bg2);color:var(--tx2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;font-family:var(--fu)}
+.cpt-chip.active{border-color:var(--acc);background:rgba(245,166,35,.12);color:var(--acc);box-shadow:0 0 0 1px rgba(245,166,35,.15)}
+.cpt-chip:active{transform:scale(.94)}
+.cpt-chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cpt-add-btn{background:transparent;border:1.5px dashed var(--brd2);color:var(--tx3);border-radius:20px;padding:6px 13px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--fu);transition:all .2s;flex-shrink:0}
+.cpt-add-btn:hover{border-color:var(--acc);color:var(--acc)}
+/* Liste compteurs */
+.cpt-item{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--bg2);border:1.5px solid var(--brd);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.cpt-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.cpt-item.is-active{border-color:var(--acc);background:rgba(245,166,35,.05)}
+.cpt-item.is-active::before{background:var(--acc)}
+.cpt-item:active{transform:scale(.98)}
+.cpt-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cpt-body{flex:1;min-width:0}
+.cpt-n{font-size:14px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:6px}
+.cpt-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(245,166,35,.15);color:var(--acc);border:1px solid rgba(245,166,35,.3)}
+.cpt-sub{font-size:10px;color:var(--tx3);margin-top:3px}
+.cpt-stat{font-size:11px;color:var(--tx2);margin-top:4px;font-weight:500}
+.cpt-btns{display:flex;gap:6px;flex-shrink:0}
+.cpt-ibtn{width:32px;height:32px;border-radius:8px;border:1px solid var(--brd);background:var(--bg3);color:var(--tx2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:var(--fu)}
+.cpt-ibtn:active{transform:scale(.9)}
+/* Form */
+.icon-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:4px}
+.icon-opt{aspect-ratio:1;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:var(--fu)}
+.icon-opt.sel{border-color:var(--acc);background:rgba(245,166,35,.12);box-shadow:0 0 0 2px rgba(245,166,35,.2)}
+.color-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.color-sw{width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s;flex-shrink:0}
+.color-sw.sel{border-color:#fff;transform:scale(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.3)}
+/* Consolidé */
+.conso-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg2);border:1px solid var(--brd);border-radius:12px;margin-bottom:6px}
+.conso-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.conso-info{flex:1;min-width:0}
+.conso-name{font-size:12px;font-weight:700;color:var(--txt)}
+.conso-sub{font-size:10px;color:var(--tx3);margin-top:2px}
+.conso-fcfa{font-family:var(--fm);font-size:14px;font-weight:700;color:var(--acc);text-align:right;flex-shrink:0}
+
 </style>
 </head>
 <body>
@@ -355,7 +394,7 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
   <div class="sp-logo"><svg id="sp-logo" viewBox="0 0 200 200" style="width:100%;height:100%;display:block"></svg></div>
   <div class="sp-name">Ergonome</div>
   <div class="sp-tag">Maîtrisez votre consommation Senelec.<br><strong>Calculez, suivez, optimisez</strong> —<br>sans jamais dépasser votre tranche.</div>
-  <div class="sp-ver">Woyofal · Calculateur · v7.4</div>
+  <div class="sp-ver">Woyofal · Calculateur · v7.5</div>
   <div class="sp-track"><div class="sp-fill"></div></div>
   <div class="sp-load">Initialisation…</div>
   <div class="sp-sig">Développé par <span>Mouhamadou Moustapha SY</span><br>Étudiant AgroTIC · USSEIN · Sénégal</div>
@@ -370,6 +409,8 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
     </div>
     <button class="hbtn" onclick="openSheet('sh_set')">⚙️</button>
   </div>
+  <!-- BARRE COMPTEURS -->
+  <div class="cpt-bar" id="cpt_bar"></div>
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="showP('p1',this)">💱 Convertir</button>
     <button class="tab-btn" onclick="showP('p2',this)">📊 Suivi</button>
@@ -446,7 +487,7 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
     <div class="tr-row tr-t3"><div><div class="tr-n" style="color:var(--t3)">🔴 Tranche 3</div><div class="tr-s">> 250 kWh — facturé T2 + TVA 18%</div></div><div><div class="tr-p" style="color:var(--t3)">136,49 F</div><div class="tr-u">+ TVA</div></div></div>
     <p class="note" style="margin-top:12px">Taxe communale 2,5% sur chaque recharge. Redevance mensuelle sur la 1ère recharge du mois uniquement.</p>
   </div>
-  <div class="sig">Développé par <strong>Mouhamadou Moustapha SY</strong> · Étudiant AgroTIC · USSEIN · Sénégal · <strong>Ergonome v7.4</strong></div>
+  <div class="sig">Développé par <strong>Mouhamadou Moustapha SY</strong> · Étudiant AgroTIC · USSEIN · Sénégal · <strong>Ergonome v7.5</strong></div>
 </div>
 
 <!-- P2 SUIVI -->
@@ -675,14 +716,14 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
       <button class="btn-sec" onclick="rstSet()">↩️ Valeurs par défaut</button>
       <div class="dvd"></div>
       <div class="slbl">À propos d'Ergonome</div>
-      <div class="ab-block"><div class="ab-ti">⚡ Ergonome v7.4</div><p>Calculateur Woyofal intelligent pour les consommateurs sénégalais. Comprendre, suivre et optimiser sa consommation pour toujours acheter au meilleur tarif.</p></div>
-      <div class="ab-block"><div class="ab-ti">💱 Convertisseur (v7.4)</div><p>Deux sens : <strong style="color:var(--txt)">FCFA → kWh</strong> et <strong style="color:var(--txt)">kWh → FCFA</strong>, enrichis de la <strong style="color:var(--acc)">durée personnalisée</strong> basée sur ton profil calibré.</p></div>
-      <div class="ab-block"><div class="ab-ti">💰 Mes Économies — Nouveau v7.4</div><p>Panel proactif d'anticipation des économies. Génère des <strong style="color:var(--acc)">suggestions d'achat avant que le besoin se présente</strong> : montant optimal, meilleur moment, alerte solde critique, plan du mois, projection annuelle. Se déverrouille progressivement avec les données.</p></div>
-      <div class="ab-block"><div class="ab-ti">🎯 Planifier (v7.4)</div><p>Alimenté automatiquement par le Suivi et le profil calibré. Deux fonctions enrichies :<br><br>
+      <div class="ab-block"><div class="ab-ti">⚡ Ergonome v7.5</div><p>Calculateur Woyofal intelligent pour les consommateurs sénégalais. Comprendre, suivre et optimiser sa consommation pour toujours acheter au meilleur tarif.</p></div>
+      <div class="ab-block"><div class="ab-ti">💱 Convertisseur (v7.5)</div><p>Deux sens : <strong style="color:var(--txt)">FCFA → kWh</strong> et <strong style="color:var(--txt)">kWh → FCFA</strong>, enrichis de la <strong style="color:var(--acc)">durée personnalisée</strong> basée sur ton profil calibré.</p></div>
+      <div class="ab-block"><div class="ab-ti">💰 Mes Économies (v7.5)</div><p>Panel proactif d'anticipation des économies. Génère des <strong style="color:var(--acc)">suggestions d'achat avant que le besoin se présente</strong> : montant optimal, meilleur moment, alerte solde critique, plan du mois, projection annuelle. Se déverrouille progressivement avec les données.</p></div>
+      <div class="ab-block"><div class="ab-ti">🎯 Planifier (v7.5)</div><p>Alimenté automatiquement par le Suivi et le profil calibré. Deux fonctions enrichies :<br><br>
       <strong style="color:var(--acc)">💰 Simuler :</strong> entre un montant → verdict + fourchette + <strong style="color:var(--grn)">durée personnalisée avec confiance</strong>.<br>
       <strong style="color:var(--acc)">📅 Plan de charge :</strong> entre ta conso/jour (pré-remplie) et les jours restants → montants recommandés + meilleur moment.</p></div>
       <div class="ab-block"><div class="ab-ti">💾 Stockage IndexedDB</div><p>Les données sont dans <strong style="color:var(--txt)">IndexedDB</strong> — base de données intégrée, indépendante du cache navigateur. Fonctionne hors ligne.</p><div class="sec-bdg"><span>🔒</span><span>IndexedDB · Local · Hors ligne · Aucun serveur</span></div></div>
-      <div class="ab-block"><div class="ab-ti">👨‍💻 Développeur</div><p><strong style="color:var(--acc)">Mouhamadou Moustapha SY</strong><br>Étudiant en 2ème année de Licence AgroTIC<br>USSEIN · Sénégal<br><br><span style="color:var(--tx3);font-size:11px">Ergonome v7.4 · Tarifs CRSE décision n°2025-140 · Janvier 2026</span></p></div>
+      <div class="ab-block"><div class="ab-ti">👨‍💻 Développeur</div><p><strong style="color:var(--acc)">Mouhamadou Moustapha SY</strong><br>Étudiant en 2ème année de Licence AgroTIC<br>USSEIN · Sénégal<br><br><span style="color:var(--tx3);font-size:11px">Ergonome v7.5 · Tarifs CRSE décision n°2025-140 · Janvier 2026</span></p></div>
       <div class="dvd"></div>
       <div class="slbl">Réinitialisation</div>
       <div class="ab-block">
@@ -691,6 +732,40 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
         <button class="btn-del" onclick="delAll()">🗑️ Effacer toutes les données et réinitialiser</button>
       </div>
       <button class="btn-sec" onclick="closeSheet('sh_set')" style="margin-top:12px">✕ Fermer</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- SHEET GESTION COMPTEURS -->
+<div class="overlay" id="sh_cpt" onclick="closeClick(event,'sh_cpt')">
+  <div class="sheet">
+    <div class="sh-in">
+      <div class="sh-handle"></div>
+      <div class="sh-title">⚡ Mes compteurs Woyofal</div>
+      <div class="sh-desc">Chaque compteur possède ses propres recharges, relevés et profil de consommation — les données sont <strong>strictement isolées</strong>.</div>
+      <div class="slbl">Compteurs enregistrés</div>
+      <div id="cpt_list"></div>
+      <div class="dvd"></div>
+      <div class="slbl" id="cpt_form_lbl">Nouveau compteur</div>
+      <div class="ig">
+        <label class="il">Nom du compteur</label>
+        <input type="text" class="ifield" id="cpt_nom" placeholder="Ex : Maison, Boutique, Atelier…" maxlength="28" autocomplete="off">
+      </div>
+      <div class="ig">
+        <label class="il">Icône</label>
+        <div class="icon-grid" id="cpt_icons"></div>
+      </div>
+      <div class="ig">
+        <label class="il">Couleur</label>
+        <div class="color-row" id="cpt_colors"></div>
+      </div>
+      <button class="btn" id="cpt_save_btn" onclick="saveCpt()">➕ Créer ce compteur</button>
+      <button class="btn-sec" id="cpt_cancel_btn" onclick="cancelEditCpt()" style="display:none">✕ Annuler les modifications</button>
+      <div class="dvd"></div>
+      <div class="slbl">Vue consolidée — tous les compteurs</div>
+      <div id="cpt_conso"></div>
+      <button class="btn-sec" onclick="closeSheet('sh_cpt')" style="margin-top:14px">✕ Fermer</button>
     </div>
   </div>
 </div>
@@ -736,7 +811,7 @@ function injectLogos(){
 }
 
 /* ══ INDEXEDDB ══ */
-const DBN='ergonome_v73',DBV=1,STR='recharges',STC='config',STL='releves';
+const DBN='ergonome_v75',DBV=1,STR='recharges',STC='config',STL='releves',STP='compteurs';
 let db=null;
 function openDB(){
   return new Promise((res,rej)=>{
@@ -746,6 +821,7 @@ function openDB(){
       if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
       if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
       if(!d.objectStoreNames.contains(STL))d.createObjectStore(STL,{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains(STP))d.createObjectStore(STP,{keyPath:'id'});
     };
     req.onsuccess=e=>{db=e.target.result;res(db);};
     req.onerror=()=>rej(req.error);
@@ -760,15 +836,40 @@ const dbClear=(s)=>new Promise((r,j)=>{const q=tx(s,'readwrite').clear();q.onsuc
 
 /* ── STATE ── */
 let CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
-let DATA=[];
-let RELEVES=[];
+let DATA=[];       // recharges du compteur actif
+let RELEVES=[];    // relevés du compteur actif
+let COMPTEURS=[];  // liste de tous les compteurs
+let CPT_ACT=null;  // compteur actuellement actif
 let OBJ='t1',VM=currMois();
+
+const CPT_DEF={id:'cpt_default',nom:'Mon compteur',icone:'⚡',couleur:'#f5a623'};
 
 async function loadState(){
   try{const c=await dbGet(STC,'main');if(c)CFG=Object.assign({},CFG,c.value);}catch(e){}
-  try{DATA=await dbAll(STR);DATA.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){DATA=[];}
-  try{RELEVES=await dbAll(STL);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){RELEVES=[];}
+  try{COMPTEURS=await dbAll(STP);}catch(e){COMPTEURS=[];}
+  if(COMPTEURS.length===0){await dbPut(STP,CPT_DEF);COMPTEURS=[CPT_DEF];}
+  CPT_ACT=COMPTEURS[0];
+  try{const ac=await dbGet(STC,'cpt_act');if(ac){const f=COMPTEURS.find(c=>c.id===ac.value);if(f)CPT_ACT=f;}}catch(e){}
+  await loadCptData();
 }
+
+async function loadCptData(){
+  try{const all=await dbAll(STR);DATA=all.filter(r=>r.cptId===CPT_ACT.id);DATA.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){DATA=[];}
+  try{const all=await dbAll(STL);RELEVES=all.filter(r=>r.cptId===CPT_ACT.id);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));}catch(e){RELEVES=[];}
+}
+
+async function switchCpt(id){
+  const c=COMPTEURS.find(x=>x.id===id);
+  if(!c||c.id===CPT_ACT.id)return;
+  CPT_ACT=c;
+  try{await dbPut(STC,{key:'cpt_act',value:id});}catch(e){}
+  await loadCptData();
+  VM=currMois();
+  renderCptBar();
+  buildMT();refreshS();refreshProfil();renderRelH();refreshPSrc();renderEco();buildDF();renderDT();
+  toast(c.icone+' '+c.nom+' — compteur actif');
+}
+
 async function saveCFG(){try{await dbPut(STC,{key:'main',value:CFG});}catch(e){}}
 
 /* ── CONFIRM MODAL — remplace window.confirm() bloqué dans iframes ── */
@@ -789,16 +890,196 @@ function cmAns(yes){
 /* ── DELETE ALL ── */
 function delAll(){
   askConfirm('🗑️','Effacer toutes les données ?',
-    'Toutes les recharges, relevés et paramètres seront supprimés. Action irréversible.',
+    'Tous les compteurs, recharges, relevés et paramètres seront supprimés. Action irréversible.',
     'Effacer', async()=>{
-      try{await dbClear(STR);await dbClear(STC);await dbClear(STL);}catch(e){}
+      try{await dbClear(STR);await dbClear(STC);await dbClear(STL);await dbClear(STP);}catch(e){}
       try{localStorage.clear();sessionStorage.clear();}catch(e){}
       try{if(typeof caches!=='undefined'){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}}catch(e){}
       try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.unregister()));}}catch(e){}
-      CFG={rev:429,t1:82,t2:136.49,taxe:2.5};DATA=[];RELEVES=[];OBJ='t1';VM=currMois();
+      CFG={rev:429,t1:82,t2:136.49,taxe:2.5};DATA=[];RELEVES=[];COMPTEURS=[];CPT_ACT=null;OBJ='t1';VM=currMois();
       closeSheet('sh_set');
       toast('✅ Données effacées — rechargement…');
       setTimeout(()=>{try{window.location.href=window.location.pathname+'?r='+Date.now();}catch(e){location.reload();}},1200);
+    }
+  );
+}
+
+/* ══════════════════════════════════════════
+   MOTEUR MULTI-COMPTEURS — v7.5
+══════════════════════════════════════════ */
+
+const CPT_ICONS=['⚡','🏠','🏪','🏢','🏭','🏡','🏗️','💡','🌾','🌿','🔧','🎓','🏥','🛒','🍽️','💼','🏋️','🎨','🚗','🌍'];
+const CPT_COLS=['#f5a623','#22c55e','#38bdf8','#c084fc','#f87171','#fb923c','#34d399','#60a5fa','#a78bfa','#fb7185','#4ade80','#e879f9'];
+
+let _editCptId=null,_selIc=CPT_ICONS[0],_selCl=CPT_COLS[0];
+
+/* ── RENDU BARRE CHIPS HEADER ── */
+function renderCptBar(){
+  const bar=document.getElementById('cpt_bar');
+  if(!bar)return;
+  bar.innerHTML=COMPTEURS.map(c=>`
+    <button class="cpt-chip${c.id===CPT_ACT.id?' active':''}" onclick="switchCpt('${c.id}')">
+      <span class="cpt-chip-dot" style="background:${c.couleur}"></span>
+      <span>${c.icone} ${san(c.nom)}</span>
+    </button>`).join('')
+    +'<button class="cpt-add-btn" onclick="openCptSheet()">⚙️ Gérer</button>';
+}
+
+function openCptSheet(){
+  renderCptList();
+  buildCptForm();
+  openSheet('sh_cpt');
+}
+
+/* ── LISTE COMPTEURS DANS LA SHEET ── */
+async function renderCptList(){
+  const wrap=document.getElementById('cpt_list');
+  if(!wrap)return;
+  // Charger toutes les données pour stats
+  let allR=[],allL=[];
+  try{allR=await dbAll(STR);}catch(e){}
+  try{allL=await dbAll(STL);}catch(e){}
+
+  wrap.innerHTML=COMPTEURS.map(c=>{
+    const rr=allR.filter(r=>r.cptId===c.id);
+    const rl=allL.filter(r=>r.cptId===c.id);
+    const totF=rr.reduce((s,r)=>s+r.montant,0);
+    const totK=rr.reduce((s,r)=>s+r.kwh,0);
+    const isAct=c.id===CPT_ACT.id;
+    return`<div class="cpt-item${isAct?' is-active':''}" onclick="selectAndClose('${c.id}')">
+      <div class="cpt-ico" style="background:${c.couleur}20;border:1.5px solid ${c.couleur}50">${c.icone}</div>
+      <div class="cpt-body">
+        <div class="cpt-n">${san(c.nom)}${isAct?'<span class="cpt-badge">Actif</span>':''}</div>
+        <div class="cpt-sub">${rr.length} recharge(s) · ${rl.length} relevé(s)</div>
+        <div class="cpt-stat">${totF>0?fmt(totF)+' FCFA · '+fD(totK)+' kWh':'Aucune donnée encore'}</div>
+      </div>
+      <div class="cpt-btns" onclick="event.stopPropagation()">
+        <button class="cpt-ibtn" title="Modifier" onclick="editCpt('${c.id}')">✏️</button>
+        ${COMPTEURS.length>1&&!isAct?`<button class="cpt-ibtn" style="color:#f87171;border-color:rgba(239,68,68,.25)" title="Supprimer" onclick="delCpt('${c.id}')">🗑</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Vue consolidée
+  const conso=document.getElementById('cpt_conso');
+  if(!conso)return;
+  let allR2=allR;
+  const totalF=allR2.reduce((s,r)=>s+r.montant,0);
+  if(COMPTEURS.length<2||totalF===0){
+    conso.innerHTML='<div class="empty" style="padding:16px"><p>Crée au moins 2 compteurs avec des données pour voir la vue consolidée.</p></div>';
+    return;
+  }
+  conso.innerHTML=COMPTEURS.map(c=>{
+    const rr=allR2.filter(r=>r.cptId===c.id);
+    const f=rr.reduce((s,r)=>s+r.montant,0);
+    const k=rr.reduce((s,r)=>s+r.kwh,0);
+    const pct=totalF>0?Math.round(f/totalF*100):0;
+    return`<div class="conso-row">
+      <div class="conso-ico" style="background:${c.couleur}18;border:1.5px solid ${c.couleur}40">${c.icone}</div>
+      <div class="conso-info">
+        <div class="conso-name">${san(c.nom)}</div>
+        <div class="conso-sub">${rr.length} recharge(s) · ${fD(k)} kWh · ${pct}%</div>
+      </div>
+      <div class="conso-fcfa">${f>0?fmt(f)+' F':'—'}</div>
+    </div>`;
+  }).join('')
+  +`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:12px;margin-top:4px">
+    <span style="font-size:12px;font-weight:700;color:var(--acc)">📊 Total global</span>
+    <span style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--acc)">${fmt(totalF)} FCFA</span>
+  </div>`;
+}
+
+function selectAndClose(id){
+  switchCpt(id);
+  setTimeout(()=>closeSheet('sh_cpt'),250);
+}
+
+/* ── FORMULAIRE CRÉATION/ÉDITION ── */
+function buildCptForm(){
+  // Grille icônes
+  const ig=document.getElementById('cpt_icons');
+  if(ig)ig.innerHTML=CPT_ICONS.map(ic=>`<button class="icon-opt${ic===_selIc?' sel':''}" onclick="selIc('${ic}')">${ic}</button>`).join('');
+  // Grille couleurs
+  const cg=document.getElementById('cpt_colors');
+  if(cg)cg.innerHTML=CPT_COLS.map(cl=>`<div class="color-sw${cl===_selCl?' sel':''}" style="background:${cl}" onclick="selCl('${cl}')"></div>`).join('');
+}
+
+function selIc(ic){
+  _selIc=ic;
+  document.querySelectorAll('.icon-opt').forEach(b=>b.classList.toggle('sel',b.textContent===ic));
+}
+function selCl(cl){
+  _selCl=cl;
+  document.querySelectorAll('.color-sw').forEach(b=>{
+    const bg=b.style.background||b.style.backgroundColor;
+    b.classList.toggle('sel',bg===cl);
+  });
+}
+
+async function saveCpt(){
+  const nom=document.getElementById('cpt_nom').value.trim();
+  if(!nom){toast('⚠️ Donne un nom à ce compteur');return;}
+  if(_editCptId){
+    // Édition
+    const idx=COMPTEURS.findIndex(c=>c.id===_editCptId);
+    if(idx<0)return;
+    COMPTEURS[idx]={...COMPTEURS[idx],nom,icone:_selIc,couleur:_selCl};
+    await dbPut(STP,COMPTEURS[idx]);
+    if(CPT_ACT.id===_editCptId)CPT_ACT=COMPTEURS[idx];
+    toast('✅ "'+nom+'" mis à jour');
+    _editCptId=null;
+  } else {
+    if(COMPTEURS.length>=8){toast('⚠️ Maximum 8 compteurs');return;}
+    const nc={id:'cpt_'+Date.now().toString(36),nom,icone:_selIc,couleur:_selCl,cree:todayStr()};
+    await dbPut(STP,nc);COMPTEURS.push(nc);
+    toast('⚡ Compteur "'+nom+'" créé ! Sélectionne-le pour y enregistrer tes données.');
+  }
+  resetCptForm();
+  renderCptBar();
+  renderCptList();
+}
+
+function editCpt(id){
+  const c=COMPTEURS.find(x=>x.id===id);if(!c)return;
+  _editCptId=id;_selIc=c.icone;_selCl=c.couleur;
+  document.getElementById('cpt_nom').value=c.nom;
+  document.getElementById('cpt_form_lbl').textContent='Modifier ce compteur';
+  document.getElementById('cpt_save_btn').textContent='💾 Enregistrer les modifications';
+  document.getElementById('cpt_cancel_btn').style.display='block';
+  buildCptForm();
+  document.getElementById('cpt_nom').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function cancelEditCpt(){
+  _editCptId=null;resetCptForm();
+}
+
+function resetCptForm(){
+  _editCptId=null;_selIc=CPT_ICONS[0];_selCl=CPT_COLS[0];
+  document.getElementById('cpt_nom').value='';
+  document.getElementById('cpt_form_lbl').textContent='Nouveau compteur';
+  document.getElementById('cpt_save_btn').textContent='➕ Créer ce compteur';
+  document.getElementById('cpt_cancel_btn').style.display='none';
+  buildCptForm();
+}
+
+function delCpt(id){
+  if(COMPTEURS.length<=1){toast('⚠️ Impossible de supprimer le seul compteur');return;}
+  const c=COMPTEURS.find(x=>x.id===id);if(!c)return;
+  askConfirm('🗑️','Supprimer "'+c.nom+'" ?',
+    'Toutes les recharges et relevés de ce compteur seront supprimés définitivement. Action irréversible.',
+    'Supprimer', async()=>{
+      try{
+        const allR=await dbAll(STR);
+        for(const r of allR.filter(r=>r.cptId===id))await dbDel(STR,r.id);
+        const allL=await dbAll(STL);
+        for(const r of allL.filter(r=>r.cptId===id))await dbDel(STL,r.id);
+        await dbDel(STP,id);
+      }catch(e){}
+      COMPTEURS=COMPTEURS.filter(x=>x.id!==id);
+      if(CPT_ACT.id===id)await switchCpt(COMPTEURS[0].id);
+      renderCptBar();renderCptList();
+      toast('🗑️ Compteur supprimé');
     }
   );
 }
@@ -914,7 +1195,7 @@ async function addRel(){
     const jours=Math.round((d2-d1)/(1000*60*60*24));
     if(jours>0&&prev.kwh>kwh)tauxCalc=parseFloat(((prev.kwh-kwh)/jours).toFixed(3));
   }
-  const newR={date:d,kwh,tauxCalc};
+  const newR={date:d,kwh,tauxCalc,cptId:CPT_ACT.id};
   const id=await dbPut(STL,newR);newR.id=id;
   RELEVES.push(newR);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('rel_kwh').value='';
@@ -1000,7 +1281,7 @@ function showP(id,tb,nb){
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   if(tb)tb.classList.add('active');
-  else{const i={'p1':0,'p2':1,'p3':2,'p4':3}[id];if(i!=null)document.querySelectorAll('.tab-btn')[i].classList.add('active');}
+  else{const i={'p1':0,'p2':1,'p3':2,'p4':3,'p5':4}[id];if(i!=null)document.querySelectorAll('.tab-btn')[i]?.classList.add('active');}
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   const nm=nb||{'p1':'nb1','p2':'nb2','p3':'nb3','p4':'nb4','p5':'nb5'}[id];
   if(nm)document.getElementById(nm)?.classList.add('active');
@@ -1133,7 +1414,7 @@ async function addR(){
   const premiere=DATA.filter(r=>r.date.startsWith(mois)).length===0;
   const deja=DATA.filter(r=>r.date.startsWith(mois)&&r.date<d).reduce((s,r)=>s+r.kwh,0);
   const r=calcKwh(m,deja,premiere);
-  const newR={date:d,montant:m,kwh:parseFloat(r.kwh.toFixed(2)),premiere};
+  const newR={date:d,montant:m,kwh:parseFloat(r.kwh.toFixed(2)),premiere,cptId:CPT_ACT.id};
   const id=await dbPut(STR,newR);newR.id=id;
   DATA.push(newR);DATA.sort((a,b)=>a.date.localeCompare(b.date));
   VM=mois;buildMT();refreshS();
@@ -1671,6 +1952,7 @@ async function init(){
   await loadState();
   document.getElementById('p2d').value=todayStr();
   document.getElementById('rel_date').value=todayStr();
+  renderCptBar();
   buildMT();refreshS();refreshProfil();renderRelH();buildDF();
   setTimeout(hideSplash,1800);
   document.getElementById('splash').addEventListener('click',hideSplash);

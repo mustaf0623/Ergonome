@@ -1,7 +1,7 @@
 {
   "name": "Ergonome — Calculateur Woyofal",
   "short_name": "Ergonome",
-  "description": "Calculateur Woyofal Senelec v7.4. Relevés compteur, profil calibré, durée personnalisée et stats inférentielles.",
+  "description": "Calculateur Woyofal Senelec v7.5. Relevés compteur, profil calibré, durée personnalisée et stats inférentielles.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
