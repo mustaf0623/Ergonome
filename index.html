@@ -1789,4 +1789,33 @@ function _runPlanifier(cj,jr,hasSolde,solde){
   document.getElementById('pl_ct').innerHTML=h;
   document.getElementById('pl_res').classList.add('show');
 }
+/* ── SPLASH ── */
+function hideSplash(){
+  const s=document.getElementById('splash');
+  if(s){s.classList.add('hide');setTimeout(()=>{s.style.display='none';},650);}
+}
 
+/* ── SERVICE WORKER ── */
+if('serviceWorker'in navigator)
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+/* ── INIT ── */
+async function init(){
+  injectLogos();
+  try{await openDB();}catch(e){console.warn('IndexedDB:',e);}
+  await loadState();
+  // Dates par défaut
+  try{document.getElementById('p2d').value=todayStr();}catch(e){}
+  try{document.getElementById('rel_date').value=todayStr();}catch(e){}
+  // Rendu initial
+  renderCptBar();
+  buildMT();refreshS();refreshProfil();renderRelH();
+  refreshPSrc();buildDF();renderDT();
+  // Splash
+  setTimeout(hideSplash,1800);
+  try{document.getElementById('splash').addEventListener('click',hideSplash);}catch(e){}
+}
+init();
+</script>
+</body>
+</html>
