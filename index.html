@@ -1122,7 +1122,7 @@ function getProfil(){
   const stable=n>=8&&sigma<0.3;
   // Messages contextuels
   let msg='';
-  if(n<2)msg=`📊 ${RELEVES.length} relevé(s) enregistré(s). Fais un 2ème relevé la semaine prochaine pour démarrer la calibration !`;
+  if(n<1)msg=`📊 ${RELEVES.length} relevé enregistré ✅. Fais un 2ème relevé lundi prochain — la calibration démarrera !`;
   else if(n<6)msg=`📈 ${6-n} relevé(s) de plus pour atteindre une précision acceptable.`;
   else if(n<10&&!stable)msg=`🎯 Bon début ! ${10-n} relevés supplémentaires affineront encore la précision.`;
   else if(stable)msg=`✅ Profil calibré — relevés mensuels suffisants désormais.`;
@@ -1236,7 +1236,7 @@ function refreshProfil(){
   document.getElementById('cal_msg').textContent=p.msg;
   document.getElementById('cal_taux').textContent=p.moyenne>0?fD(p.moyenne)+'':'—';
   document.getElementById('cal_sigma').textContent=p.n>1?fD(p.sigma,2):'—';
-  document.getElementById('cal_n').textContent=p.n+' / '+(p.n<10?10:p.n);
+  document.getElementById('cal_n').textContent=RELEVES.length+' / '+(RELEVES.length<9?9:RELEVES.length);
   // Badge statut
   const bdg=document.getElementById('cal_status_bdg');
   if(p.stable)bdg.innerHTML='<span class="bdg b-t1">✅ Calibré</span>';
@@ -1482,7 +1482,20 @@ function toggleSolde(p){document.getElementById(p+'_sg').style.display=document.
 function getSuiviData(){
   const mois=currMois(),items=DATA.filter(r=>r.date.startsWith(mois));
   const totK=items.reduce((s,r)=>s+r.kwh,0),je=joursEcoules(mois),nb=items.length;
-  return{totK,je,cjAuto:je>0?totK/je:0,nb,hasData:nb>0};
+  // Taux journalier : priorité profil inférentiel calibré
+  // Jamais kWh_rechargés/jours (achat unique ≠ consommation journalière)
+  const p=getProfil();
+  let tauxJour=null,tauxSrc='';
+  if(p.fiable&&p.moyenne>0){
+    tauxJour=p.moyenne;
+    tauxSrc='profil';  // x̄ inférentiel — le plus fiable
+  } else if(RELEVES.length>=2){
+    // Taux calculé depuis les relevés même si profil pas encore fiable
+    const taux=getTauxJournaliers();
+    if(taux.length>0){tauxJour=taux[taux.length-1].taux;tauxSrc='relevé';}
+  }
+  // Aucun relevé → pas de taux affiché (on n'invente pas de chiffre)
+  return{totK,je,tauxJour,tauxSrc,nb,hasData:nb>0};
 }
 
 function refreshPSrc(){
@@ -1492,17 +1505,36 @@ function refreshPSrc(){
   if(!d.hasData)return;
   document.getElementById('sl_k').textContent=fD(d.totK);
   document.getElementById('sl_j').textContent=d.je;
-  document.getElementById('sl_c').textContent=fD(d.cjAuto);
+  // Affichage taux journalier — honnête selon source
+  const slC=document.getElementById('sl_c');
+  if(d.tauxJour){
+    slC.textContent=fD(d.tauxJour);
+    slC.title=d.tauxSrc==='profil'?'Basé sur profil calibré (x̄)':d.tauxSrc==='relevé'?'Calculé depuis tes relevés':'';
+  } else {
+    slC.textContent='—';
+    slC.title='Fais un 2ème relevé compteur pour calculer ton taux réel';
+  }
+  // Pré-remplir le planificateur avec le taux fiable uniquement
   const ci=document.getElementById('pl_cj');
-  if(!ci.value&&d.cjAuto>0)ci.value=d.cjAuto.toFixed(1);
+  if(!ci.value&&d.tauxJour>0)ci.value=d.tauxJour.toFixed(1);
+  // Message de fiabilité corrélé à la source
   const h=document.getElementById('pl_hint');
-  if(d.nb>=3){h.innerHTML='✅ Basé sur '+d.nb+' recharges — fiable. Ajuste si ce mois est atypique.';h.style.color='var(--grn)';}
-  else{h.innerHTML='⚠️ '+d.nb+' recharge(s) seulement — estimation approximative.';h.style.color='var(--acc)';}
+  const p=getProfil();
+  if(d.tauxSrc==='profil'){
+    h.innerHTML=`✅ Taux x̄=${fD(p.moyenne)} kWh/j — profil calibré à ${p.pct}%. Précision maximale.`;
+    h.style.color='var(--grn)';
+  } else if(d.tauxSrc==='relevé'){
+    h.innerHTML=`📊 Taux estimé depuis tes relevés — continue les relevés hebdo pour affiner.`;
+    h.style.color='var(--blu)';
+  } else {
+    h.innerHTML=`⚠️ Taux journalier non disponible — fais un 2ème relevé compteur dans le Suivi pour le calculer.`;
+    h.style.color='var(--acc)';
+  }
 }
 
 function getKwC(d,hasSolde,solde){
   if(hasSolde&&solde>=0)return{val:Math.max(0,d.totK-solde),src:'exact (solde compteur)',fi:'h'};
-  return{val:d.cjAuto*d.je,src:'estimé',fi:d.nb>=3?'m':'l'};
+  const tauxEst=d.tauxJour||3;return{val:tauxEst*d.je,src:d.tauxJour?(d.tauxSrc==='profil'?'profil calibré':'relevés'):'estimation ~3kWh/j',fi:d.tauxSrc==='profil'?'h':d.tauxJour?'m':'l'};
 }
 
 // Suggestion meilleur moment
@@ -1548,7 +1580,7 @@ function simuler(){
   // Fourchette
   const mMax=seuil<9999&&kC<seuil?maxFcfa(kC,seuil,false):null;
   const mMid=mMax?Math.floor(mMax*0.9):null;
-  const kMinCible=d.cjAuto>0?Math.min(d.cjAuto*3,seuil<9999?Math.max(0,seuil-kC):d.cjAuto*3):0;
+  const _tj=d.tauxJour||3;const kMinCible=Math.min(_tj*3,seuil<9999?Math.max(0,seuil-kC):_tj*3);
   const mMin=kMinCible>0?Math.ceil(calcFcfa(kMinCible,kC,false).montant):null;
   let h='';
   // Verdict
@@ -1678,11 +1710,79 @@ function renderDT(){
   document.getElementById('gs_m').textContent=ms.size;
   document.getElementById('gs_moy').textContent=ms.size?fD(tKa/ms.size):0;
   document.getElementById('gs_c').textContent=tKa?Math.round(tFa/tKa):0;
-  const cM=tKa?tFa/tKa:0,cI=CFG.t1*(1+CFG.taxe/100),gs=document.getElementById('gs_sugg');
-  if(tKa>0){
-    if(cM>cI+5){const ec=(cM-cI)*tKa;gs.innerHTML=`<div class="sugg" style="margin-top:12px"><div class="sugg-t">💡 Suggestion</div><p>Coût moyen <strong>${Math.round(cM)} F/kWh</strong> vs <strong>${Math.round(cI)} F/kWh</strong> optimal T1. Économie potentielle : ~<strong>${fmt(ec)} FCFA</strong>.</p></div>`;}
-    else gs.innerHTML=`<div class="al al-ok" style="margin-top:12px"><span class="al-ic">✅</span><span>Excellent ! Coût moyen <strong>${Math.round(cM)} F/kWh</strong> — proche du tarif T1 optimal.</span></div>`;
-  }else gs.innerHTML='';
+  const gs=document.getElementById('gs_sugg');
+  if(tKa>0&&tFa>0){
+    // ── Données de base recharges ──
+    const cM=tFa/tKa; // coût moyen réel FCFA/kWh
+    const nbMois=ms.size||1;
+    const coutT1Reel=(tKa*CFG.t1*(1+CFG.taxe/100)+nbMois*CFG.rev)/tKa;
+    const coutT2Hyp=CFG.t2*(1+CFG.taxe/100);
+    const ecoVsT2=Math.max(0,Math.round((coutT2Hyp-cM)*tKa));
+    const ecoPot=Math.max(0,Math.round((cM-coutT1Reel)*tKa));
+    const nbT1=DATA.filter(r=>r.premiere).length;
+    const pctT1=DATA.length?Math.round(nbT1/DATA.length*100):0;
+
+    // ── Intégration profil statistique inférentiel ──
+    const p=getProfil();
+    const nRel=RELEVES.length;
+
+    // Coût journalier réel = taux journalier × coût moyen
+    const coutJour=p.fiable?parseFloat((p.moyenne*cM).toFixed(0)):null;
+    const coutJourT1=p.fiable?parseFloat((p.moyenne*coutT1Reel).toFixed(0)):null;
+    const coutJourEco=coutJour&&coutJourT1?Math.max(0,coutJour-coutJourT1):null;
+
+    // Projection annuelle économie potentielle avec IC
+    const ecoAnnuelle=ecoPot>0?Math.round(ecoPot/nbMois*12):0;
+    const ecoAnnuelleMin=p.fiable&&p.ic95>0?Math.max(0,Math.round(ecoAnnuelle*(1-p.ic95/p.moyenne))):null;
+    const ecoAnnuelleMax=p.fiable&&p.ic95>0?Math.round(ecoAnnuelle*(1+p.ic95/p.moyenne)):null;
+
+    // ── Niveau de fiabilité selon relevés ──
+    // niv 0 : aucun relevé → suggestion recharges seules + invitation
+    // niv 1 : 1-2 relevés → estimation précoce, IC large
+    // niv 2 : 3-8 relevés → corrélation partielle
+    // niv 3 : 9+ relevés  → corrélation complète avec IC précise
+    const niv=nRel===0?0:nRel<=2?1:nRel<=8?2:3;
+
+    // Badge fiabilité
+    const badge={
+      0:`<span style="font-size:9px;color:var(--tx3);font-weight:600;display:block;margin-top:6px">📊 Basé sur tes recharges uniquement — fais des relevés pour affiner</span>`,
+      1:`<span style="font-size:9px;color:var(--acc);font-weight:600;display:block;margin-top:6px">📊 Estimation précoce (${nRel} relevé(s)) — précision faible, continue les relevés hebdo</span>`,
+      2:`<span style="font-size:9px;color:var(--blu);font-weight:600;display:block;margin-top:6px">📊 Calibration en cours — ${p.pct}% de fiabilité · σ=${fD(p.sigma,2)} kWh/j</span>`,
+      3:`<span style="font-size:9px;color:var(--grn);font-weight:600;display:block;margin-top:6px">🎯 Profil calibré à ${p.pct}% · x̄=${fD(p.moyenne)} kWh/j · IC±${fD(p.ic95,2)}</span>`
+    }[niv];
+
+    let html='';
+
+    if(ecoPot>200){
+      // Sous-optimal — suggestion d'amélioration
+      const ligneJour=coutJour?`<br>À ton rythme (~<strong>${fD(p.moyenne)} kWh/jour</strong>), tu dépenses <strong>${fmt(coutJour)} FCFA/jour</strong> vs <strong>${fmt(coutJourT1)} F/jour</strong> en T1 optimal.`:'';
+      const ligneAnnuelle=ecoAnnuelle>0?(ecoAnnuelleMin&&ecoAnnuelleMax?
+        `<br>Projection annuelle : entre <strong>${fmt(ecoAnnuelleMin)}</strong> et <strong>${fmt(ecoAnnuelleMax)} FCFA</strong> d'économies possibles.`:
+        `<br>Projection annuelle : ~<strong>${fmt(ecoAnnuelle)} FCFA</strong> d'économies possibles.`):'';
+      html=`<div class="sugg" style="margin-top:12px">
+        <div class="sugg-t">💡 Suggestion</div>
+        <p>Coût moyen <strong>${Math.round(cM)} F/kWh</strong> vs <strong>${Math.round(coutT1Reel)} F/kWh</strong> optimal T1 (redevance incluse).
+        En rechargeant systématiquement en début de mois, économie potentielle : ~<strong>${fmt(ecoPot)} FCFA</strong> sur la période.${ligneJour}${ligneAnnuelle}</p>
+        ${badge}
+      </div>`;
+    } else if(ecoVsT2>0||pctT1>=80){
+      // Bien positionné — valoriser + projeter si profil dispo
+      const ligneJour=coutJour?`À ton rythme (~<strong>${fD(p.moyenne)} kWh/j</strong>), tu dépenses <strong>${fmt(coutJour)} FCFA/jour</strong> — cohérent avec ton historique. `:'';
+      const ligneEco=ecoVsT2>0?`Tu as évité ~<strong>${fmt(ecoVsT2)} FCFA</strong> de surcoût T2 sur la période. `:'';
+      html=`<div class="al al-ok" style="margin-top:12px">
+        <span class="al-ic">✅</span>
+        <span>${pctT1}% de tes recharges en T1 — excellent positionnement. ${ligneEco}${ligneJour}Continue ainsi !</span>
+      </div>${badge}`;
+    } else {
+      // Neutre — données insuffisantes pour trancher
+      const ligneJour=coutJour?` À ce rythme : <strong>${fmt(coutJour)} FCFA/jour</strong>.`:'';
+      html=`<div class="al al-ok" style="margin-top:12px">
+        <span class="al-ic">📊</span>
+        <span>Coût moyen <strong>${Math.round(cM)} F/kWh</strong> sur ${nbMois} mois.${ligneJour}</span>
+      </div>${badge}`;
+    }
+    gs.innerHTML=html;
+  } else gs.innerHTML='';
 }
 
 /* ── SPLASH ── */
@@ -1737,13 +1837,66 @@ function getMontantOptimal(){
   return{montant:r.montant,kwh:parseFloat(kCible.toFixed(1)),dLeft,kDejaRech,taux,kT1restant,confiance,isPremiere,mois};
 }
 
-// Calcule économie potentielle vs habitude de l'utilisateur
-function getEconomiePotentielle(montantOptimal){
-  if(!montantOptimal)return 0;
-  // Moyenne des recharges passées
-  if(DATA.length<2)return 0;
-  const moyRecharge=DATA.reduce((s,r)=>s+r.montant,0)/DATA.length;
-  return Math.max(0,Math.round(moyRecharge-montantOptimal.montant));
+// Calcule économie potentielle vs habitude réelle inférée
+function getEconomiePotentielle(opt){
+  if(!opt||!opt.kwh||opt.kwh<=0)return 0;
+  const p=getProfil();
+  const hist=getEconomiesHistorique();
+
+  // ── Source 1 : habitude réelle mesurée sur l'historique ──
+  // Coût mensuel moyen réel de l'utilisateur (ce qu'il dépense chaque mois)
+  let coutMoisHabituel=null;
+  if(hist.length>=2){
+    coutMoisHabituel=hist.reduce((s,h)=>s+h.totF,0)/hist.length;
+  }
+
+  // ── Source 2 : coût journalier inféré via profil ──
+  // Si profil calibré : coût/jour habituel = x̄ × coût_moyen_kWh_historique
+  let ecoInferee=null;
+  if(p.fiable&&coutMoisHabituel){
+    const allK=DATA.reduce((s,r)=>s+r.kwh,0);
+    const allF=DATA.reduce((s,r)=>s+r.montant,0);
+    const coutKwhHabituel=allK>0?allF/allK:null; // FCFA/kWh réel moyen
+    if(coutKwhHabituel){
+      // Coût journalier habituel inféré
+      const coutJourHabit=p.moyenne*coutKwhHabituel;
+      // Coût journalier optimal T1 réel
+      const nbMoisHist=hist.length||1;
+      const allKHist=hist.reduce((s,h)=>s+h.totK,0);
+      const coutT1Reel=(allKHist*CFG.t1*(1+CFG.taxe/100)+nbMoisHist*CFG.rev)/Math.max(1,allKHist);
+      const coutJourOptimal=p.moyenne*coutT1Reel;
+      // Économie sur les jours restants du mois
+      const ecoJour=Math.max(0,coutJourHabit-coutJourOptimal);
+      ecoInferee=Math.round(ecoJour*opt.dLeft);
+      // Fourchette IC : marge = (ic95/x̄) × économie
+      const marge=p.ic95>0?Math.round(ecoInferee*(p.ic95/p.moyenne)):0;
+      opt._ecoMin=Math.max(0,ecoInferee-marge);
+      opt._ecoMax=ecoInferee+marge;
+      opt._ecoBase='inféré'; // marqueur pour l'affichage
+    }
+  }
+
+  // ── Source 3 : habitude mensuelle brute (si pas de profil calibré) ──
+  if(!ecoInferee&&coutMoisHabituel){
+    // Proportion du mois restant × (coût habituel - coût optimal recommandé)
+    const now=new Date();
+    const dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    const propRestante=opt.dLeft/dInM;
+    const coutHabitProp=Math.round(coutMoisHabituel*propRestante);
+    ecoInferee=Math.max(0,coutHabitProp-opt.montant);
+    opt._ecoBase='historique';
+    opt._ecoMin=null;opt._ecoMax=null;
+  }
+
+  // ── Fallback : comparaison T2 plafonnée (aucune donnée suffisante) ──
+  if(!ecoInferee){
+    const coutT2=Math.ceil(opt.kwh*CFG.t2*(1+CFG.taxe/100));
+    ecoInferee=Math.min(Math.max(0,coutT2-opt.montant),Math.round(opt.montant*0.20));
+    opt._ecoBase='T2';
+    opt._ecoMin=null;opt._ecoMax=null;
+  }
+
+  return ecoInferee;
 }
 
 // Détecte urgence : dans combien de jours le solde estimé s'épuise
@@ -1906,7 +2059,12 @@ function renderEco(){
       <div class="action-desc">Il reste <strong>${opt.dLeft} jours</strong> dans le mois. Taux estimé : ~<strong>${fD(opt.taux)} kWh/jour</strong>${joursStr}. Pour rester en T1 :</div>
       <div class="action-montant">${fmt(opt.montant)} <span style="font-size:14px;color:var(--tx2)">FCFA</span></div>
       <div style="font-size:11px;color:var(--tx2);margin-top:3px">≈ ${fD(opt.kwh)} kWh · reste en T1 ✅</div>
-      ${eco>0?`<div class="action-eco">💰 Économie estimée : ~${fmt(eco)} FCFA vs ton habitude</div>`:''}
+      ${eco>0?(()=>{
+        const src=opt._ecoBase;
+        const ic=opt._ecoMin!=null&&opt._ecoMax!=null?` (fourchette : ${fmt(opt._ecoMin)}–${fmt(opt._ecoMax)} F)`:'';
+        const lbl=src==='inféré'?'vs ton habitude réelle (profil calibré)':src==='historique'?'vs ton habitude mensuelle':'vs recharge en T2';
+        return`<div class="action-eco">💰 Économie estimée : ~${fmt(eco)} FCFA ${lbl}${ic}</div>`;
+      })():''}
       <div class="action-date">${confStr}</div>
     </div>`;
   } else {
