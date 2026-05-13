@@ -1706,10 +1706,52 @@ function renderDT(){
   document.getElementById('dt_f').textContent=fmt(tF)+' FCFA';
   document.getElementById('dt_k').textContent=fD(tK)+' kWh';
   document.getElementById('dt_n').textContent=items.length+' recharges';
-  const ms=new Set(DATA.map(r=>r.date.substring(0,7))),tKa=DATA.reduce((s,r)=>s+r.kwh,0),tFa=DATA.reduce((s,r)=>s+r.montant,0);
+  const ms=new Set(DATA.map(r=>r.date.substring(0,7)));
+  const tKa=DATA.reduce((s,r)=>s+r.kwh,0);
+  const tFa=DATA.reduce((s,r)=>s+r.montant,0);
+  const p=getProfil();
+
+  // ── kWh/mois moyen ──
+  // Priorité 1 : profil calibré → x̄ × 30 jours (consommation réelle estimée)
+  // Priorité 2 : taux depuis relevés bruts → même calcul
+  // Priorité 3 : kWh rechargés / mois (achat, pas consommation — labelisé honnêtement)
+  let kwhMoisAff, kwhMoisLabel, kwhMoisColor='var(--acc)';
+  if(p.fiable&&p.moyenne>0){
+    kwhMoisAff=fD(p.moyenne*30);
+    kwhMoisLabel='kWh/mois consommés (profil)';
+    kwhMoisColor='var(--grn)';
+  } else if(RELEVES.length>=2){
+    const taux=getTauxJournaliers();
+    if(taux.length>0){
+      const moyTaux=taux.reduce((s,t)=>s+t.taux,0)/taux.length;
+      kwhMoisAff=fD(moyTaux*30);
+      kwhMoisLabel='kWh/mois consommés (relevés)';
+      kwhMoisColor='var(--blu)';
+    } else {
+      kwhMoisAff=ms.size?fD(tKa/ms.size):0;
+      kwhMoisLabel='kWh/mois rechargés';
+      kwhMoisColor='var(--acc)';
+    }
+  } else {
+    kwhMoisAff=ms.size?fD(tKa/ms.size):0;
+    kwhMoisLabel='kWh/mois rechargés*';
+    kwhMoisColor='var(--acc)';
+  }
+
+  // ── FCFA/kWh moyen ──
+  // Coût réel moyen payé — chiffre honnête basé sur les recharges
+  // (inclut redevance, taxe, position T1/T2 réelle)
+  const fcfaKwh=tKa?Math.round(tFa/tKa):0;
+
   document.getElementById('gs_m').textContent=ms.size;
-  document.getElementById('gs_moy').textContent=ms.size?fD(tKa/ms.size):0;
-  document.getElementById('gs_c').textContent=tKa?Math.round(tFa/tKa):0;
+  const gsMoy=document.getElementById('gs_moy');
+  gsMoy.textContent=kwhMoisAff;
+  gsMoy.style.color=kwhMoisColor;
+  gsMoy.title=kwhMoisLabel;
+  // Mettre à jour le label sous la stat
+  const gsMoyL=gsMoy.nextElementSibling;
+  if(gsMoyL)gsMoyL.textContent=kwhMoisLabel.length>20?'kWh/mois moy.':kwhMoisLabel;
+  document.getElementById('gs_c').textContent=fcfaKwh;
   const gs=document.getElementById('gs_sugg');
   if(tKa>0&&tFa>0){
     // ── Données de base recharges ──
