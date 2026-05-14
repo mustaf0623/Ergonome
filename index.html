@@ -839,20 +839,37 @@ function openDB(){
   return Promise.race([
     new Promise((res,rej)=>{
       try{
+        if(!window.indexedDB){
+          rej(new Error('IndexedDB not available in this browser'));
+          return;
+        }
         const req=indexedDB.open(DBN,DBV);
         req.onupgradeneeded=e=>{
-          const d=e.target.result;
-          if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
-          if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
-          if(!d.objectStoreNames.contains(STL))d.createObjectStore(STL,{keyPath:'id',autoIncrement:true});
-          if(!d.objectStoreNames.contains(STP))d.createObjectStore(STP,{keyPath:'id'});
+          try{
+            const d=e.target.result;
+            if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
+            if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
+            if(!d.objectStoreNames.contains(STL))d.createObjectStore(STL,{keyPath:'id',autoIncrement:true});
+            if(!d.objectStoreNames.contains(STP))d.createObjectStore(STP,{keyPath:'id'});
+            console.log('✓ IndexedDB schema created');
+          }catch(e){rej(e);}
         };
-        req.onsuccess=e=>{db=e.target.result;res(db);};
-        req.onerror=()=>rej(new Error('IndexedDB error: '+req.error));
-        req.onblocked=()=>console.warn('IndexedDB blocked');
-      }catch(e){rej(e);}
+        req.onsuccess=e=>{
+          db=e.target.result;
+          console.log('✓ IndexedDB opened');
+          res(db);
+        };
+        req.onerror=()=>{
+          rej(new Error('IndexedDB open error: '+(req.error?.message||req.error||'unknown')));
+        };
+        req.onblocked=()=>{
+          console.warn('⚠ IndexedDB blocked - another tab may have it open');
+        };
+      }catch(e){
+        rej(new Error('IndexedDB exception: '+e.message));
+      }
     }),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('IndexedDB timeout after 6s')),6000))
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('IndexedDB timeout (6s)')),6000))
   ]);
 }
 const tx=(s,m='readonly')=>{if(!db)throw new Error('DB not initialized');return db.transaction(s,m).objectStore(s);};
@@ -1369,8 +1386,8 @@ window.addEventListener('appinstalled',()=>{dismissBanner();dPr=null;});
 /* -- UTILS -- */
 function san(s){return String(s).replace(/[<>"'&]/g,c=>({"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","&":"&amp;"}[c]));}
 function sf(v,d){const n=parseFloat(v);return isNaN(n)?d:n;}
-function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
-function fD(n,d=1){return parseFloat(n.toFixed(d)).toLocaleString('fr-FR');}
+function fmt(n){if(typeof n!=='number'||isNaN(n))return '0';return Math.round(n).toLocaleString('fr-FR');}
+function fD(n,d=1){if(typeof n!=='number'||isNaN(n))return '0';try{return parseFloat(n.toFixed(d)).toLocaleString('fr-FR');}catch(e){console.warn('fD error:',e.message);return '0';}}
 let _tt;
 function toast(msg){
   try{
@@ -1607,7 +1624,8 @@ async function addR(){
   const premiere=DATA.filter(r=>r.date.startsWith(mois)).length===0;
   const deja=DATA.filter(r=>r.date.startsWith(mois)&&r.date<d).reduce((s,r)=>s+r.kwh,0);
   const r=calcKwh(m,deja,premiere);
-  const newR={date:d,montant:m,kwh:parseFloat(r.kwh.toFixed(2)),premiere,cptId:CPT_ACT.id};
+  const rKwh=typeof r.kwh==='number'?r.kwh:parseFloat(r.kwh);
+  const newR={date:d,montant:m,kwh:parseFloat((isNaN(rKwh)?0:rKwh).toFixed(2)),premiere,cptId:CPT_ACT.id};
   const id=await dbPut(STR,newR);newR.id=id;
   DATA.push(newR);DATA.sort((a,b)=>a.date.localeCompare(b.date));
   VM=mois;buildMT();refreshS();
@@ -1752,7 +1770,7 @@ function togglePlanManuel(forceManuel){
     autoB.style.display='none';manB.style.display='block';banner.style.display='block';
     const ci=document.getElementById('pl_cj');
     const p=getProfil();const d=getSuiviData();
-    if(!ci.value&&d.tauxJour)ci.value=d.tauxJour.toFixed(1);
+    if(!ci.value&&d.tauxJour){ci.value=(typeof d.tauxJour==='number'?d.tauxJour:parseFloat(d.tauxJour)||0).toFixed(1);}
     const jrEl=document.getElementById('pl_jr');
     if(!jrEl.value)jrEl.value=joursRestantsMois();
   } else {
@@ -1771,12 +1789,12 @@ function getKwC(d,hasSolde,solde){
   // Cas 2 - Profil calibre : taux x_moy × jours ecoules = consommation estimee fiable
   const p=getProfil();
   if(p.fiable&&p.moyenne>0){
-    const consommes=parseFloat((p.moyenne*d.je).toFixed(2));
+    const consommes=p&&p.moyenne?parseFloat((p.moyenne*d.je).toFixed(2)):0;
     return{val:consommes,src:`profil calibre (${fD(p.moyenne)} kWh/j × ${d.je}j)`,fi:'h'};
   }
   // Cas 3 - Releves disponibles mais profil pas encore fiable
   if(d.tauxJour&&d.tauxSrc==='releve'){
-    const consommes=parseFloat((d.tauxJour*d.je).toFixed(2));
+    const consommes=d&&d.tauxJour?parseFloat((d.tauxJour*d.je).toFixed(2)):0;
     return{val:consommes,src:`releves (${fD(d.tauxJour)} kWh/j × ${d.je}j)`,fi:'m'};
   }
   // Cas 4 - Aucune donnee fiable : kWh recharges (surestime, signale)
@@ -2052,8 +2070,8 @@ function renderDT(){
     const nRel=RELEVES.length;
 
     // Coût journalier réel = taux journalier × coût moyen
-    const coutJour=p.fiable?parseFloat((p.moyenne*cM).toFixed(0)):null;
-    const coutJourT1=p.fiable?parseFloat((p.moyenne*coutT1Reel).toFixed(0)):null;
+    const coutJour=p&&p.fiable&&p.moyenne?parseFloat((p.moyenne*cM).toFixed(0)):null;
+    const coutJourT1=p&&p.fiable&&p.moyenne?parseFloat((p.moyenne*coutT1Reel).toFixed(0)):null;
     const coutJourEco=coutJour&&coutJourT1?Math.max(0,coutJour-coutJourT1):null;
 
     // Projection annuelle économie potentielle avec IC
@@ -2286,27 +2304,37 @@ if('serviceWorker'in navigator){
 /* -- INIT -- */
 async function init(){
   try{
+    console.log('🚀 Starting application...');
+    
     if(!document.getElementById('splash')){
       console.error('Splash element missing');
       return;
     }
     
+    console.log('✓ DOM ready');
     injectLogos();
     
+    console.log('⏳ Initializing IndexedDB...');
     try{
       await openDB();
       console.log('✓ IndexedDB initialized');
     }catch(e){
-      throw new Error('IndexedDB initialization failed: '+e.message);
+      const errMsg='IndexedDB initialization failed: '+e.message;
+      console.error(errMsg);
+      throw new Error(errMsg);
     }
     
+    console.log('⏳ Loading application state...');
     try{
       await loadState();
-      console.log('✓ Application state loaded');
+      console.log('✓ Application state loaded ('+COMPTEURS.length+' compteurs)');
     }catch(e){
-      throw new Error('Failed to load application state: '+e.message);
+      const errMsg='Failed to load application state: '+e.message;
+      console.error(errMsg);
+      throw new Error(errMsg);
     }
     
+    console.log('⏳ Setting up UI...');
     try{
       const p2d=document.getElementById('p2d');
       if(p2d)p2d.value=todayStr();
@@ -2318,6 +2346,7 @@ async function init(){
     }catch(e){console.warn('Could not set rel_date');}
     
     try{
+      console.log('⏳ Rendering UI...');
       renderCptBar();
       buildMT();
       refreshS();
@@ -2328,14 +2357,17 @@ async function init(){
       renderDT();
       console.log('✓ UI rendered successfully');
     }catch(e){
-      throw new Error('UI rendering failed: '+e.message);
+      const errMsg='UI rendering failed: '+e.message;
+      console.error(errMsg);
+      throw new Error(errMsg);
     }
     
     console.log('✓ Application ready');
     setTimeout(hideSplash,4000);
     
   }catch(e){
-    console.error('Critical init error:',e.message);
+    console.error('❌ Critical init error:',e.message);
+    console.error('Stack:',e.stack);
     showError(e.message);
   }
   
@@ -2351,11 +2383,28 @@ function showError(msg){
     if(!s)return;
     s.classList.remove('hide');
     s.style.display='flex';
-    s.innerHTML=`<div style="text-align:center;color:#f87171;padding:20px;max-width:280px;font-family:var(--fu)">
-      <div style="font-size:40px;margin-bottom:10px">⚠️</div>
-      <div style="font-size:14px;font-weight:bold;color:var(--txt)">Erreur de démarrage</div>
-      <div style="font-size:12px;color:#aaa;margin-top:10px;line-height:1.6;word-break:break-word">${msg}</div>
-      <div style="font-size:11px;color:#666;margin-top:15px">Essayez:<br/>1. Vider cache<br/>2. Recharger (Ctrl+F5 ou Cmd+Shift+R)</div>
+    
+    let troubleshoot='';
+    if(msg.includes('IndexedDB')){
+      troubleshoot=`<div style="font-size:11px;color:#4ade80;margin-top:12px;padding:10px;background:rgba(34,197,94,.1);border-radius:8px">
+        <strong>💡 Suggestions :</strong><br/>
+        • <strong>iPhone/Safari:</strong> Paramètres → Safari → Confidentialité<br/>&nbsp;&nbsp; Réduire le suivi inter-sites (OFF)<br/>
+        • <strong>Edge:</strong> Paramètres → Confidentialité<br/>&nbsp;&nbsp; Désactiver "Prévention du suivi"<br/>
+        • Tous: Vider cache (Ctrl+Shift+Del ou Cmd+Shift+Backspace)<br/>
+        • Tous: Recharger (Ctrl+F5 ou Cmd+Shift+R)
+      </div>`;
+    }else{
+      troubleshoot=`<div style="font-size:11px;color:#4ade80;margin-top:12px">
+        Essayez: Vider cache → Recharger (Ctrl+F5 ou Cmd+Shift+R)
+      </div>`;
+    }
+    
+    s.innerHTML=`<div style="text-align:left;color:#f87171;padding:20px;max-width:320px;font-family:var(--fu);max-height:90vh;overflow-y:auto">
+      <div style="font-size:40px;margin-bottom:10px;text-align:center">⚠️</div>
+      <div style="font-size:14px;font-weight:bold;color:var(--txt);text-align:center;margin-bottom:10px">Erreur de démarrage</div>
+      <div style="font-size:12px;color:#ccc;margin-top:10px;line-height:1.6;word-break:break-word;padding:10px;background:rgba(0,0,0,.3);border-radius:8px;font-family:monospace">${msg}</div>
+      ${troubleshoot}
+      <div style="font-size:10px;color:#666;margin-top:15px;text-align:center">ID: ${Date.now()}</div>
     `;
   }catch(e){
     console.error('Error display failed:',e);
