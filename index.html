@@ -793,7 +793,7 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
 </div>
 
 <script>
-/* ── LOGO SVG injecté en JS — universel sur tous navigateurs mobiles ── */
+/* -- LOGO SVG injecte en JS - universel sur tous navigateurs mobiles -- */
 function logoSVG(id){
   const suffix = id.replace(/[^a-zA-Z0-9]/g,'');
   return `<defs>
@@ -832,7 +832,7 @@ function injectLogos(){
   });
 }
 
-/* ══ INDEXEDDB ══ */
+/* == INDEXEDDB == */
 const DBN='ergonome_v75',DBV=1,STR='recharges',STC='config',STL='releves',STP='compteurs';
 let db=null;
 function openDB(){
@@ -856,10 +856,10 @@ const dbDel=(s,k)=>new Promise((r,j)=>{const q=tx(s,'readwrite').delete(k);q.ons
 const dbAll=(s)=>new Promise((r,j)=>{const q=tx(s).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error);});
 const dbClear=(s)=>new Promise((r,j)=>{const q=tx(s,'readwrite').clear();q.onsuccess=()=>r();q.onerror=()=>j(q.error);});
 
-/* ── STATE ── */
+/* -- STATE -- */
 let CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
 let DATA=[];       // recharges du compteur actif
-let RELEVES=[];    // relevés du compteur actif
+let RELEVES=[];    // releves du compteur actif
 let COMPTEURS=[];  // liste de tous les compteurs
 let CPT_ACT=null;  // compteur actuellement actif
 let OBJ='t1',VM=currMois();
@@ -889,12 +889,12 @@ async function switchCpt(id){
   VM=currMois();
   renderCptBar();
   buildMT();refreshS();refreshProfil();renderRelH();refreshPSrc();renderEco();buildDF();renderDT();
-  toast(c.icone+' '+c.nom+' — compteur actif');
+  toast(c.icone+' '+c.nom+'  -  compteur actif');
 }
 
 async function saveCFG(){try{await dbPut(STC,{key:'main',value:CFG});}catch(e){}}
 
-/* ── CONFIRM MODAL — remplace window.confirm() bloqué dans iframes ── */
+/* -- CONFIRM MODAL - remplace window.confirm() bloque dans iframes -- */
 let _cmCb=null;
 function askConfirm(icon,title,sub,okLbl,onOk){
   document.getElementById('cm-ic').textContent=icon;
@@ -909,10 +909,10 @@ function cmAns(yes){
   if(yes&&_cmCb){const cb=_cmCb;_cmCb=null;cb();}else _cmCb=null;
 }
 
-/* ── DELETE ALL ── */
+/* -- DELETE ALL -- */
 function delAll(){
-  askConfirm('🗑️','Effacer toutes les données ?',
-    'Tous les compteurs, recharges, relevés et paramètres seront supprimés. Action irréversible.',
+  askConfirm('🗑️','Effacer toutes les donnees ?',
+    'Tous les compteurs, recharges, releves et parametres seront supprimes. Action irreversible.',
     'Effacer', async()=>{
       try{await dbClear(STR);await dbClear(STC);await dbClear(STL);await dbClear(STP);}catch(e){}
       try{localStorage.clear();sessionStorage.clear();}catch(e){}
@@ -920,22 +920,22 @@ function delAll(){
       try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.unregister()));}}catch(e){}
       CFG={rev:429,t1:82,t2:136.49,taxe:2.5};DATA=[];RELEVES=[];COMPTEURS=[];CPT_ACT=null;OBJ='t1';VM=currMois();
       closeSheet('sh_set');
-      toast('✅ Données effacées — rechargement…');
+      toast('✅ Donnees effacees  -  rechargement...');
       setTimeout(()=>{try{window.location.href=window.location.pathname+'?r='+Date.now();}catch(e){location.reload();}},1200);
     }
   );
 }
 
-/* ══════════════════════════════════════════
-   MOTEUR MULTI-COMPTEURS — v7.5
-══════════════════════════════════════════ */
+/* ==========================================
+   MOTEUR MULTI-COMPTEURS - v7.5
+========================================== */
 
 const CPT_ICONS=['⚡','🏠','🏪','🏢','🏭','🏡','🏗️','💡','🌾','🌿','🔧','🎓','🏥','🛒','🍽️','💼','🏋️','🎨','🚗','🌍'];
 const CPT_COLS=['#f5a623','#22c55e','#38bdf8','#c084fc','#f87171','#fb923c','#34d399','#60a5fa','#a78bfa','#fb7185','#4ade80','#e879f9'];
 
 let _editCptId=null,_selIc=CPT_ICONS[0],_selCl=CPT_COLS[0];
 
-/* ── RENDU BARRE CHIPS HEADER ── */
+/* -- RENDU BARRE CHIPS HEADER -- */
 function renderCptBar(){
   const bar=document.getElementById('cpt_bar');
   if(!bar)return;
@@ -944,7 +944,7 @@ function renderCptBar(){
       <span class="cpt-chip-dot" style="background:${c.couleur}"></span>
       <span>${c.icone} ${san(c.nom)}</span>
     </button>`).join('')
-    +'<button class="cpt-add-btn" onclick="openCptSheet()">⚙️ Gérer</button>';
+    +'<button class="cpt-add-btn" onclick="openCptSheet()">⚙️ Gerer</button>';
 }
 
 function openCptSheet(){
@@ -953,11 +953,11 @@ function openCptSheet(){
   openSheet('sh_cpt');
 }
 
-/* ── LISTE COMPTEURS DANS LA SHEET ── */
+/* -- LISTE COMPTEURS DANS LA SHEET -- */
 async function renderCptList(){
   const wrap=document.getElementById('cpt_list');
   if(!wrap)return;
-  // Charger toutes les données pour stats
+  // Charger toutes les donnees pour stats
   let allR=[],allL=[];
   try{allR=await dbAll(STR);}catch(e){}
   try{allL=await dbAll(STL);}catch(e){}
@@ -972,8 +972,8 @@ async function renderCptList(){
       <div class="cpt-ico" style="background:${c.couleur}20;border:1.5px solid ${c.couleur}50">${c.icone}</div>
       <div class="cpt-body">
         <div class="cpt-n">${san(c.nom)}${isAct?'<span class="cpt-badge">Actif</span>':''}</div>
-        <div class="cpt-sub">${rr.length} recharge(s) · ${rl.length} relevé(s)</div>
-        <div class="cpt-stat">${totF>0?fmt(totF)+' FCFA · '+fD(totK)+' kWh':'Aucune donnée encore'}</div>
+        <div class="cpt-sub">${rr.length} recharge(s) · ${rl.length} releve(s)</div>
+        <div class="cpt-stat">${totF>0?fmt(totF)+' FCFA · '+fD(totK)+' kWh':'Aucune donnee encore'}</div>
       </div>
       <div class="cpt-btns" onclick="event.stopPropagation()">
         <button class="cpt-ibtn" title="Modifier" onclick="editCpt('${c.id}')">✏️</button>
@@ -982,13 +982,13 @@ async function renderCptList(){
     </div>`;
   }).join('');
 
-  // Vue consolidée
+  // Vue consolidee
   const conso=document.getElementById('cpt_conso');
   if(!conso)return;
   let allR2=allR;
   const totalF=allR2.reduce((s,r)=>s+r.montant,0);
   if(COMPTEURS.length<2||totalF===0){
-    conso.innerHTML='<div class="empty" style="padding:16px"><p>Crée au moins 2 compteurs avec des données pour voir la vue consolidée.</p></div>';
+    conso.innerHTML='<div class="empty" style="padding:16px"><p>Cree au moins 2 compteurs avec des donnees pour voir la vue consolidee.</p></div>';
     return;
   }
   conso.innerHTML=COMPTEURS.map(c=>{
@@ -1002,7 +1002,7 @@ async function renderCptList(){
         <div class="conso-name">${san(c.nom)}</div>
         <div class="conso-sub">${rr.length} recharge(s) · ${fD(k)} kWh · ${pct}%</div>
       </div>
-      <div class="conso-fcfa">${f>0?fmt(f)+' F':'—'}</div>
+      <div class="conso-fcfa">${f>0?fmt(f)+' F':' - '}</div>
     </div>`;
   }).join('')
   +`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:12px;margin-top:4px">
@@ -1016,9 +1016,9 @@ function selectAndClose(id){
   setTimeout(()=>closeSheet('sh_cpt'),250);
 }
 
-/* ── FORMULAIRE CRÉATION/ÉDITION ── */
+/* -- FORMULAIRE CREATION/EDITION -- */
 function buildCptForm(){
-  // Grille icônes
+  // Grille icones
   const ig=document.getElementById('cpt_icons');
   if(ig)ig.innerHTML=CPT_ICONS.map(ic=>`<button class="icon-opt${ic===_selIc?' sel':''}" onclick="selIc('${ic}')">${ic}</button>`).join('');
   // Grille couleurs
@@ -1040,21 +1040,21 @@ function selCl(cl){
 
 async function saveCpt(){
   const nom=document.getElementById('cpt_nom').value.trim();
-  if(!nom){toast('⚠️ Donne un nom à ce compteur');return;}
+  if(!nom){toast('⚠️ Donne un nom a ce compteur');return;}
   if(_editCptId){
-    // Édition
+    // Edition
     const idx=COMPTEURS.findIndex(c=>c.id===_editCptId);
     if(idx<0)return;
     COMPTEURS[idx]={...COMPTEURS[idx],nom,icone:_selIc,couleur:_selCl};
     await dbPut(STP,COMPTEURS[idx]);
     if(CPT_ACT.id===_editCptId)CPT_ACT=COMPTEURS[idx];
-    toast('✅ "'+nom+'" mis à jour');
+    toast('✅ "'+nom+'" mis a jour');
     _editCptId=null;
   } else {
     if(COMPTEURS.length>=8){toast('⚠️ Maximum 8 compteurs');return;}
     const nc={id:'cpt_'+Date.now().toString(36),nom,icone:_selIc,couleur:_selCl,cree:todayStr()};
     await dbPut(STP,nc);COMPTEURS.push(nc);
-    toast('⚡ Compteur "'+nom+'" créé ! Sélectionne-le pour y enregistrer tes données.');
+    toast('⚡ Compteur "'+nom+'" cree ! Selectionne-le pour y enregistrer tes donnees.');
   }
   resetCptForm();
   renderCptBar();
@@ -1080,7 +1080,7 @@ function resetCptForm(){
   _editCptId=null;_selIc=CPT_ICONS[0];_selCl=CPT_COLS[0];
   document.getElementById('cpt_nom').value='';
   document.getElementById('cpt_form_lbl').textContent='Nouveau compteur';
-  document.getElementById('cpt_save_btn').textContent='➕ Créer ce compteur';
+  document.getElementById('cpt_save_btn').textContent='➕ Creer ce compteur';
   document.getElementById('cpt_cancel_btn').style.display='none';
   buildCptForm();
 }
@@ -1089,7 +1089,7 @@ function delCpt(id){
   if(COMPTEURS.length<=1){toast('⚠️ Impossible de supprimer le seul compteur');return;}
   const c=COMPTEURS.find(x=>x.id===id);if(!c)return;
   askConfirm('🗑️','Supprimer "'+c.nom+'" ?',
-    'Toutes les recharges et relevés de ce compteur seront supprimés définitivement. Action irréversible.',
+    'Toutes les recharges et releves de ce compteur seront supprimes definitivement. Action irreversible.',
     'Supprimer', async()=>{
       try{
         const allR=await dbAll(STR);
@@ -1101,14 +1101,14 @@ function delCpt(id){
       COMPTEURS=COMPTEURS.filter(x=>x.id!==id);
       if(CPT_ACT.id===id)await switchCpt(COMPTEURS[0].id);
       renderCptBar();renderCptList();
-      toast('🗑️ Compteur supprimé');
+      toast('🗑️ Compteur supprime');
     }
   );
 }
 
-/* ══ MOTEUR STATISTIQUE INFÉRENTIEL ══ */
+/* == MOTEUR STATISTIQUE INFERENTIEL == */
 
-// Calcule les taux journaliers à partir des relevés consécutifs
+// Calcule les taux journaliers a partir des releves consecutifs
 function getTauxJournaliers(){
   if(RELEVES.length<2)return[];
   const taux=[];
@@ -1116,7 +1116,7 @@ function getTauxJournaliers(){
     const r1=RELEVES[i-1],r2=RELEVES[i];
     const d1=new Date(r1.date+'T00:00:00'),d2=new Date(r2.date+'T00:00:00');
     const jours=Math.round((d2-d1)/(1000*60*60*24));
-    if(jours>=3&&jours<=21&&r1.kwh>r2.kwh){ // consommation positive, période réaliste
+    if(jours>=3&&jours<=21&&r1.kwh>r2.kwh){ // consommation positive, periode realiste
       const t=(r1.kwh-r2.kwh)/jours;
       if(t>0&&t<30)taux.push({taux:t,jours,date:r2.date});
     }
@@ -1132,27 +1132,27 @@ function getProfil(){
   const vals=taux.map(t=>t.taux);
   const moy=vals.reduce((s,v)=>s+v,0)/n;
   const sigma=n>1?Math.sqrt(vals.reduce((s,v)=>s+(v-moy)**2,0)/(n-1)):moy*0.5;
-  // IC basé sur t-distribution approx et loi des grands nombres
+  // IC base sur t-distribution approx et loi des grands nombres
   const errStd=sigma/Math.sqrt(n);
   const tCrit=n>=30?1.96:n>=10?2.1:n>=5?2.57:3.18; // t approx selon n
   const ic95=tCrit*errStd;
-  // Score de calibration : commence à 0, sature vers 95%
-  // Formule : 1 - exp(-n/k) pondéré par stabilité σ
+  // Score de calibration : commence a 0, sature vers 95%
+  // Formule : 1 - exp(-n/k) pondere par stabilite σ
   const stabFactor=Math.max(0,1-sigma/Math.max(moy,0.1));
   const nFactor=1-Math.exp(-n/4);
   const pct=Math.round(Math.min(95,nFactor*stabFactor*100+nFactor*20));
   const stable=n>=8&&sigma<0.3;
   // Messages contextuels
   let msg='';
-  if(n<1)msg=`📊 ${RELEVES.length} relevé enregistré ✅. Fais un 2ème relevé lundi prochain — la calibration démarrera !`;
-  else if(n<6)msg=`📈 ${6-n} relevé(s) de plus pour atteindre une précision acceptable.`;
-  else if(n<10&&!stable)msg=`🎯 Bon début ! ${10-n} relevés supplémentaires affineront encore la précision.`;
-  else if(stable)msg=`✅ Profil calibré — relevés mensuels suffisants désormais.`;
-  else msg=`📊 Profil en bonne voie. Continue les relevés hebdomadaires.`;
+  if(n<1)msg=`📊 ${RELEVES.length} releve enregistre ✅. Fais un 2eme releve lundi prochain  -  la calibration demarrera !`;
+  else if(n<6)msg=`📈 ${6-n} releve(s) de plus pour atteindre une precision acceptable.`;
+  else if(n<10&&!stable)msg=`🎯 Bon debut ! ${10-n} releves supplementaires affineront encore la precision.`;
+  else if(stable)msg=`✅ Profil calibre  -  releves mensuels suffisants desormais.`;
+  else msg=`📊 Profil en bonne voie. Continue les releves hebdomadaires.`;
   return{n,moyenne:moy,sigma,ic95,fiable:n>=3,pct,stable,errStd,vals,msg};
 }
 
-// Calcule la durée estimée pour un montant/kWh donné
+// Calcule la duree estimee pour un montant/kWh donne
 function getDureeEstimee(kwh){
   const p=getProfil();
   if(!p.fiable||p.moyenne<=0)return null;
@@ -1167,41 +1167,41 @@ function getDureeEstimee(kwh){
   return{duree:Math.round(duree),marge:Math.round(marge),dateEpuis:fmtDate(dateEpuis),dateMin:fmtDate(dateMin),dateMax:fmtDate(dateMax),confiance,moyenne:p.moyenne,sigma:p.sigma};
 }
 
-// HTML de la carte durée personnalisée
+// HTML de la carte duree personnalisee
 function dureeHTML(kwh){
   const d=getDureeEstimee(kwh);
-  if(!d)return`<div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Enregistre au moins 3 <strong>relevés compteur</strong> dans le Suivi pour voir la durée personnalisée.</span></div>`;
+  if(!d)return`<div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Enregistre au moins 3 <strong>releves compteur</strong> dans le Suivi pour voir la duree personnalisee.</span></div>`;
   const margeStr=d.marge>0?` (entre ${d.duree-d.marge} et ${d.duree+d.marge} j)`:'';
   return`<div class="duree-card">
-    <div style="font-size:10px;font-weight:700;color:var(--grn);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⏱️ Durée pour TOI</div>
+    <div style="font-size:10px;font-weight:700;color:var(--grn);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⏱️ Duree pour TOI</div>
     <div class="duree-big">${d.duree} jours</div>
     <div class="duree-date">📅 Tient jusqu'au <strong>${d.dateEpuis}</strong>${margeStr}</div>
-    <div class="duree-ic" style="color:var(--tx2)">Basé sur ton taux moyen de <strong style="color:var(--grn)">${fD(d.moyenne)} kWh/jour</strong> — confiance <strong style="color:var(--acc)">${d.confiance}%</strong></div>
+    <div class="duree-ic" style="color:var(--tx2)">Base sur ton taux moyen de <strong style="color:var(--grn)">${fD(d.moyenne)} kWh/jour</strong>  -  confiance <strong style="color:var(--acc)">${d.confiance}%</strong></div>
   </div>`;
 }
 
-// Détecte si recalibration nécessaire
+// Detecte si recalibration necessaire
 function checkRecalibration(){
   const p=getProfil();
   if(p.n<3)return null;
-  // Vérifier dérive récente : comparer les 3 derniers taux vs moyenne globale
+  // Verifier derive recente : comparer les 3 derniers taux vs moyenne globale
   if(p.vals.length>=5){
     const recents=p.vals.slice(-3);
     const moyRecente=recents.reduce((s,v)=>s+v,0)/recents.length;
     if(Math.abs(moyRecente-p.moyenne)>2*p.sigma&&p.sigma>0)
-      return`Ta consommation récente (${fD(moyRecente)} kWh/j) s'écarte de ta moyenne (${fD(p.moyenne)} kWh/j). Fais 3 relevés cette semaine pour recalibrer.`;
+      return`Ta consommation recente (${fD(moyRecente)} kWh/j) s'ecarte de ta moyenne (${fD(p.moyenne)} kWh/j). Fais 3 releves cette semaine pour recalibrer.`;
   }
-  // Vérifier ancienneté du dernier relevé
+  // Verifier anciennete du dernier releve
   if(RELEVES.length>0){
     const last=new Date(RELEVES[RELEVES.length-1].date+'T00:00:00');
     const joursDepuis=Math.round((new Date()-last)/(1000*60*60*24));
-    if(joursDepuis>45&&!p.stable)return`Ton dernier relevé date de ${joursDepuis} jours. Un relevé maintenant maintiendra la précision.`;
-    if(joursDepuis>90)return`Profil ancien (${joursDepuis} jours sans relevé). Fais 2-3 relevés pour vérifier que tes habitudes n'ont pas changé.`;
+    if(joursDepuis>45&&!p.stable)return`Ton dernier releve date de ${joursDepuis} jours. Un releve maintenant maintiendra la precision.`;
+    if(joursDepuis>90)return`Profil ancien (${joursDepuis} jours sans releve). Fais 2-3 releves pour verifier que tes habitudes n'ont pas change.`;
   }
   return null;
 }
 
-/* ══ GESTION DES RELEVÉS ══ */
+/* == GESTION DES RELEVES == */
 
 async function addRel(){
   const kStr=document.getElementById('rel_kwh').value;
@@ -1209,7 +1209,7 @@ async function addRel(){
   if(!kStr||parseFloat(kStr)<0){toast('⚠️ Saisis un solde valide (kWh)');return;}
   if(!d){toast('⚠️ Choisis une date');return;}
   const kwh=parseFloat(parseFloat(kStr).toFixed(2));
-  // Calculer taux si pas le premier relevé
+  // Calculer taux si pas le premier releve
   let tauxCalc=null;
   if(RELEVES.length>0){
     const prev=RELEVES[RELEVES.length-1];
@@ -1222,8 +1222,8 @@ async function addRel(){
   RELEVES.push(newR);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('rel_kwh').value='';
   refreshProfil();renderRelH();
-  toast('🔋 Relevé enregistré !');
-  if(RELEVES.length===1)toast('✅ 1er relevé ! Fais-en un la semaine prochaine pour démarrer la calibration.');
+  toast('🔋 Releve enregistre !');
+  if(RELEVES.length===1)toast('✅ 1er releve ! Fais-en un la semaine prochaine pour demarrer la calibration.');
 }
 
 async function delRel(id){
@@ -1234,11 +1234,11 @@ async function delRel(id){
 
 function renderRelH(){
   const el=document.getElementById('rel_hist');
-  if(!RELEVES.length){el.innerHTML='<div class="empty"><div class="ei">🔋</div><p>Aucun relevé enregistré.<br>Commence par lire ton compteur.</p></div>';return;}
+  if(!RELEVES.length){el.innerHTML='<div class="empty"><div class="ei">🔋</div><p>Aucun releve enregistre.<br>Commence par lire ton compteur.</p></div>';return;}
   const items=[...RELEVES].reverse();
   el.innerHTML=items.map((r,i)=>{
     const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'});
-    const tauxHtml=r.tauxCalc?`<div class="rel-taux">→ ${fD(r.tauxCalc)} kWh/jour</div>`:'<div style="font-size:10px;color:var(--tx3)">Premier relevé</div>';
+    const tauxHtml=r.tauxCalc?`<div class="rel-taux">→ ${fD(r.tauxCalc)} kWh/jour</div>`:'<div style="font-size:10px;color:var(--tx3)">Premier releve</div>';
     return`<div class="rel-item"><div class="rel-l"><div class="rel-d">${san(ds)}</div><div class="rel-m">Solde compteur</div>${tauxHtml}</div><div class="rel-r"><div class="rel-k">${fD(r.kwh)}</div><div class="rel-kl">kWh restants</div></div><button class="dbtn" onclick="delRel(${r.id})">🗑</button></div>`;
   }).join('');
 }
@@ -1254,14 +1254,14 @@ function refreshProfil(){
   fill.className='cal-bar-fill '+(p.pct>=80?'cal-ic-high':p.pct>=45?'cal-ic-mid':'cal-ic-low');
   document.getElementById('cal_pct').textContent=p.pct+'%';
   document.getElementById('cal_pct').style.color=p.pct>=80?'var(--grn)':p.pct>=45?'var(--acc)':'var(--red)';
-  document.getElementById('cal_sub').textContent=p.stable?'Profil calibré ✅':'Calibration en cours…';
+  document.getElementById('cal_sub').textContent=p.stable?'Profil calibre ✅':'Calibration en cours...';
   document.getElementById('cal_msg').textContent=p.msg;
-  document.getElementById('cal_taux').textContent=p.moyenne>0?fD(p.moyenne)+'':'—';
-  document.getElementById('cal_sigma').textContent=p.n>1?fD(p.sigma,2):'—';
+  document.getElementById('cal_taux').textContent=p.moyenne>0?fD(p.moyenne)+'':' - ';
+  document.getElementById('cal_sigma').textContent=p.n>1?fD(p.sigma,2):' - ';
   document.getElementById('cal_n').textContent=RELEVES.length+' / '+(RELEVES.length<9?9:RELEVES.length);
   // Badge statut
   const bdg=document.getElementById('cal_status_bdg');
-  if(p.stable)bdg.innerHTML='<span class="bdg b-t1">✅ Calibré</span>';
+  if(p.stable)bdg.innerHTML='<span class="bdg b-t1">✅ Calibre</span>';
   else if(p.pct>=45)bdg.innerHTML='<span class="bdg b-t2">⚠️ En cours</span>';
   else bdg.innerHTML='<span class="bdg b-t3">🔴 Insuffisant</span>';
   // Alerte recalibration
@@ -1271,17 +1271,17 @@ function refreshProfil(){
   else recalDiv.style.display='none';
 }
 
-/* ── PWA ── */
+/* -- PWA -- */
 let dPr=null;
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();dPr=e;
   if(!sessionStorage.getItem('erg_dis'))document.getElementById('ib').classList.add('show');
 });
-function triggerInstall(){if(!dPr)return;dPr.prompt();dPr.userChoice.then(r=>{if(r.outcome==='accepted')toast('✅ Ergonome installé !');dPr=null;dismissBanner();});}
+function triggerInstall(){if(!dPr)return;dPr.prompt();dPr.userChoice.then(r=>{if(r.outcome==='accepted')toast('✅ Ergonome installe !');dPr=null;dismissBanner();});}
 function dismissBanner(){document.getElementById('ib').classList.remove('show');sessionStorage.setItem('erg_dis','1');}
 window.addEventListener('appinstalled',()=>{dismissBanner();dPr=null;});
 
-/* ── UTILS ── */
+/* -- UTILS -- */
 function san(s){return String(s).replace(/[<>"'&]/g,c=>({"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","&":"&amp;"}[c]));}
 function sf(v,d){const n=parseFloat(v);return isNaN(n)?d:n;}
 function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
@@ -1290,14 +1290,14 @@ let _tt;
 function toast(msg){if(_tt)clearTimeout(_tt);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);_tt=setTimeout(()=>t.remove(),2800);}
 function al(el,type,icon,msg){el.innerHTML=`<div class="al al-${type}"><span class="al-ic">${icon}</span><span>${msg}</span></div>`;}
 
-/* ── DATE ── */
+/* -- DATE -- */
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function currMois(){const n=new Date();return`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;}
 function moisLbl(m){const[y,mo]=m.split('-');return new Date(+y,+mo-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});}
 function getAllMonths(){const s=new Set(DATA.map(r=>r.date.substring(0,7)));s.add(currMois());return Array.from(s).sort().reverse();}
 function joursEcoules(mois){const n=new Date(),[y,m]=mois.split('-').map(Number);return(y===n.getFullYear()&&m===n.getMonth()+1)?n.getDate():new Date(y,m,0).getDate();}
 
-/* ── NAV ── */
+/* -- NAV -- */
 function showP(id,tb,nb){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1319,15 +1319,15 @@ function openSheet(id){
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 function closeClick(e,id){if(e.target===document.getElementById(id))closeSheet(id);}
 
-/* ── SETTINGS ── */
+/* -- SETTINGS -- */
 async function saveSet(){
   const rev=sf(document.getElementById('sr').value,-1),t1=sf(document.getElementById('st1').value,-1),t2=sf(document.getElementById('st2').value,-1),taxe=sf(document.getElementById('stx').value,-1);
   if(rev<0||t1<=0||t2<=0||taxe<0||taxe>50){toast('⚠️ Valeurs invalides');return;}
-  CFG={rev,t1,t2,taxe};await saveCFG();closeSheet('sh_set');toast('✅ Paramètres enregistrés');
+  CFG={rev,t1,t2,taxe};await saveCFG();closeSheet('sh_set');toast('✅ Parametres enregistres');
 }
-function rstSet(){CFG={rev:429,t1:82,t2:136.49,taxe:2.5};saveCFG();document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;toast('↩️ Valeurs par défaut');}
+function rstSet(){CFG={rev:429,t1:82,t2:136.49,taxe:2.5};saveCFG();document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;toast('↩️ Valeurs par defaut');}
 
-/* ── CORE CALC ── */
+/* -- CORE CALC -- */
 function calcKwh(montant,deja,premiere){
   const tr=CFG.taxe/100,rev=premiere?CFG.rev:0;
   let budget=montant-rev;
@@ -1362,7 +1362,7 @@ function maxFcfa(deja,seuil,premiere){
   return Math.floor(hi);
 }
 
-/* ── CONVERTISSEUR TABS ── */
+/* -- CONVERTISSEUR TABS -- */
 function switchConv(t){
   const isCfa=t==='cfa';
   document.getElementById('cv_cfa').style.display=isCfa?'block':'none';
@@ -1371,7 +1371,7 @@ function switchConv(t){
   document.getElementById('ct_kwh').classList.toggle('active',!isCfa);
 }
 
-/* ── P1 FCFA→kWh ── */
+/* -- P1 FCFA→kWh -- */
 function calcCFA(){
   const m=sf(document.getElementById('c1m').value,0),dj=Math.max(0,sf(document.getElementById('c1d').value,0)),pr=document.getElementById('c1p').checked;
   if(m<=0){toast('⚠️ Entre un montant valide');return;}
@@ -1387,18 +1387,18 @@ function calcCFA(){
   document.getElementById('c1_bt1').style.width=Math.min(60,(Math.min(nv,150)/250)*100)+'%';
   document.getElementById('c1_bt2').style.width=(nv>150?Math.min(40,((Math.min(nv,250)-150)/250)*100):0)+'%';
   const ale=document.getElementById('c1_al');
-  if(nv>250)al(ale,'err','🔴','Tu dépasses <strong>250 kWh</strong>. TVA 18% activée.');
+  if(nv>250)al(ale,'err','🔴','Tu depasses <strong>250 kWh</strong>. TVA 18% activee.');
   else if(nv>150)al(ale,'warn','🟡',`Tranche 2 (136,49 F/kWh). Reste ${fD(250-nv)} kWh avant T3.`);
   else al(ale,'ok','✅',`Tranche 1 (82 F/kWh). Reste ${fD(150-nv)} kWh avant T2.`);
   const sg=document.getElementById('c1_sg');
-  if(nv>150){const ec=(nv-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);sg.innerHTML=`<div class="sugg" style="margin-top:10px"><div class="sugg-t">💡 Suggestion</div><p>En rechargeant en début de mois (T1), tu économises ~<strong>${fmt(ec)} FCFA</strong> sur ces ${fD(nv-150)} kWh en T2.</p></div>`;}else sg.innerHTML='';
+  if(nv>150){const ec=(nv-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);sg.innerHTML=`<div class="sugg" style="margin-top:10px"><div class="sugg-t">💡 Suggestion</div><p>En rechargeant en debut de mois (T1), tu economises ~<strong>${fmt(ec)} FCFA</strong> sur ces ${fD(nv-150)} kWh en T2.</p></div>`;}else sg.innerHTML='';
   document.getElementById('c1r').classList.add('show');
 }
 
-/* ── P1 kWh→FCFA ── */
+/* -- P1 kWh→FCFA -- */
 function calcKWH(){
   const k=sf(document.getElementById('c2k').value,0),dj=Math.max(0,sf(document.getElementById('c2d').value,0)),pr=document.getElementById('c2p').checked;
-  if(k<=0){toast('⚠️ Entre une quantité de kWh valide');return;}
+  if(k<=0){toast('⚠️ Entre une quantite de kWh valide');return;}
   const r=calcFcfa(k,dj,pr),nv=dj+k;
   document.getElementById('c2_fcfa').textContent=fmt(r.montant);
   document.getElementById('c2_k').textContent=fD(k)+' kWh';
@@ -1416,14 +1416,14 @@ function calcKWH(){
   document.getElementById('c2r').classList.add('show');
 }
 
-/* ── P2 SUIVI ── */
+/* -- P2 SUIVI -- */
 function buildMT(){document.getElementById('month_tabs').innerHTML=getAllMonths().map(m=>`<button class="mtab${m===VM?' active':''}" onclick="selMois('${m}')">${moisLbl(m)}</button>`).join('');}
 function selMois(m){VM=m;buildMT();refreshS();}
 
 function p2Sugg(k){
   if(!k)return'';
-  if(k>150&&k<=250){const ec=(k-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);return`<div class="sugg"><div class="sugg-t">💡 Suggestion</div><p>${fD(k-150)} kWh en T2 ce mois. En rechargeant plus tôt en T1, tu aurais économisé ~<strong>${fmt(ec)} FCFA</strong>.</p></div>`;}
-  if(k>250)return`<div class="sugg"><div class="sugg-t">⚠️ Suggestion</div><p>Tu as dépassé 250 kWh. TVA 18% appliquée. Utilise le <strong>Planifier</strong> pour anticiper.</p></div>`;
+  if(k>150&&k<=250){const ec=(k-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);return`<div class="sugg"><div class="sugg-t">💡 Suggestion</div><p>${fD(k-150)} kWh en T2 ce mois. En rechargeant plus tot en T1, tu aurais economise ~<strong>${fmt(ec)} FCFA</strong>.</p></div>`;}
+  if(k>250)return`<div class="sugg"><div class="sugg-t">⚠️ Suggestion</div><p>Tu as depasse 250 kWh. TVA 18% appliquee. Utilise le <strong>Planifier</strong> pour anticiper.</p></div>`;
   if(k>120&&k<=150)return`<div class="sugg"><div class="sugg-t">💡 Suggestion</div><p>Plus que <strong>${fD(150-k)} kWh</strong> avant T2. Surveille ta consommation !</p></div>`;
   return'';
 }
@@ -1441,7 +1441,7 @@ async function addR(){
   DATA.push(newR);DATA.sort((a,b)=>a.date.localeCompare(b.date));
   VM=mois;buildMT();refreshS();
   document.getElementById('p2m').value='';
-  toast('✅ Recharge enregistrée !');
+  toast('✅ Recharge enregistree !');
 }
 
 function refreshS(){
@@ -1456,7 +1456,7 @@ function refreshS(){
   const ale=document.getElementById('jal');
   if(totK<=150){document.getElementById('jbdg').innerHTML='<span class="bdg b-t1">🟢 Tranche 1</span>';document.getElementById('ss').textContent=fD(150-totK);if(totK>120)al(ale,'warn','⚠️',`Plus que <strong>${fD(150-totK)} kWh</strong> avant T2 !`);else ale.innerHTML='';}
   else if(totK<=250){document.getElementById('jbdg').innerHTML='<span class="bdg b-t2">🟡 Tranche 2</span>';document.getElementById('ss').textContent=fD(250-totK);if(totK>220)al(ale,'err','🔴',`Plus que <strong>${fD(250-totK)} kWh</strong> avant TVA 18% !`);else al(ale,'warn','🟡',`T2 (136,49 F/kWh). Reste <strong>${fD(250-totK)} kWh</strong> avant T3.`);}
-  else{document.getElementById('jbdg').innerHTML='<span class="bdg b-t3">🔴 Tranche 3</span>';document.getElementById('ss').textContent='—';al(ale,'err','🔴','T3 + TVA 18%. Attends le 1er du mois suivant pour repartir en T1.');}
+  else{document.getElementById('jbdg').innerHTML='<span class="bdg b-t3">🔴 Tranche 3</span>';document.getElementById('ss').textContent=' - ';al(ale,'err','🔴','T3 + TVA 18%. Attends le 1er du mois suivant pour repartir en T1.');}
   document.getElementById('p2sugg').innerHTML=p2Sugg(totK);
   renderH(mois);
   document.getElementById('btn_rst').style.display=items.length?'block':'none';
@@ -1467,7 +1467,7 @@ function renderH(mois){
   if(!items.length){el.innerHTML='<div class="empty"><div class="ei">📂</div><p>Aucune recharge pour ce mois.</p></div>';return;}
   el.innerHTML=items.map(r=>{
     const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-    return`<div class="ri"><div class="ri-l"><div class="ri-d">${san(ds)}${r.premiere?' · <span style="color:var(--acc);font-weight:700">1ère ⭐</span>':''}</div><div class="ri-m">${fmt(r.montant)} FCFA</div></div><div class="ri-r"><div class="ri-k">${fD(r.kwh)}</div><div class="ri-kl">kWh</div></div><button class="dbtn" onclick="delRec(${r.id})">🗑</button></div>`;
+    return`<div class="ri"><div class="ri-l"><div class="ri-d">${san(ds)}${r.premiere?' · <span style="color:var(--acc);font-weight:700">1ere ⭐</span>':''}</div><div class="ri-m">${fmt(r.montant)} FCFA</div></div><div class="ri-r"><div class="ri-k">${fD(r.kwh)}</div><div class="ri-kl">kWh</div></div><button class="dbtn" onclick="delRec(${r.id})">🗑</button></div>`;
   }).join('');
 }
 
@@ -1478,19 +1478,19 @@ async function delRec(id){
 }
 
 function rstMois(){
-  askConfirm('🗑️','Réinitialiser ce mois ?',
-    'Toutes les recharges du mois sélectionné seront supprimées définitivement.',
-    'Réinitialiser',
+  askConfirm('🗑️','Reinitialiser ce mois ?',
+    'Toutes les recharges du mois selectionne seront supprimees definitivement.',
+    'Reinitialiser',
     async()=>{
       const items=DATA.filter(r=>r.date.startsWith(VM));
       for(const r of items)await dbDel(STR,r.id);
       DATA=DATA.filter(r=>!r.date.startsWith(VM));
-      buildMT();refreshS();toast('🗑️ Mois réinitialisé');
+      buildMT();refreshS();toast('🗑️ Mois reinitialise');
     }
   );
 }
 
-/* ── P3 PLANIFIER ── */
+/* -- P3 PLANIFIER -- */
 function selO(t){OBJ=t;['t1','t2','t3'].forEach(x=>document.getElementById('oc_'+x).classList.remove('sel'));document.getElementById('oc_'+t).classList.add('sel');}
 function switchPT(t){
   const isSim=t==='sim';
@@ -1504,19 +1504,19 @@ function toggleSolde(p){document.getElementById(p+'_sg').style.display=document.
 function getSuiviData(){
   const mois=currMois(),items=DATA.filter(r=>r.date.startsWith(mois));
   const totK=items.reduce((s,r)=>s+r.kwh,0),je=joursEcoules(mois),nb=items.length;
-  // Taux journalier : priorité profil inférentiel calibré
-  // Jamais kWh_rechargés/jours (achat unique ≠ consommation journalière)
+  // Taux journalier : priorite profil inferentiel calibre
+  // Jamais kWh_recharges/jours (achat unique ≠ consommation journaliere)
   const p=getProfil();
   let tauxJour=null,tauxSrc='';
   if(p.fiable&&p.moyenne>0){
     tauxJour=p.moyenne;
-    tauxSrc='profil';  // x̄ inférentiel — le plus fiable
+    tauxSrc='profil';  // x_moy inferentiel - le plus fiable
   } else if(RELEVES.length>=2){
-    // Taux calculé depuis les relevés même si profil pas encore fiable
+    // Taux calcule depuis les releves meme si profil pas encore fiable
     const taux=getTauxJournaliers();
-    if(taux.length>0){tauxJour=taux[taux.length-1].taux;tauxSrc='relevé';}
+    if(taux.length>0){tauxJour=taux[taux.length-1].taux;tauxSrc='releve';}
   }
-  // Aucun relevé → pas de taux affiché (on n'invente pas de chiffre)
+  // Aucun releve → pas de taux affiche (on n'invente pas de chiffre)
   return{totK,je,tauxJour,tauxSrc,nb,hasData:nb>0};
 }
 
@@ -1537,38 +1537,38 @@ function refreshPSrc(){
   const slC=document.getElementById('sl_c');
   if(d.tauxJour){
     slC.textContent=fD(d.tauxJour);
-    slC.title=d.tauxSrc==='profil'?'x̄ profil calibré':d.tauxSrc==='relevé'?'Calculé depuis relevés':'';
+    slC.title=d.tauxSrc==='profil'?'x_moy profil calibre':d.tauxSrc==='releve'?'Calcule depuis releves':'';
   } else {
-    slC.textContent='—';
-    slC.title='Fais un 2ème relevé pour calculer ton taux réel';
+    slC.textContent=' - ';
+    slC.title='Fais un 2eme releve pour calculer ton taux reel';
   }
   const p=getProfil();
   const jr=joursRestantsMois();
-  // ── MODE AUTO : profil calibré détecté ──
-  if(d.tauxJour&&(d.tauxSrc==='profil'||d.tauxSrc==='relevé')){
+  // -- MODE AUTO : profil calibre detecte --
+  if(d.tauxJour&&(d.tauxSrc==='profil'||d.tauxSrc==='releve')){
     document.getElementById('pl_auto_block').style.display='block';
     document.getElementById('pl_man_block').style.display='none';
-    // Résumé des paramètres auto
-    const src=d.tauxSrc==='profil'?`profil calibré à ${p.pct}%`:'tes relevés';
+    // Resume des parametres auto
+    const src=d.tauxSrc==='profil'?`profil calibre a ${p.pct}%`:'tes releves';
     document.getElementById('pl_auto_params').innerHTML=
-      `<span style="color:var(--txt)">📊 Taux :</span> <strong style="color:var(--grn)">${fD(d.tauxJour)} kWh/jour</strong> — issu de ${src}<br>`+
-      `<span style="color:var(--txt)">📅 Jours restants :</span> <strong style="color:var(--acc)">${jr} jours</strong> — calculé automatiquement<br>`+
-      (d.tauxSrc==='profil'?`<span style="color:var(--txt)">🎯 IC :</span> <strong style="color:var(--blu)">±${fD(p.ic95,2)} kWh/j</strong> — intervalle de confiance 95%`:'');
+      `<span style="color:var(--txt)">📊 Taux :</span> <strong style="color:var(--grn)">${fD(d.tauxJour)} kWh/jour</strong>  -  issu de ${src}<br>`+
+      `<span style="color:var(--txt)">📅 Jours restants :</span> <strong style="color:var(--acc)">${jr} jours</strong>  -  calcule automatiquement<br>`+
+      (d.tauxSrc==='profil'?`<span style="color:var(--txt)">🎯 IC :</span> <strong style="color:var(--blu)">±${fD(p.ic95,2)} kWh/j</strong>  -  intervalle de confiance 95%`:'');
     // Stocker les valeurs auto pour planifier()
     window._planAuto={cj:d.tauxJour,jr,tauxSrc:d.tauxSrc};
-    // Déclencher automatiquement le plan sans interaction
-    setTimeout(()=>planifier(),100);
+    // Declencher automatiquement le plan sans interaction
+    setTimeout(()=>{try{planifier();}catch(e){console.warn('plan auto:',e);}},100);
   } else {
-    // ── MODE MANUEL : pas de profil ──
+    // -- MODE MANUEL : pas de profil --
     document.getElementById('pl_auto_block').style.display='none';
     document.getElementById('pl_man_block').style.display='block';
-    // Pré-remplir les champs manuels
+    // Pre-remplir les champs manuels
     const ci=document.getElementById('pl_cj');
     if(!ci.value)ci.value='';
     const jrEl=document.getElementById('pl_jr');
     if(!jrEl.value&&jr>0)jrEl.value=jr;
     const h=document.getElementById('pl_hint');
-    h.innerHTML='⚠️ Fais un 2ème relevé compteur pour activer le plan automatique.';
+    h.innerHTML='⚠️ Fais un 2eme releve compteur pour activer le plan automatique.';
     h.style.color='var(--acc)';
   }
 }
@@ -1591,51 +1591,51 @@ function togglePlanManuel(forceManuel){
 }
 
 function getKwC(d,hasSolde,solde){
-  // Cas 1 — Solde compteur saisi manuellement : calcul exact
+  // Cas 1 - Solde compteur saisi manuellement : calcul exact
   if(hasSolde&&solde>=0){
-    // kWh consommés = kWh rechargés ce mois - solde restant sur compteur
+    // kWh consommes = kWh recharges ce mois - solde restant sur compteur
     const consommes=Math.max(0,d.totK-solde);
     return{val:consommes,src:'exact (solde compteur)',fi:'h'};
   }
-  // Cas 2 — Profil calibré : taux x̄ × jours écoulés = consommation estimée fiable
+  // Cas 2 - Profil calibre : taux x_moy × jours ecoules = consommation estimee fiable
   const p=getProfil();
   if(p.fiable&&p.moyenne>0){
     const consommes=parseFloat((p.moyenne*d.je).toFixed(2));
-    return{val:consommes,src:`profil calibré (${fD(p.moyenne)} kWh/j × ${d.je}j)`,fi:'h'};
+    return{val:consommes,src:`profil calibre (${fD(p.moyenne)} kWh/j × ${d.je}j)`,fi:'h'};
   }
-  // Cas 3 — Relevés disponibles mais profil pas encore fiable
-  if(d.tauxJour&&d.tauxSrc==='relevé'){
+  // Cas 3 - Releves disponibles mais profil pas encore fiable
+  if(d.tauxJour&&d.tauxSrc==='releve'){
     const consommes=parseFloat((d.tauxJour*d.je).toFixed(2));
-    return{val:consommes,src:`relevés (${fD(d.tauxJour)} kWh/j × ${d.je}j)`,fi:'m'};
+    return{val:consommes,src:`releves (${fD(d.tauxJour)} kWh/j × ${d.je}j)`,fi:'m'};
   }
-  // Cas 4 — Aucune donnée fiable : kWh rechargés (surestimé, signalé)
-  return{val:d.totK,src:'kWh rechargés (estimation — fais des relevés)',fi:'l'};
+  // Cas 4 - Aucune donnee fiable : kWh recharges (surestime, signale)
+  return{val:d.totK,src:'kWh recharges (estimation  -  fais des releves)',fi:'l'};
 }
 
 // Suggestion meilleur moment
 function bestTimeSugg(kwhCons,seuil,totK){
   const now=new Date(),day=now.getDate(),dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),dLeft=dInM-day;
   let h='';
-  if(day<=5&&kwhCons<seuil*0.3)h=`<div class="al al-pur" style="margin-top:8px"><span class="al-ic">🕐</span><span><strong>Bon moment !</strong> Tu es en début de mois avec peu de kWh consommés. Recharger maintenant te donne accès à tout le quota T1 de ce mois.</span></div>`;
-  else if(kwhCons>=seuil*0.85&&dLeft>3)h=`<div class="al al-warn" style="margin-top:8px"><span class="al-ic">⏳</span><span><strong>Attention :</strong> Tu approches du seuil avec ${dLeft} jours restants. Attends le 1er du mois prochain pour repartir en T1 et économiser.</span></div>`;
-  else if(day>25&&kwhCons<seuil*0.6)h=`<div class="al al-info" style="margin-top:8px"><span class="al-ic">💡</span><span>Tu es en fin de mois. Une petite recharge maintenant te couvre les derniers jours, et au 1er tu repars à zéro en T1.</span></div>`;
-  else if(kwhCons<seuil&&dLeft>10)h=`<div class="al al-ok" style="margin-top:8px"><span class="al-ic">🕐</span><span>Il te reste ${dLeft} jours et tu es sous le seuil. Recharger maintenant est sans risque — tu resteras en T1.</span></div>`;
+  if(day<=5&&kwhCons<seuil*0.3)h=`<div class="al al-pur" style="margin-top:8px"><span class="al-ic">🕐</span><span><strong>Bon moment !</strong> Tu es en debut de mois avec peu de kWh consommes. Recharger maintenant te donne acces a tout le quota T1 de ce mois.</span></div>`;
+  else if(kwhCons>=seuil*0.85&&dLeft>3)h=`<div class="al al-warn" style="margin-top:8px"><span class="al-ic">⏳</span><span><strong>Attention :</strong> Tu approches du seuil avec ${dLeft} jours restants. Attends le 1er du mois prochain pour repartir en T1 et economiser.</span></div>`;
+  else if(day>25&&kwhCons<seuil*0.6)h=`<div class="al al-info" style="margin-top:8px"><span class="al-ic">💡</span><span>Tu es en fin de mois. Une petite recharge maintenant te couvre les derniers jours, et au 1er tu repars a zero en T1.</span></div>`;
+  else if(kwhCons<seuil&&dLeft>10)h=`<div class="al al-ok" style="margin-top:8px"><span class="al-ic">🕐</span><span>Il te reste ${dLeft} jours et tu es sous le seuil. Recharger maintenant est sans risque  -  tu resteras en T1.</span></div>`;
   return h;
 }
 
-// Suggestion solde non activé
+// Suggestion solde non active
 function suggSolde(){
-  return`<div class="al al-info" style="margin-top:8px"><span class="al-ic">💡</span><span><strong>Astuce précision :</strong> Active le bouton "J'ai lu mon solde sur le compteur" pour obtenir des calculs exacts basés sur ce qu'il y a réellement sur ton compteur.</span></div>`;
+  return`<div class="al al-info" style="margin-top:8px"><span class="al-ic">💡</span><span><strong>Astuce precision :</strong> Active le bouton "J'ai lu mon solde sur le compteur" pour obtenir des calculs exacts bases sur ce qu'il y a reellement sur ton compteur.</span></div>`;
 }
 
 // Fourchette HTML
 function fourchetteHTML(min,mid,max,seuil){
   return`
-  <div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette recommandée</div>
+  <div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette recommandee</div>
   <div class="frc" style="margin-top:8px">
-    <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${min?fmt(min)+' F':'—'}</div><div class="fc-l">Minimum utile<br>(~3 jours)</div></div>
-    <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mid?fmt(mid)+' F':'—'}</div><div class="fc-l">Recommandé<br>(marge sécurité)</div></div>
-    <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${max?fmt(max)+' F':'—'}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
+    <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${min?fmt(min)+' F':' - '}</div><div class="fc-l">Minimum utile<br>(~3 jours)</div></div>
+    <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mid?fmt(mid)+' F':' - '}</div><div class="fc-l">Recommande<br>(marge securite)</div></div>
+    <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${max?fmt(max)+' F':' - '}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
   </div>`;
 }
 
@@ -1660,35 +1660,35 @@ function simuler(){
   let h='';
   // Verdict
   if(OBJ==='t3'){
-    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Recharge acceptée</div><div class="v-su">Tu obtiendras <strong>${fD(r.kwh)} kWh</strong> supplémentaires. Aucune limite de tranche.</div></div>`;
+    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Recharge acceptee</div><div class="v-su">Tu obtiendras <strong>${fD(r.kwh)} kWh</strong> supplementaires. Aucune limite de tranche.</div></div>`;
   }else if(kC>=seuil){
-    h+=`<div class="verd v-err"><div class="v-ic">🚫</div><div class="v-ti" style="color:#f87171">Seuil déjà dépassé</div><div class="v-su">Tu es à ${fD(kC)} kWh — au-dessus du seuil ${seuil} kWh.<br>Attends le 1er du mois prochain pour repartir en T1.</div></div>`;
+    h+=`<div class="verd v-err"><div class="v-ic">🚫</div><div class="v-ti" style="color:#f87171">Seuil deja depasse</div><div class="v-su">Tu es a ${fD(kC)} kWh  -  au-dessus du seuil ${seuil} kWh.<br>Attends le 1er du mois prochain pour repartir en T1.</div></div>`;
   }else if(kApres>seuil){
-    h+=`<div class="verd v-err"><div class="v-ic">⚠️</div><div class="v-ti" style="color:#f87171">Cette recharge dépasse le seuil</div><div class="v-su">Avec ${fmt(montant)} FCFA tu passes à <strong>${fD(kApres)} kWh</strong> — soit <strong>${fD(kApres-seuil)} kWh au-dessus</strong> du seuil ${seuil} kWh.</div></div>`;
+    h+=`<div class="verd v-err"><div class="v-ic">⚠️</div><div class="v-ti" style="color:#f87171">Cette recharge depasse le seuil</div><div class="v-su">Avec ${fmt(montant)} FCFA tu passes a <strong>${fD(kApres)} kWh</strong>  -  soit <strong>${fD(kApres-seuil)} kWh au-dessus</strong> du seuil ${seuil} kWh.</div></div>`;
   }else{
     const marge=seuil-kApres;
-    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Bonne recharge !</div><div class="v-su">Tu passes à <strong>${fD(kApres)} kWh</strong> — tu restes sous le seuil ${seuil} kWh.<br>Marge restante : <strong>${fD(marge)} kWh</strong>.</div></div>`;
+    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Bonne recharge !</div><div class="v-su">Tu passes a <strong>${fD(kApres)} kWh</strong>  -  tu restes sous le seuil ${seuil} kWh.<br>Marge restante : <strong>${fD(marge)} kWh</strong>.</div></div>`;
   }
-  // Fourchette dans tous les cas (sauf seuil déjà dépassé / sans limite)
+  // Fourchette dans tous les cas (sauf seuil deja depasse / sans limite)
   if(OBJ!=='t3'&&kC<seuil)h+=fourchetteHTML(mMin,mMid,mMax,seuil);
   // Positionnement du montant saisi
   if(OBJ!=='t3'&&kC<seuil&&mMax){
-    const pos=montant>mMax?'<strong style="color:#f87171">au-dessus du maximum ⚠️</strong>':mMin&&montant<mMin?'<strong style="color:var(--acc)">en dessous du minimum conseillé</strong>':'<strong style="color:#4ade80">dans la fourchette optimale ✅</strong>';
+    const pos=montant>mMax?'<strong style="color:#f87171">au-dessus du maximum ⚠️</strong>':mMin&&montant<mMin?'<strong style="color:var(--acc)">en dessous du minimum conseille</strong>':'<strong style="color:#4ade80">dans la fourchette optimale ✅</strong>';
     h+=`<p style="font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.5">Ton montant de <strong style="color:var(--txt)">${fmt(montant)} FCFA</strong> se situe ${pos}</p>`;
   }
-  // Détail
-  h+=`<div class="bk" style="margin-top:12px"><div class="bk-hd">Détail de la simulation</div>
-  <div class="bk-row"><span class="bk-l">kWh consommés (${srcL})</span><span class="bk-v">${fD(kC)} kWh</span></div>
+  // Detail
+  h+=`<div class="bk" style="margin-top:12px"><div class="bk-hd">Detail de la simulation</div>
+  <div class="bk-row"><span class="bk-l">kWh consommes (${srcL})</span><span class="bk-v">${fD(kC)} kWh</span></div>
   <div class="bk-row"><span class="bk-l">kWh obtenus avec ${fmt(montant)} FCFA</span><span class="bk-v" style="color:var(--acc)">${fD(r.kwh)} kWh</span></div>
-  <div class="bk-row"><span class="bk-l">Total projeté après recharge</span><span class="bk-v" style="color:${kApres>seuil&&OBJ!=='t3'?'var(--red)':'var(--grn)'}">${fD(kApres)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">Total projete apres recharge</span><span class="bk-v" style="color:${kApres>seuil&&OBJ!=='t3'?'var(--red)':'var(--grn)'}">${fD(kApres)} kWh</span></div>
   ${seuil<9999?`<div class="bk-row"><span class="bk-l">Seuil objectif</span><span class="bk-v">${seuil} kWh</span></div>`:''}
   </div>`;
-  // Suggestion solde si pas activé
+  // Suggestion solde si pas active
   if(!hasSolde)h+=suggSolde();
   // Meilleur moment
   h+=bestTimeSugg(kC,seuil,d.totK);
-  // Fiabilité
-  const fm={'h':'🎯 Calcul exact — solde compteur utilisé','m':'📊 Estimation fiable','l':'⚠️ Estimation approx. — enregistre plus de recharges dans le Suivi'}[fiab];
+  // Fiabilite
+  const fm={'h':'🎯 Calcul exact  -  solde compteur utilise','m':'📊 Estimation fiable','l':'⚠️ Estimation approx.  -  enregistre plus de recharges dans le Suivi'}[fiab];
   h+=`<div class="fiab fi-${fiab}" style="margin-top:10px">${fm}</div>`;
   document.getElementById('sm_ct').innerHTML=h;
   document.getElementById('sm_duree').innerHTML=dureeHTML(r.kwh);
@@ -1698,10 +1698,10 @@ function simuler(){
 /* PLANIFIER */
 function planifierManuel(){
   const d=getSuiviData();
-  if(!d.hasData){toast('⚠️ Enregistre d'abord des recharges dans le Suivi');return;}
+  if(!d.hasData){toast('⚠️ Enregistre d\'abord des recharges dans le Suivi');return;}
   const cj=sf(document.getElementById('pl_cj').value,0),jr=sf(document.getElementById('pl_jr').value,0);
-  if(cj<=0||cj>50){toast('⚠️ Consommation journalière invalide (entre 0,1 et 50 kWh/j)');return;}
-  if(jr<=0||jr>31){toast('⚠️ Jours restants invalide — doit être entre 1 et 31');return;}
+  if(cj<=0||cj>50){toast('⚠️ Consommation journaliere invalide (entre 0,1 et 50 kWh/j)');return;}
+  if(jr<=0||jr>31){toast('⚠️ Jours restants invalide  -  doit etre entre 1 et 31');return;}
   const hasSolde=document.getElementById('pl_hs_m')?.checked||false;
   const solde=hasSolde?sf(document.getElementById('pl_s_m')?.value,-1):-1;
   if(hasSolde&&solde<0){toast('⚠️ Entre le solde lu sur le compteur');return;}
@@ -1722,11 +1722,13 @@ function planifier(){
 }
 
 function _runPlanifier(cj,jr,hasSolde,solde){
-    const{val:kC,src:srcL,fi:fiab}=getKwC(d,hasSolde,solde);
+  const d=getSuiviData();
+  if(!d.hasData)return;
+  const{val:kC,src:srcL,fi:fiab}=getKwC(d,hasSolde,solde);
   const seuil=OBJ==='t1'?150:OBJ==='t2'?250:9999;
   const kF=cj*jr,proj=kC+kF;
   // Solde restant sur le compteur :
-  // Si solde saisi → direct. Sinon → kWh rechargés - kWh consommés estimés
+  // Si solde saisi → direct. Sinon → kWh recharges - kWh consommes estimes
   const kSolde=hasSolde&&solde>=0?solde:Math.max(0,d.totK-kC);
   const kManq=Math.max(0,kF-kSolde);
   // Fourchette
@@ -1736,75 +1738,372 @@ function _runPlanifier(cj,jr,hasSolde,solde){
   const mMin=kManq>0?Math.ceil(calcFcfa(kManq,kC,false).montant):null;
   const mMinConf=mMin?Math.ceil(mMin*1.1):null;
   let h=`<div class="bk" style="margin-bottom:12px"><div class="bk-hd">Analyse automatique</div>
-  <div class="bk-row"><span class="bk-l">kWh consommés (${srcL})</span><span class="bk-v">${fD(kC)} kWh</span></div>
-  <div class="bk-row"><span class="bk-l">kWh à consommer (${jr} jours × ${fD(cj)} kWh/j)</span><span class="bk-v">${fD(kF)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">kWh consommes (${srcL})</span><span class="bk-v">${fD(kC)} kWh</span></div>
+  <div class="bk-row"><span class="bk-l">kWh a consommer (${jr} jours × ${fD(cj)} kWh/j)</span><span class="bk-v">${fD(kF)} kWh</span></div>
   <div class="bk-row"><span class="bk-l">Projection fin de mois</span><span class="bk-v" style="color:${proj>seuil&&OBJ!=='t3'?'var(--red)':'var(--grn)'}">${fD(proj)} kWh</span></div>
   </div>`;
   if(OBJ==='t3'){
     const ms=kManq>0?Math.ceil(calcFcfa(kManq,kC,false).montant)+500:0;
     h+=`<div class="verd v-ok"><div class="v-ic">📊</div><div class="v-ti" style="color:#4ade80">Mode sans limite</div><div class="v-su">Projection : <strong>${fD(proj)} kWh</strong> fin de mois.</div></div>`;
-    if(ms>0)h+=`<div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Recharge suggérée pour couvrir le mois : <strong>~${fmt(ms)} FCFA</strong></span></div>`;
+    if(ms>0)h+=`<div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Recharge suggeree pour couvrir le mois : <strong>~${fmt(ms)} FCFA</strong></span></div>`;
   }else if(kC>=seuil){
-    h+=`<div class="verd v-err"><div class="v-ic">🚫</div><div class="v-ti" style="color:#f87171">Seuil déjà dépassé</div><div class="v-su">Tu es à ${fD(kC)} kWh. Attends le 1er du mois prochain pour repartir en T1.</div></div>`;
+    h+=`<div class="verd v-err"><div class="v-ic">🚫</div><div class="v-ti" style="color:#f87171">Seuil deja depasse</div><div class="v-su">Tu es a ${fD(kC)} kWh. Attends le 1er du mois prochain pour repartir en T1.</div></div>`;
   }else if(proj>seuil){
-    h+=`<div class="verd v-warn"><div class="v-ic">⚠️</div><div class="v-ti" style="color:var(--acc)">Risque de dépassement</div><div class="v-su">À ce rythme tu franchiras ${seuil} kWh. Voici ta fourchette de recharge.</div></div>`;
-    h+=`<div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette — à ne pas dépasser</div>
+    h+=`<div class="verd v-warn"><div class="v-ic">⚠️</div><div class="v-ti" style="color:var(--acc)">Risque de depassement</div><div class="v-su">A ce rythme tu franchiras ${seuil} kWh. Voici ta fourchette de recharge.</div></div>`;
+    h+=`<div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette  -  a ne pas depasser</div>
     <div class="frc" style="margin-top:8px">
-      <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${mMin?fmt(mMin)+' F':'—'}</div><div class="fc-l">Minimum strict<br>(kWh manquants)</div></div>
-      <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mMid?fmt(mMid)+' F':'—'}</div><div class="fc-l">Recommandé<br>(marge −12%)</div></div>
-      <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${mMax?fmt(mMax)+' F':'—'}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
+      <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${mMin?fmt(mMin)+' F':' - '}</div><div class="fc-l">Minimum strict<br>(kWh manquants)</div></div>
+      <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mMid?fmt(mMid)+' F':' - '}</div><div class="fc-l">Recommande<br>(marge −12%)</div></div>
+      <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${mMax?fmt(mMax)+' F':' - '}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
     </div>
-    <div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Ou attends le 1er du mois suivant pour repartir en T1 à 82 F/kWh.</span></div>`;
+    <div class="al al-info" style="margin-top:10px"><span class="al-ic">💡</span><span>Ou attends le 1er du mois suivant pour repartir en T1 a 82 F/kWh.</span></div>`;
   }else{
-    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Tu peux finir en ${OBJ==='t1'?'Tranche 1':'Tranche 2'} !</div><div class="v-su">Projection : <strong>${fD(proj)} kWh</strong> — sous le seuil de ${seuil} kWh.</div></div>`;
-    h+=`<div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette recommandée</div>
+    h+=`<div class="verd v-ok"><div class="v-ic">✅</div><div class="v-ti" style="color:#4ade80">Tu peux finir en ${OBJ==='t1'?'Tranche 1':'Tranche 2'} !</div><div class="v-su">Projection : <strong>${fD(proj)} kWh</strong>  -  sous le seuil de ${seuil} kWh.</div></div>`;
+    h+=`<div class="bk-hd" style="margin-top:14px;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Fourchette recommandee</div>
     <div class="frc" style="margin-top:8px">
-      <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${mMin?fmt(mMin)+' F':'—'}</div><div class="fc-l">Minimum strict<br>(kWh manquants)</div></div>
-      <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mMinConf?fmt(mMinConf)+' F':'—'}</div><div class="fc-l">Conseillé<br>(min +10% confort)</div></div>
-      <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${mMax?fmt(mMax)+' F':'—'}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
+      <div class="fc fc-min"><div class="fc-v" style="color:#f87171">${mMin?fmt(mMin)+' F':' - '}</div><div class="fc-l">Minimum strict<br>(kWh manquants)</div></div>
+      <div class="fc fc-mid"><div class="fc-v" style="color:var(--acc)">${mMinConf?fmt(mMinConf)+' F':' - '}</div><div class="fc-l">Conseille<br>(min +10% confort)</div></div>
+      <div class="fc fc-max"><div class="fc-v" style="color:var(--grn)">${mMax?fmt(mMax)+' F':' - '}</div><div class="fc-l">Maximum strict<br>avant seuil ${seuil} kWh</div></div>
     </div>`;
-    if(kSolde>=kF)h+=`<div class="al al-ok" style="margin-top:10px"><span class="al-ic">🔋</span><span>Ton solde actuel (<strong>${fD(kSolde)} kWh</strong>) couvre déjà les ${jr} jours restants. Recharge non urgente.</span></div>`;
+    if(kSolde>=kF)h+=`<div class="al al-ok" style="margin-top:10px"><span class="al-ic">🔋</span><span>Ton solde actuel (<strong>${fD(kSolde)} kWh</strong>) couvre deja les ${jr} jours restants. Recharge non urgente.</span></div>`;
     h+=`<div class="bk" style="margin-top:10px"><div class="bk-row"><span class="bk-l">Marge restante avant seuil</span><span class="bk-v pos">${fD(Math.max(0,seuil-proj))} kWh</span></div></div>`;
   }
-  // Suggestion solde si pas activé
+  // Suggestion solde si pas active
   if(!hasSolde)h+=suggSolde();
   // Meilleur moment
   h+=bestTimeSugg(kC,seuil,d.totK);
   const p2=getProfil();
   const fmMap={
-    'h': hasSolde?'🎯 Calcul exact — solde compteur utilisé'
-        :p2.fiable?`🎯 Profil calibré à ${p2.pct}% — x̄=${fD(p2.moyenne)} kWh/j · IC±${fD(p2.ic95,2)}`
-        :'🎯 Calcul exact — solde compteur utilisé',
-    'm':`📊 Estimation basée sur tes relevés — ${p2.n} taux calculé(s)`,
-    'l':'⚠️ Estimation approx. — fais des relevés compteur pour améliorer la précision'
+    'h': hasSolde?'🎯 Calcul exact  -  solde compteur utilise'
+        :p2.fiable?`🎯 Profil calibre a ${p2.pct}%  -  x_moy=${fD(p2.moyenne)} kWh/j · IC±${fD(p2.ic95,2)}`
+        :'🎯 Calcul exact  -  solde compteur utilise',
+    'm':`📊 Estimation basee sur tes releves  -  ${p2.n} taux calcule(s)`,
+    'l':'⚠️ Estimation approx.  -  fais des releves compteur pour ameliorer la precision'
   };
-  // Avertissement si cj saisi diffère significativement du profil calibré
+  // Avertissement si cj saisi differe significativement du profil calibre
   let alertCj='';
   if(p2.fiable&&Math.abs(cj-p2.moyenne)>p2.sigma*2){
-    alertCj=`<div class="al al-warn" style="margin-top:8px"><span class="al-ic">⚠️</span><span>La conso/jour saisie (<strong>${fD(cj)} kWh</strong>) s'écarte de ton profil calibré (<strong>${fD(p2.moyenne)} kWh/j</strong>). Résultat moins précis.</span></div>`;
+    alertCj=`<div class="al al-warn" style="margin-top:8px"><span class="al-ic">⚠️</span><span>La conso/jour saisie (<strong>${fD(cj)} kWh</strong>) s'ecarte de ton profil calibre (<strong>${fD(p2.moyenne)} kWh/j</strong>). Resultat moins precis.</span></div>`;
   }
   h+=`<div class="fiab fi-${fiab}" style="margin-top:10px">${fmMap[fiab]}</div>${alertCj}`;
-  // Durée personnalisée sur kWh nécessaires
+  // Duree personnalisee sur kWh necessaires
   if(kManq>0)h+=dureeHTML(kF);
   document.getElementById('pl_ct').innerHTML=h;
   document.getElementById('pl_res').classList.add('show');
 }
-/* ── SPLASH ── */
+/* -- SPLASH -- */
+
+
+/* -- PANEL DONNEES ET ECONOMIES -- */
+
+function buildDF(){
+  const ms=getAllMonths(),sel=document.getElementById('df'),cur=sel.value;
+  sel.innerHTML='<option value="all">Tous les mois</option>'+ms.map(m=>`<option value="${m}">${moisLbl(m)}</option>`).join('');
+  if(ms.includes(cur))sel.value=cur;
+}
+
+function renderDT(){
+  const filter=document.getElementById('df').value;
+  let items=filter==='all'?[...DATA]:DATA.filter(r=>r.date.startsWith(filter));
+  items=items.slice().reverse();
+  const tb=document.getElementById('dtb'),empty=document.getElementById('dt_empty'),tot=document.getElementById('dt_tot'),wrap=document.getElementById('dtw');
+  if(!items.length){wrap.style.display='none';empty.style.display='block';tot.style.display='none';return;}
+  wrap.style.display='block';empty.style.display='none';tot.style.display='block';
+  tb.innerHTML=items.map(r=>{
+    const ds=new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'});
+    const tr=r.premiere?'<span style="color:var(--t1)">T1⭐</span>':'<span style="color:var(--t2)">T2</span>';
+    return`<tr><td>${san(ds)}</td><td>${fmt(r.montant)} F</td><td style="color:var(--acc)">${fD(r.kwh)}</td><td>${tr}</td><td><button class="dbtn" onclick="delRec(${r.id});buildDF();renderDT();" style="font-size:12px">🗑</button></td></tr>`;
+  }).join('');
+  const tK=items.reduce((s,r)=>s+r.kwh,0),tF=items.reduce((s,r)=>s+r.montant,0);
+  document.getElementById('dt_f').textContent=fmt(tF)+' FCFA';
+  document.getElementById('dt_k').textContent=fD(tK)+' kWh';
+  document.getElementById('dt_n').textContent=items.length+' recharges';
+  const ms=new Set(DATA.map(r=>r.date.substring(0,7)));
+  const tKa=DATA.reduce((s,r)=>s+r.kwh,0);
+  const tFa=DATA.reduce((s,r)=>s+r.montant,0);
+  const p=getProfil();
+
+  // ── kWh/mois moyen ──
+  // Priorité 1 : profil calibré → x̄ × 30 jours (consommation réelle estimée)
+  // Priorité 2 : taux depuis relevés bruts → même calcul
+  // Priorité 3 : kWh rechargés / mois (achat, pas consommation — labelisé honnêtement)
+  let kwhMoisAff, kwhMoisLabel, kwhMoisColor='var(--acc)';
+  if(p.fiable&&p.moyenne>0){
+    kwhMoisAff=fD(p.moyenne*30);
+    kwhMoisLabel='kWh/mois consommés (profil)';
+    kwhMoisColor='var(--grn)';
+  } else if(RELEVES.length>=2){
+    const taux=getTauxJournaliers();
+    if(taux.length>0){
+      const moyTaux=taux.reduce((s,t)=>s+t.taux,0)/taux.length;
+      kwhMoisAff=fD(moyTaux*30);
+      kwhMoisLabel='kWh/mois consommés (relevés)';
+      kwhMoisColor='var(--blu)';
+    } else {
+      kwhMoisAff=ms.size?fD(tKa/ms.size):0;
+      kwhMoisLabel='kWh/mois rechargés';
+      kwhMoisColor='var(--acc)';
+    }
+  } else {
+    kwhMoisAff=ms.size?fD(tKa/ms.size):0;
+    kwhMoisLabel='kWh/mois rechargés*';
+    kwhMoisColor='var(--acc)';
+  }
+
+  // ── FCFA/kWh moyen ──
+  // Coût réel moyen payé — chiffre honnête basé sur les recharges
+  // (inclut redevance, taxe, position T1/T2 réelle)
+  const fcfaKwh=tKa?Math.round(tFa/tKa):0;
+
+  document.getElementById('gs_m').textContent=ms.size;
+  const gsMoy=document.getElementById('gs_moy');
+  gsMoy.textContent=kwhMoisAff;
+  gsMoy.style.color=kwhMoisColor;
+  gsMoy.title=kwhMoisLabel;
+  // Mettre à jour le label sous la stat
+  const gsMoyL=gsMoy.nextElementSibling;
+  if(gsMoyL)gsMoyL.textContent=kwhMoisLabel.length>20?'kWh/mois moy.':kwhMoisLabel;
+  document.getElementById('gs_c').textContent=fcfaKwh;
+  const gs=document.getElementById('gs_sugg');
+  if(tKa>0&&tFa>0){
+    // ── Données de base recharges ──
+    const cM=tFa/tKa; // coût moyen réel FCFA/kWh
+    const nbMois=ms.size||1;
+    const coutT1Reel=(tKa*CFG.t1*(1+CFG.taxe/100)+nbMois*CFG.rev)/tKa;
+    const coutT2Hyp=CFG.t2*(1+CFG.taxe/100);
+    const ecoVsT2=Math.max(0,Math.round((coutT2Hyp-cM)*tKa));
+    const ecoPot=Math.max(0,Math.round((cM-coutT1Reel)*tKa));
+    const nbT1=DATA.filter(r=>r.premiere).length;
+    const pctT1=DATA.length?Math.round(nbT1/DATA.length*100):0;
+
+    // ── Intégration profil statistique inférentiel ──
+    const p=getProfil();
+    const nRel=RELEVES.length;
+
+    // Coût journalier réel = taux journalier × coût moyen
+    const coutJour=p.fiable?parseFloat((p.moyenne*cM).toFixed(0)):null;
+    const coutJourT1=p.fiable?parseFloat((p.moyenne*coutT1Reel).toFixed(0)):null;
+    const coutJourEco=coutJour&&coutJourT1?Math.max(0,coutJour-coutJourT1):null;
+
+    // Projection annuelle économie potentielle avec IC
+    const ecoAnnuelle=ecoPot>0?Math.round(ecoPot/nbMois*12):0;
+    const ecoAnnuelleMin=p.fiable&&p.ic95>0?Math.max(0,Math.round(ecoAnnuelle*(1-p.ic95/p.moyenne))):null;
+    const ecoAnnuelleMax=p.fiable&&p.ic95>0?Math.round(ecoAnnuelle*(1+p.ic95/p.moyenne)):null;
+
+    // ── Niveau de fiabilité selon relevés ──
+    // niv 0 : aucun relevé → suggestion recharges seules + invitation
+    // niv 1 : 1-2 relevés → estimation précoce, IC large
+    // niv 2 : 3-8 relevés → corrélation partielle
+    // niv 3 : 9+ relevés  → corrélation complète avec IC précise
+    const niv=nRel===0?0:nRel<=2?1:nRel<=8?2:3;
+
+    // Badge fiabilité
+    const badge={
+      0:`<span style="font-size:9px;color:var(--tx3);font-weight:600;display:block;margin-top:6px">📊 Basé sur tes recharges uniquement — fais des relevés pour affiner</span>`,
+      1:`<span style="font-size:9px;color:var(--acc);font-weight:600;display:block;margin-top:6px">📊 Estimation précoce (${nRel} relevé(s)) — précision faible, continue les relevés hebdo</span>`,
+      2:`<span style="font-size:9px;color:var(--blu);font-weight:600;display:block;margin-top:6px">📊 Calibration en cours — ${p.pct}% de fiabilité · σ=${fD(p.sigma,2)} kWh/j</span>`,
+      3:`<span style="font-size:9px;color:var(--grn);font-weight:600;display:block;margin-top:6px">🎯 Profil calibré à ${p.pct}% · x̄=${fD(p.moyenne)} kWh/j · IC±${fD(p.ic95,2)}</span>`
+    }[niv];
+
+    let html='';
+
+    if(ecoPot>200){
+      // Sous-optimal — suggestion d'amélioration
+      const ligneJour=coutJour?`<br>À ton rythme (~<strong>${fD(p.moyenne)} kWh/jour</strong>), tu dépenses <strong>${fmt(coutJour)} FCFA/jour</strong> vs <strong>${fmt(coutJourT1)} F/jour</strong> en T1 optimal.`:'';
+      const ligneAnnuelle=ecoAnnuelle>0?(ecoAnnuelleMin&&ecoAnnuelleMax?
+        `<br>Projection annuelle : entre <strong>${fmt(ecoAnnuelleMin)}</strong> et <strong>${fmt(ecoAnnuelleMax)} FCFA</strong> d'économies possibles.`:
+        `<br>Projection annuelle : ~<strong>${fmt(ecoAnnuelle)} FCFA</strong> d'économies possibles.`):'';
+      html=`<div class="sugg" style="margin-top:12px">
+        <div class="sugg-t">💡 Suggestion</div>
+        <p>Coût moyen <strong>${Math.round(cM)} F/kWh</strong> vs <strong>${Math.round(coutT1Reel)} F/kWh</strong> optimal T1 (redevance incluse).
+        En rechargeant systématiquement en début de mois, économie potentielle : ~<strong>${fmt(ecoPot)} FCFA</strong> sur la période.${ligneJour}${ligneAnnuelle}</p>
+        ${badge}
+      </div>`;
+    } else if(ecoVsT2>0||pctT1>=80){
+      // Bien positionné — valoriser + projeter si profil dispo
+      const ligneJour=coutJour?`À ton rythme (~<strong>${fD(p.moyenne)} kWh/j</strong>), tu dépenses <strong>${fmt(coutJour)} FCFA/jour</strong> — cohérent avec ton historique. `:'';
+      const ligneEco=ecoVsT2>0?`Tu as évité ~<strong>${fmt(ecoVsT2)} FCFA</strong> de surcoût T2 sur la période. `:'';
+      html=`<div class="al al-ok" style="margin-top:12px">
+        <span class="al-ic">✅</span>
+        <span>${pctT1}% de tes recharges en T1 — excellent positionnement. ${ligneEco}${ligneJour}Continue ainsi !</span>
+      </div>${badge}`;
+    } else {
+      // Neutre — données insuffisantes pour trancher
+      const ligneJour=coutJour?` À ce rythme : <strong>${fmt(coutJour)} FCFA/jour</strong>.`:'';
+      html=`<div class="al al-ok" style="margin-top:12px">
+        <span class="al-ic">📊</span>
+        <span>Coût moyen <strong>${Math.round(cM)} F/kWh</strong> sur ${nbMois} mois.${ligneJour}</span>
+      </div>${badge}`;
+    }
+    gs.innerHTML=html;
+  } else gs.innerHTML='';
+}
+
+function renderEco(){
+  const p=getProfil();
+  const hist=getEconomiesHistorique();
+  const nbRecharges=DATA.length;
+
+  // Niveaux de déverrouillage
+  const niv1=nbRecharges>=1; // Prochaine action basique
+  const niv2=RELEVES.length>=3;  // Suggestions personnalisées
+  const niv3=hist.length>=2; // Économies calculées + historique
+  const niv4=RELEVES.length>=9;  // Plan mois + projection annuelle (9 relevés = 8 taux)
+
+  // Afficher contenu ou lock
+  if(!niv1){
+    document.getElementById('eco_lock').style.display='block';
+    document.getElementById('eco_content').style.display='none';
+    document.getElementById('eco_steps').innerHTML=`
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Enregistre ta <strong>1ère recharge</strong> dans le Suivi</span></div>
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Fais <strong>3 relevés compteur</strong> pour les suggestions personnalisées</span></div>
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Atteins <strong>2 mois</strong> de données pour voir tes économies calculées</span></div>
+      <div class="prog-step prog-lock"><span class="prog-ic">🔒</span><span>Atteins <strong>8 relevés</strong> pour le plan optimal mensuel complet</span></div>`;
+    return;
+  }
+
+  document.getElementById('eco_lock').style.display='none';
+  document.getElementById('eco_content').style.display='block';
+
+  // Progression partielle si pas encore niv4
+  if(!niv4){
+    const steps=`
+      <div class="prog-step ${niv1?'prog-done':'prog-lock'}"><span class="prog-ic">${niv1?'✅':'🔒'}</span><span>1ère recharge enregistrée</span></div>
+      <div class="prog-step ${niv2?'prog-done':niv1?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv2?'✅':niv1?'⏳':'🔒'}</span><span>3 relevés compteur — <strong>${RELEVES.length}/3</strong>${niv2?' ✓':` (encore ${Math.max(0,3-RELEVES.length)})`}</span></div>
+      <div class="prog-step ${niv3?'prog-done':niv2?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv3?'✅':niv2?'⏳':'🔒'}</span><span>2 mois de recharges — <strong>${hist.length}/2</strong>${niv3?' ✓':niv2?` (encore ${Math.max(0,2-hist.length)} mois)`:'🔒'}</span></div>
+      <div class="prog-step ${niv4?'prog-done':niv3?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv4?'✅':niv3?'⏳':'🔒'}</span><span>9 relevés calibration — <strong>${RELEVES.length}/9</strong>${niv4?' ✓':niv3?` (encore ${Math.max(0,9-RELEVES.length)})`:'🔒'}</span></div>`;
+    document.getElementById('eco_steps').innerHTML=steps;
+    document.getElementById('eco_lock').style.display='block';
+  } else {
+    document.getElementById('eco_lock').style.display='none';
+  }
+
+  // ── ALERTE PROACTIVE URGENTE ──
+  const alerte=getAlerteProactive();
+  const alerteDiv=document.getElementById('eco_alerte');
+  if(alerte){
+    const col=alerte.niveau==='high'?'var(--red)':alerte.niveau==='med'?'var(--acc)':'var(--grn)';
+    const bg=alerte.niveau==='high'?'rgba(239,68,68,.08)':alerte.niveau==='med'?'rgba(245,166,35,.08)':'rgba(34,197,94,.08)';
+    const brd=alerte.niveau==='high'?'rgba(239,68,68,.3)':alerte.niveau==='med'?'rgba(245,166,35,.3)':'rgba(34,197,94,.3)';
+    alerteDiv.style.display='block';
+    alerteDiv.innerHTML=`<div style="background:${bg};border:1.5px solid ${brd};border-radius:14px;padding:14px;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:800;color:${col};margin-bottom:6px">${alerte.titre}</div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.6">${alerte.msg}</div>
+      ${alerte.eco>0?`<div style="font-size:11px;color:#4ade80;margin-top:6px;font-weight:600">💰 Économie potentielle : +${fmt(alerte.eco)} FCFA vs ton habitude</div>`:''}
+    </div>`;
+  } else alerteDiv.style.display='none';
+
+  // ── PROCHAINE ACTION ──
+  const opt=getMontantOptimal();
+  const actionDiv=document.getElementById('eco_action');
+  if(opt&&opt.t1pleine){
+    // T1 épuisée ce mois
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-low">Ce mois</div>
+      <div class="action-ti">✅ Tranche 1 couverte ce mois</div>
+      <div class="action-desc">Tu as déjà rechargé <strong>${fD(opt.kDejaRech)} kWh</strong> sur 150 kWh T1. Recharger maintenant te ferait passer en T2 (plus cher).</div>
+      <div class="action-eco">💡 Attends le 1er du mois prochain pour repartir au tarif T1 optimal.</div>
+    </div>`;
+  } else if(opt&&opt.findemois){
+    // Fin de mois ou peu de kWh restants
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-low">Fin de mois</div>
+      <div class="action-ti">🗓️ Presque fin de mois</div>
+      <div class="action-desc">Il reste <strong>${opt.dLeft} jour(s)</strong> — pas besoin de recharger maintenant. Attends le 1er du mois prochain pour repartir en T1.</div>
+    </div>`;
+  } else if(opt&&opt.montant>0){
+    const eco=getEconomiePotentielle(opt);
+    const urgence=getUrgenceSolde();
+    const joursStr=urgence?` — solde estimé : ~${urgence.jours}j`:'';
+    const urgNiv=urgence&&urgence.urgent?'high':urgence&&urgence.jours<=7?'med':'low';
+    const urgLbl=urgNiv==='high'?'Urgent':urgNiv==='med'?'Cette semaine':'Anticipation';
+    const confStr=opt.confiance<50?` · ⚠️ Estimation (pas encore de relevés)`:`· Confiance : ${opt.confiance}%`;
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-urgence urg-${urgNiv}">${urgLbl}</div>
+      <div class="action-ti">🎯 Prochaine recharge recommandée</div>
+      <div class="action-desc">Il reste <strong>${opt.dLeft} jours</strong> dans le mois. Taux estimé : ~<strong>${fD(opt.taux)} kWh/jour</strong>${joursStr}. Pour rester en T1 :</div>
+      <div class="action-montant">${fmt(opt.montant)} <span style="font-size:14px;color:var(--tx2)">FCFA</span></div>
+      <div style="font-size:11px;color:var(--tx2);margin-top:3px">≈ ${fD(opt.kwh)} kWh · reste en T1 ✅</div>
+      ${eco>0?(()=>{
+        const src=opt._ecoBase;
+        const ic=opt._ecoMin!=null&&opt._ecoMax!=null?` (fourchette : ${fmt(opt._ecoMin)}–${fmt(opt._ecoMax)} F)`:'';
+        const lbl=src==='inféré'?'vs ton habitude réelle (profil calibré)':src==='historique'?'vs ton habitude mensuelle':'vs recharge en T2';
+        return`<div class="action-eco">💰 Économie estimée : ~${fmt(eco)} FCFA ${lbl}${ic}</div>`;
+      })():''}
+      <div class="action-date">${confStr}</div>
+    </div>`;
+  } else {
+    // Cas inattendu — fallback neutre
+    actionDiv.innerHTML=`<div class="action-card">
+      <div class="action-ti">💡 Aucune recharge nécessaire</div>
+      <div class="action-desc">Ton suivi ce mois est bon. Continue à enregistrer tes recharges pour des recommandations de plus en plus précises.</div>
+    </div>`;
+  }
+
+  // ── ÉCONOMIES RÉALISÉES ──
+  const ecoHeroDiv=document.getElementById('eco_hero');
+  if(niv3){
+    const totalEco=hist.reduce((s,h)=>s+h.eco,0);
+    const moyMensuelle=hist.length?Math.round(totalEco/hist.length):0;
+    const projAnnuelle=moyMensuelle*12;
+    ecoHeroDiv.style.display='block';
+    document.getElementById('eco_total').textContent=fmt(totalEco)+' F';
+    document.getElementById('eco_sub').textContent=`Économisé sur ${hist.length} mois vs recharges non optimisées`;
+    document.getElementById('eco_annuel').textContent=projAnnuelle>0?`📈 Projection annuelle : ~${fmt(projAnnuelle)} FCFA/an`:'';
+    document.getElementById('eco_stats_row').style.display='flex';
+    const nbOpt=hist.filter(h=>h.score>=80).length;
+    const bestMois=hist.reduce((b,h)=>h.eco>b.eco?h:b,hist[0]);
+    const scoreGlobal=hist.length?Math.round(hist.reduce((s,h)=>s+h.score,0)/hist.length):0;
+    document.getElementById('eco_nb_opt').textContent=nbOpt+'/'+hist.length;
+    document.getElementById('eco_best_mois').textContent=bestMois?fmt(bestMois.eco)+' F':'—';
+    document.getElementById('eco_score').textContent=scoreGlobal+'%';
+  } else ecoHeroDiv.style.display='none';
+
+  // ── PLAN DU MOIS ──
+  const planDiv=document.getElementById('eco_plan_mois');
+  if(niv4){
+    const plan=getPlanMois();
+    planDiv.style.display='block';
+    document.getElementById('eco_plan_ct').innerHTML=`
+      <div class="bk-row"><span class="bk-l">Jours restants</span><span class="bk-v">${plan.dLeft} j</span></div>
+      <div class="bk-row"><span class="bk-l">kWh estimés ce mois</span><span class="bk-v">${fD(plan.kMoisEstime)} kWh</span></div>
+      <div class="bk-row"><span class="bk-l">kWh déjà rechargés</span><span class="bk-v" style="color:var(--grn)">${fD(plan.kDejaRech)} kWh</span></div>
+      <div class="bk-row"><span class="bk-l">kWh restants à recharger</span><span class="bk-v" style="color:var(--acc)">${fD(plan.kRestant)} kWh</span></div>
+      <div class="bk-row"><span class="bk-l">Recharge optimale conseillée</span><span class="bk-v pos">${plan.montantReco?fmt(plan.montantReco)+' FCFA':'—'}</span></div>
+      <div class="bk-row"><span class="bk-l">Économie vs T2</span><span class="bk-v" style="color:#4ade80">${plan.eco?'+'+fmt(plan.eco)+' FCFA':'0 F'}</span></div>
+      <div style="margin-top:10px">
+        <div class="${plan.peutT1?'al al-ok':'al al-warn'}"><span class="al-ic">${plan.peutT1?'✅':'⚠️'}</span><span>${plan.peutT1?'Tu peux finir ce mois en Tranche 1 !':'Attention — risque de dépasser T1 ce mois.'}</span></div>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--tx3)">Confiance ${plan.confiance}% · Taux : ${plan.taux} kWh/jour</div>`;
+  } else planDiv.style.display='none';
+
+  // ── HISTORIQUE ÉCONOMIES ──
+  const histDiv=document.getElementById('eco_hist_block');
+  if(niv3&&hist.length>0){
+    histDiv.style.display='block';
+    document.getElementById('eco_hist_ct').innerHTML=hist.slice(0,6).map(h=>`
+      <div class="eco-hist-item">
+        <div><div style="font-weight:600;color:var(--txt)">${moisLbl(h.mois)}</div><div style="font-size:10px;color:var(--tx3)">${h.nbRecharges} recharge(s) · ${fD(h.totK)} kWh · Score T1: ${h.score}%</div></div>
+        <div class="eco-hist-eco">${h.eco>0?'+'+fmt(h.eco)+' F':'Optimal ✅'}</div>
+      </div>`).join('');
+  } else histDiv.style.display='none';
+}
+
 function hideSplash(){
   const s=document.getElementById('splash');
   if(s){s.classList.add('hide');setTimeout(()=>{s.style.display='none';},650);}
 }
 
-/* ── SERVICE WORKER ── */
+/* -- SERVICE WORKER -- */
 if('serviceWorker'in navigator)
   window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
-/* ── INIT ── */
+/* -- INIT -- */
 async function init(){
   injectLogos();
   try{await openDB();}catch(e){console.warn('IndexedDB:',e);}
   await loadState();
-  // Dates par défaut
+  // Dates par defaut
   try{document.getElementById('p2d').value=todayStr();}catch(e){}
   try{document.getElementById('rel_date').value=todayStr();}catch(e){}
   // Rendu initial
