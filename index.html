@@ -1251,7 +1251,7 @@ function getProfil(){
   else if(n<10&&!stable)msg=`🎯 Bon debut ! ${10-n} releves supplementaires affineront encore la precision.`;
   else if(stable)msg=`✅ Profil calibre  -  releves mensuels suffisants desormais.`;
   else msg=`📊 Profil en bonne voie. Continue les releves hebdomadaires.`;
-  return{n,moyenne:moy,sigma,ic95,fiable:n>=3,pct,stable,errStd,vals,msg};
+  return{n,moyenne:moy,sigma,ic95,fiable:n>=2,pct,stable,errStd,vals,msg};
 }
 
 // Calcule la duree estimee pour un montant/kWh donne
@@ -1631,6 +1631,12 @@ async function addR(){
   VM=mois;buildMT();refreshS();
   document.getElementById('p2m').value='';
   toast('✅ Recharge enregistree !');
+}
+
+async function delR(id){
+  await dbDel(STR,id);
+  DATA=DATA.filter(r=>r.id!==id);
+  buildMT();refreshS();
 }
 
 function refreshS(){
