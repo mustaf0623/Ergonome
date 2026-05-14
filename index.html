@@ -836,25 +836,32 @@ function injectLogos(){
 const DBN='ergonome_v75',DBV=1,STR='recharges',STC='config',STL='releves',STP='compteurs';
 let db=null;
 function openDB(){
-  return new Promise((res,rej)=>{
-    const req=indexedDB.open(DBN,DBV);
-    req.onupgradeneeded=e=>{
-      const d=e.target.result;
-      if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
-      if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
-      if(!d.objectStoreNames.contains(STL))d.createObjectStore(STL,{keyPath:'id',autoIncrement:true});
-      if(!d.objectStoreNames.contains(STP))d.createObjectStore(STP,{keyPath:'id'});
-    };
-    req.onsuccess=e=>{db=e.target.result;res(db);};
-    req.onerror=()=>rej(req.error);
-  });
+  return Promise.race([
+    new Promise((res,rej)=>{
+      try{
+        const req=indexedDB.open(DBN,DBV);
+        req.onupgradeneeded=e=>{
+          const d=e.target.result;
+          if(!d.objectStoreNames.contains(STR))d.createObjectStore(STR,{keyPath:'id',autoIncrement:true});
+          if(!d.objectStoreNames.contains(STC))d.createObjectStore(STC,{keyPath:'key'});
+          if(!d.objectStoreNames.contains(STL))d.createObjectStore(STL,{keyPath:'id',autoIncrement:true});
+          if(!d.objectStoreNames.contains(STP))d.createObjectStore(STP,{keyPath:'id'});
+        };
+        req.onsuccess=e=>{db=e.target.result;res(db);};
+        req.onerror=()=>rej(new Error('IndexedDB error: '+req.error));
+        req.onblocked=()=>console.warn('IndexedDB blocked');
+      }catch(e){rej(e);}
+    }),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('IndexedDB timeout after 6s')),6000))
+  ]);
 }
-const tx=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
-const dbGet=(s,k)=>new Promise((r,j)=>{const q=tx(s).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);});
-const dbPut=(s,v)=>new Promise((r,j)=>{const q=tx(s,'readwrite').put(v);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);});
-const dbDel=(s,k)=>new Promise((r,j)=>{const q=tx(s,'readwrite').delete(k);q.onsuccess=()=>r();q.onerror=()=>j(q.error);});
-const dbAll=(s)=>new Promise((r,j)=>{const q=tx(s).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error);});
-const dbClear=(s)=>new Promise((r,j)=>{const q=tx(s,'readwrite').clear();q.onsuccess=()=>r();q.onerror=()=>j(q.error);});
+const tx=(s,m='readonly')=>{if(!db)throw new Error('DB not initialized');return db.transaction(s,m).objectStore(s);};
+const dbOp=(op)=>Promise.race([op,new Promise((_,rej)=>setTimeout(()=>rej(new Error('DB operation timeout')),5000))]);
+const dbGet=(s,k)=>dbOp(new Promise((r,j)=>{try{const q=tx(s).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);}catch(e){j(e);}}));
+const dbPut=(s,v)=>dbOp(new Promise((r,j)=>{try{const q=tx(s,'readwrite').put(v);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error);}catch(e){j(e);}}));
+const dbDel=(s,k)=>dbOp(new Promise((r,j)=>{try{const q=tx(s,'readwrite').delete(k);q.onsuccess=()=>r();q.onerror=()=>j(q.error);}catch(e){j(e);}}));
+const dbAll=(s)=>dbOp(new Promise((r,j)=>{try{const q=tx(s).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error);}catch(e){j(e);}}));
+const dbClear=(s)=>dbOp(new Promise((r,j)=>{try{const q=tx(s,'readwrite').clear();q.onsuccess=()=>r();q.onerror=()=>j(q.error);}catch(e){j(e);};}));
 
 /* -- STATE -- */
 let CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
@@ -867,12 +874,39 @@ let OBJ='t1',VM=currMois();
 const CPT_DEF={id:'cpt_default',nom:'Mon compteur',icone:'⚡',couleur:'#f5a623'};
 
 async function loadState(){
-  try{const c=await dbGet(STC,'main');if(c)CFG=Object.assign({},CFG,c.value);}catch(e){}
-  try{COMPTEURS=await dbAll(STP);}catch(e){COMPTEURS=[];}
-  if(COMPTEURS.length===0){await dbPut(STP,CPT_DEF);COMPTEURS=[CPT_DEF];}
+  if(!db)throw new Error('IndexedDB database not initialized');
+  try{
+    const c=await dbGet(STC,'main');
+    if(c)CFG=Object.assign({},CFG,c.value);
+  }catch(e){
+    console.warn('Failed to load config:',e.message);
+  }
+  try{
+    COMPTEURS=await dbAll(STP);
+    if(COMPTEURS.length===0){
+      await dbPut(STP,CPT_DEF);
+      COMPTEURS=[CPT_DEF];
+    }
+  }catch(e){
+    console.error('Failed to load compteurs:',e.message);
+    COMPTEURS=[CPT_DEF];
+  }
   CPT_ACT=COMPTEURS[0];
-  try{const ac=await dbGet(STC,'cpt_act');if(ac){const f=COMPTEURS.find(c=>c.id===ac.value);if(f)CPT_ACT=f;}}catch(e){}
-  await loadCptData();
+  try{
+    const ac=await dbGet(STC,'cpt_act');
+    if(ac){
+      const f=COMPTEURS.find(c=>c.id===ac.value);
+      if(f)CPT_ACT=f;
+    }
+  }catch(e){
+    console.warn('Failed to load active compteur:',e.message);
+  }
+  try{
+    await loadCptData();
+  }catch(e){
+    console.error('Failed to load compteur data:',e.message);
+    DATA=[];RELEVES=[];
+  }
 }
 
 async function loadCptData(){
@@ -881,32 +915,83 @@ async function loadCptData(){
 }
 
 async function switchCpt(id){
-  const c=COMPTEURS.find(x=>x.id===id);
-  if(!c||c.id===CPT_ACT.id)return;
-  CPT_ACT=c;
-  try{await dbPut(STC,{key:'cpt_act',value:id});}catch(e){}
-  await loadCptData();
-  VM=currMois();
-  renderCptBar();
-  buildMT();refreshS();refreshProfil();renderRelH();refreshPSrc();renderEco();buildDF();renderDT();
-  toast(c.icone+' '+c.nom+'  -  compteur actif');
+  try{
+    const c=COMPTEURS.find(x=>x.id===id);
+    if(!c||c.id===CPT_ACT.id)return;
+    CPT_ACT=c;
+    try{
+      await dbPut(STC,{key:'cpt_act',value:id});
+    }catch(e){
+      console.warn('Failed to save active compteur preference:',e.message);
+    }
+    try{
+      await loadCptData();
+    }catch(e){
+      console.error('Failed to load compteur data:',e.message);
+    }
+    VM=currMois();
+    renderCptBar();
+    buildMT();
+    refreshS();
+    refreshProfil();
+    renderRelH();
+    refreshPSrc();
+    renderEco();
+    buildDF();
+    renderDT();
+    toast(c.icone+' '+c.nom+'  -  compteur actif');
+  }catch(e){
+    console.error('Error switching compteur:',e.message);
+    toast('⚠️ Erreur lors du changement de compteur');
+  }
 }
 
-async function saveCFG(){try{await dbPut(STC,{key:'main',value:CFG});}catch(e){}}
+async function saveCFG(){
+  try{
+    await dbPut(STC,{key:'main',value:CFG});
+  }catch(e){
+    console.warn('Failed to save config:',e.message);
+    toast('⚠️ Config non sauvegardée');
+  }
+}
 
 /* -- CONFIRM MODAL - remplace window.confirm() bloque dans iframes -- */
 let _cmCb=null;
 function askConfirm(icon,title,sub,okLbl,onOk){
-  document.getElementById('cm-ic').textContent=icon;
-  document.getElementById('cm-ti').textContent=title;
-  document.getElementById('cm-su').textContent=sub;
-  document.getElementById('cm-yes').textContent=okLbl;
-  _cmCb=onOk;
-  document.getElementById('cm').classList.add('open');
+  try{
+    const ic=document.getElementById('cm-ic');
+    const ti=document.getElementById('cm-ti');
+    const su=document.getElementById('cm-su');
+    const yes=document.getElementById('cm-yes');
+    const cm=document.getElementById('cm');
+    
+    if(!ic||!ti||!su||!yes||!cm)return;
+    
+    ic.textContent=String(icon||'');
+    ti.textContent=String(title||'');
+    su.textContent=String(sub||'');
+    yes.textContent=String(okLbl||'Confirmer');
+    _cmCb=typeof onOk==='function'?onOk:null;
+    cm.classList.add('open');
+  }catch(e){
+    console.warn('Error showing confirm modal:',e.message);
+  }
 }
+
 function cmAns(yes){
-  document.getElementById('cm').classList.remove('open');
-  if(yes&&_cmCb){const cb=_cmCb;_cmCb=null;cb();}else _cmCb=null;
+  try{
+    const cm=document.getElementById('cm');
+    if(cm)cm.classList.remove('open');
+    if(yes&&_cmCb){
+      const cb=_cmCb;
+      _cmCb=null;
+      try{cb();}catch(e){console.error('Confirm callback error:',e.message);}
+    }else{
+      _cmCb=null;
+    }
+  }catch(e){
+    console.warn('Error handling confirm answer:',e.message);
+  }
 }
 
 /* -- DELETE ALL -- */
@@ -1287,7 +1372,21 @@ function sf(v,d){const n=parseFloat(v);return isNaN(n)?d:n;}
 function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
 function fD(n,d=1){return parseFloat(n.toFixed(d)).toLocaleString('fr-FR');}
 let _tt;
-function toast(msg){if(_tt)clearTimeout(_tt);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);_tt=setTimeout(()=>t.remove(),2800);}
+function toast(msg){
+  try{
+    if(_tt)clearTimeout(_tt);
+    const oldT=document.querySelector('.toast');
+    if(oldT)oldT.remove();
+    const t=document.createElement('div');
+    t.className='toast';
+    t.textContent=String(msg||'');
+    const body=document.body;
+    if(body)body.appendChild(t);
+    _tt=setTimeout(()=>{try{t.remove();}catch(e){}},2800);
+  }catch(e){
+    console.warn('Toast error:',e.message);
+  }
+}
 function al(el,type,icon,msg){el.innerHTML=`<div class="al al-${type}"><span class="al-ic">${icon}</span><span>${msg}</span></div>`;}
 
 /* -- DATE -- */
@@ -1313,19 +1412,91 @@ function showP(id,tb,nb){
   if(id==='p5')renderEco();
 }
 function openSheet(id){
-  if(id==='sh_set'){document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;}
-  document.getElementById(id).classList.add('open');
+  try{
+    const sheet=document.getElementById(id);
+    if(!sheet)return;
+    if(id==='sh_set'){
+      const sr=document.getElementById('sr');
+      const st1=document.getElementById('st1');
+      const st2=document.getElementById('st2');
+      const stx=document.getElementById('stx');
+      if(sr)sr.value=CFG.rev;
+      if(st1)st1.value=CFG.t1;
+      if(st2)st2.value=CFG.t2;
+      if(stx)stx.value=CFG.taxe;
+    }
+    sheet.classList.add('open');
+  }catch(e){
+    console.warn('Error opening sheet:',e.message);
+  }
 }
-function closeSheet(id){document.getElementById(id).classList.remove('open');}
-function closeClick(e,id){if(e.target===document.getElementById(id))closeSheet(id);}
+
+function closeSheet(id){
+  try{
+    const sheet=document.getElementById(id);
+    if(sheet)sheet.classList.remove('open');
+  }catch(e){
+    console.warn('Error closing sheet:',e.message);
+  }
+}
+
+function closeClick(e,id){
+  try{
+    const sheet=document.getElementById(id);
+    if(e.target===sheet)closeSheet(id);
+  }catch(e){}
+}
 
 /* -- SETTINGS -- */
 async function saveSet(){
-  const rev=sf(document.getElementById('sr').value,-1),t1=sf(document.getElementById('st1').value,-1),t2=sf(document.getElementById('st2').value,-1),taxe=sf(document.getElementById('stx').value,-1);
-  if(rev<0||t1<=0||t2<=0||taxe<0||taxe>50){toast('⚠️ Valeurs invalides');return;}
-  CFG={rev,t1,t2,taxe};await saveCFG();closeSheet('sh_set');toast('✅ Parametres enregistres');
+  try{
+    const sr=document.getElementById('sr');
+    const st1=document.getElementById('st1');
+    const st2=document.getElementById('st2');
+    const stx=document.getElementById('stx');
+    
+    if(!sr||!st1||!st2||!stx){
+      toast('⚠️ Formulaire incomplet');
+      return;
+    }
+    
+    const rev=sf(sr.value,-1);
+    const t1=sf(st1.value,-1);
+    const t2=sf(st2.value,-1);
+    const taxe=sf(stx.value,-1);
+    
+    if(rev<0||t1<=0||t2<=0||taxe<0||taxe>50){
+      toast('⚠️ Valeurs invalides');
+      return;
+    }
+    
+    CFG={rev,t1,t2,taxe};
+    await saveCFG();
+    closeSheet('sh_set');
+    toast('✅ Parametres enregistres');
+  }catch(e){
+    console.error('Error saving settings:',e.message);
+    toast('⚠️ Erreur lors de la sauvegarde');
+  }
 }
-function rstSet(){CFG={rev:429,t1:82,t2:136.49,taxe:2.5};saveCFG();document.getElementById('sr').value=CFG.rev;document.getElementById('st1').value=CFG.t1;document.getElementById('st2').value=CFG.t2;document.getElementById('stx').value=CFG.taxe;toast('↩️ Valeurs par defaut');}
+function rstSet(){
+  try{
+    CFG={rev:429,t1:82,t2:136.49,taxe:2.5};
+    saveCFG();
+    const sr=document.getElementById('sr');
+    const st1=document.getElementById('st1');
+    const st2=document.getElementById('st2');
+    const stx=document.getElementById('stx');
+    if(sr)sr.value=CFG.rev;
+    if(st1)st1.value=CFG.t1;
+    if(st2)st2.value=CFG.t2;
+    if(stx)stx.value=CFG.taxe;
+    toast('↩️ Valeurs par defaut');
+  }catch(e){
+    console.error('Error resetting settings:',e.message);
+    toast('⚠️ Erreur lors de la reinitialisation');
+  }
+}
 
 /* -- CORE CALC -- */
 function calcKwh(montant,deja,premiere){
@@ -2095,26 +2266,126 @@ function hideSplash(){
 }
 
 /* -- SERVICE WORKER -- */
-if('serviceWorker'in navigator)
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker'in navigator){
+  window.addEventListener('load',async()=>{
+    try{
+      const scope=window.location.pathname.split('/').slice(0,-1).join('/')||'/';
+      const reg=await Promise.race([
+        navigator.serviceWorker.register('/sw.js',{scope:scope}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('SW registration timeout')),8000))
+      ]);
+      console.log('✓ Service Worker registered');
+    }catch(e){
+      console.warn('⚠ Service Worker registration failed:',e.message);
+    }
+  });
+}else{
+  console.warn('⚠ Service Worker not supported in this browser');
+}
 
 /* -- INIT -- */
 async function init(){
-  injectLogos();
-  try{await openDB();}catch(e){console.warn('IndexedDB:',e);}
-  await loadState();
-  // Dates par defaut
-  try{document.getElementById('p2d').value=todayStr();}catch(e){}
-  try{document.getElementById('rel_date').value=todayStr();}catch(e){}
-  // Rendu initial
-  renderCptBar();
-  buildMT();refreshS();refreshProfil();renderRelH();
-  refreshPSrc();buildDF();renderDT();
-  // Splash
-  setTimeout(hideSplash,1800);
-  try{document.getElementById('splash').addEventListener('click',hideSplash);}catch(e){}
+  try{
+    if(!document.getElementById('splash')){
+      console.error('Splash element missing');
+      return;
+    }
+    
+    injectLogos();
+    
+    try{
+      await openDB();
+      console.log('✓ IndexedDB initialized');
+    }catch(e){
+      throw new Error('IndexedDB initialization failed: '+e.message);
+    }
+    
+    try{
+      await loadState();
+      console.log('✓ Application state loaded');
+    }catch(e){
+      throw new Error('Failed to load application state: '+e.message);
+    }
+    
+    try{
+      const p2d=document.getElementById('p2d');
+      if(p2d)p2d.value=todayStr();
+    }catch(e){console.warn('Could not set p2d date');}
+    
+    try{
+      const rel_date=document.getElementById('rel_date');
+      if(rel_date)rel_date.value=todayStr();
+    }catch(e){console.warn('Could not set rel_date');}
+    
+    try{
+      renderCptBar();
+      buildMT();
+      refreshS();
+      refreshProfil();
+      renderRelH();
+      refreshPSrc();
+      buildDF();
+      renderDT();
+      console.log('✓ UI rendered successfully');
+    }catch(e){
+      throw new Error('UI rendering failed: '+e.message);
+    }
+    
+    console.log('✓ Application ready');
+    setTimeout(hideSplash,4000);
+    
+  }catch(e){
+    console.error('Critical init error:',e.message);
+    showError(e.message);
+  }
+  
+  try{
+    const splash=document.getElementById('splash');
+    if(splash)splash.addEventListener('click',hideSplash);
+  }catch(e){}
 }
-init();
+
+function showError(msg){
+  try{
+    const s=document.getElementById('splash');
+    if(!s)return;
+    s.classList.remove('hide');
+    s.style.display='flex';
+    s.innerHTML=`<div style="text-align:center;color:#f87171;padding:20px;max-width:280px;font-family:var(--fu)">
+      <div style="font-size:40px;margin-bottom:10px">⚠️</div>
+      <div style="font-size:14px;font-weight:bold;color:var(--txt)">Erreur de démarrage</div>
+      <div style="font-size:12px;color:#aaa;margin-top:10px;line-height:1.6;word-break:break-word">${msg}</div>
+      <div style="font-size:11px;color:#666;margin-top:15px">Essayez:<br/>1. Vider cache<br/>2. Recharger (Ctrl+F5 ou Cmd+Shift+R)</div>
+    `;
+  }catch(e){
+    console.error('Error display failed:',e);
+  }
+}
+
+/* -- GLOBAL ERROR HANDLERS -- */
+window.addEventListener('error',(e)=>{
+  console.error('Uncaught error:',e.message,e.filename,e.lineno);
+});
+
+window.addEventListener('unhandledrejection',(e)=>{
+  console.error('Unhandled promise rejection:',e.reason);
+});
+
+window.addEventListener('online',()=>{
+  console.log('✓ Back online');
+  toast('✓ Connexion rétablie');
+});
+
+window.addEventListener('offline',()=>{
+  console.warn('⚠ Connection lost');
+  toast('⚠️ Pas de connexion');
+});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',init);
+}else{
+  init();
+}
 </script>
 </body>
 </html>
