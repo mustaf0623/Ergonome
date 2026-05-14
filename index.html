@@ -2128,6 +2128,170 @@ function renderDT(){
   } else gs.innerHTML='';
 }
 
+
+/* -- MOTEUR ECONOMIES -- */
+
+function getUrgenceSolde(){
+  const p=getProfil();
+  if(!p.fiable||RELEVES.length===0)return null;
+  const dernierRel=RELEVES[RELEVES.length-1];
+  const joursDepuis=Math.round((new Date()-new Date(dernierRel.date+'T00:00:00'))/(1000*60*60*24));
+  const soldeEstime=Math.max(0,dernierRel.kwh-p.moyenne*joursDepuis);
+  if(soldeEstime<=0)return{jours:0,solde:0,urgent:true};
+  const joursRestants=Math.round(soldeEstime/p.moyenne);
+  return{jours:joursRestants,solde:parseFloat(soldeEstime.toFixed(1)),urgent:joursRestants<=5};
+}
+
+function getMontantOptimal(){
+  const p=getProfil();
+  const now=new Date(),mois=currMois();
+  const dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const dLeft=dInM-now.getDate();
+  const itemsMois=DATA.filter(r=>r.date.startsWith(mois));
+  const kDejaRech=itemsMois.reduce((s,r)=>s+r.kwh,0);
+  const kT1restant=Math.max(0,150-kDejaRech);
+
+  // Taux journalier : profil calibré en priorité, sinon moyenne nationale ~3 kWh/jour
+  // Ne pas utiliser kDejaRech/joursEcoules car une grosse recharge unique fausse tout
+  const taux=p.fiable?p.moyenne:3;
+
+  const kRestant=taux*dLeft;
+  // Si l'utilisateur a déjà largement rechargé ce mois (kT1restant faible),
+  // montrer combien il peut encore recharger en T1 — même si c'est peu
+  const kCible=kT1restant>0?Math.min(kRestant,kT1restant):0;
+
+  // Cas : T1 épuisée ce mois → message spécifique géré ailleurs
+  if(kT1restant<=0)return{montant:0,kwh:0,dLeft,kDejaRech,taux,kT1restant:0,confiance:p.fiable?p.pct:30,mois,t1pleine:true};
+
+  // Cas : fin de mois proche (<3j) ou kRestant très faible → pas de recharge nécessaire
+  if(dLeft<=2||kCible<1)return{montant:0,kwh:0,dLeft,kDejaRech,taux,kT1restant,confiance:p.fiable?p.pct:30,mois,findemois:true};
+
+  const isPremiere=itemsMois.length===0;
+  const r=calcFcfa(kCible,kDejaRech,isPremiere);
+  const confiance=p.fiable?p.pct:30;
+  return{montant:r.montant,kwh:parseFloat(kCible.toFixed(1)),dLeft,kDejaRech,taux,kT1restant,confiance,isPremiere,mois};
+}
+
+function getEconomiePotentielle(opt){
+  if(!opt||!opt.kwh||opt.kwh<=0)return 0;
+  const p=getProfil();
+  const hist=getEconomiesHistorique();
+
+  // ── Source 1 : habitude réelle mesurée sur l'historique ──
+  // Coût mensuel moyen réel de l'utilisateur (ce qu'il dépense chaque mois)
+  let coutMoisHabituel=null;
+  if(hist.length>=2){
+    coutMoisHabituel=hist.reduce((s,h)=>s+h.totF,0)/hist.length;
+  }
+
+  // ── Source 2 : coût journalier inféré via profil ──
+  // Si profil calibré : coût/jour habituel = x̄ × coût_moyen_kWh_historique
+  let ecoInferee=null;
+  if(p.fiable&&coutMoisHabituel){
+    const allK=DATA.reduce((s,r)=>s+r.kwh,0);
+    const allF=DATA.reduce((s,r)=>s+r.montant,0);
+    const coutKwhHabituel=allK>0?allF/allK:null; // FCFA/kWh réel moyen
+    if(coutKwhHabituel){
+      // Coût journalier habituel inféré
+      const coutJourHabit=p.moyenne*coutKwhHabituel;
+      // Coût journalier optimal T1 réel
+      const nbMoisHist=hist.length||1;
+      const allKHist=hist.reduce((s,h)=>s+h.totK,0);
+      const coutT1Reel=(allKHist*CFG.t1*(1+CFG.taxe/100)+nbMoisHist*CFG.rev)/Math.max(1,allKHist);
+      const coutJourOptimal=p.moyenne*coutT1Reel;
+      // Économie sur les jours restants du mois
+      const ecoJour=Math.max(0,coutJourHabit-coutJourOptimal);
+      ecoInferee=Math.round(ecoJour*opt.dLeft);
+      // Fourchette IC : marge = (ic95/x̄) × économie
+      const marge=p.ic95>0?Math.round(ecoInferee*(p.ic95/p.moyenne)):0;
+      opt._ecoMin=Math.max(0,ecoInferee-marge);
+      opt._ecoMax=ecoInferee+marge;
+      opt._ecoBase='inféré'; // marqueur pour l'affichage
+    }
+  }
+
+  // ── Source 3 : habitude mensuelle brute (si pas de profil calibré) ──
+  if(!ecoInferee&&coutMoisHabituel){
+    // Proportion du mois restant × (coût habituel - coût optimal recommandé)
+    const now=new Date();
+    const dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    const propRestante=opt.dLeft/dInM;
+    const coutHabitProp=Math.round(coutMoisHabituel*propRestante);
+    ecoInferee=Math.max(0,coutHabitProp-opt.montant);
+    opt._ecoBase='historique';
+    opt._ecoMin=null;opt._ecoMax=null;
+  }
+
+  // ── Fallback : comparaison T2 plafonnée (aucune donnée suffisante) ──
+  if(!ecoInferee){
+    const coutT2=Math.ceil(opt.kwh*CFG.t2*(1+CFG.taxe/100));
+    ecoInferee=Math.min(Math.max(0,coutT2-opt.montant),Math.round(opt.montant*0.20));
+    opt._ecoBase='T2';
+    opt._ecoMin=null;opt._ecoMax=null;
+  }
+
+  return ecoInferee;
+}
+
+function getAlerteProactive(){
+  const urgence=getUrgenceSolde();
+  if(!urgence)return null;
+  const opt=getMontantOptimal();
+  if(urgence.urgent||urgence.jours<=5){
+    const montant=opt?fmt(opt.montant)+' FCFA':'une recharge';
+    const deadline=urgence.jours<=2?'aujourd\'hui ou demain':`dans ${urgence.jours} jours`;
+    return{
+      niveau:urgence.jours<=2?'high':urgence.jours<=4?'med':'low',
+      titre:urgence.jours<=0?'⚡ Solde épuisé !':'⚡ Recharge nécessaire bientôt',
+      msg:`Solde estimé : <strong>${urgence.solde} kWh</strong> — s'épuise ${deadline}. Recharge <strong>${montant}</strong> maintenant pour éviter la coupure.`,
+      montant:opt?.montant,
+      eco:getEconomiePotentielle(opt)
+    };
+  }
+  return null;
+}
+
+function getPlanMois(){
+  const p=getProfil();
+  const now=new Date(),mois=currMois();
+  const jour=now.getDate();
+  const dInM=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const dLeft=dInM-jour;
+  const taux=p.fiable?p.moyenne:3;
+  const kMoisEstime=Math.round(taux*dInM);
+  const kDejaRech=DATA.filter(r=>r.date.startsWith(mois)).reduce((s,r)=>s+r.kwh,0);
+  const kRestant=Math.max(0,taux*dLeft);
+  const isPremiere=DATA.filter(r=>r.date.startsWith(mois)).length===0;
+  // Rester en T1 ?
+  const peutT1=kDejaRech+kRestant<=150;
+  const montantReco=kRestant>0?calcFcfa(Math.min(kRestant,Math.max(0,150-kDejaRech)),kDejaRech,isPremiere).montant:0;
+  // Économie vs recharger en T2
+  const coutSiT2=kRestant>0?Math.ceil(kRestant*CFG.t2*(1+CFG.taxe/100)):0;
+  const coutOptimal=kRestant>0?Math.ceil(kRestant*CFG.t1*(1+CFG.taxe/100)):0;
+  const eco=Math.max(0,coutSiT2-coutOptimal);
+  return{kMoisEstime,kDejaRech,kRestant:parseFloat(kRestant.toFixed(1)),peutT1,montantReco,eco,dLeft,jour,taux:parseFloat(taux.toFixed(2)),confiance:p.fiable?p.pct:30};
+}
+
+function getEconomiesHistorique(){
+  // Pour chaque mois, compare montant réel vs montant optimal théorique
+  const moisMap={};
+  DATA.forEach(r=>{
+    const m=r.date.substring(0,7);
+    if(!moisMap[m])moisMap[m]={recharges:[],totF:0,totK:0};
+    moisMap[m].recharges.push(r);
+    moisMap[m].totF+=r.montant;
+    moisMap[m].totK+=r.kwh;
+  });
+  const hist=[];
+  Object.entries(moisMap).forEach(([m,d])=>{
+    const coutOptimal=Math.ceil(d.totK*CFG.t1*(1+CFG.taxe/100)+CFG.rev);
+    const eco=Math.max(0,d.totF-coutOptimal);
+    const score=d.totK<=150?100:d.totK<=250?60:20;
+    hist.push({mois:m,totF:d.totF,totK:d.totK,coutOptimal,eco,score,nbRecharges:d.recharges.length});
+  });
+  return hist.sort((a,b)=>b.mois.localeCompare(a.mois));
+}
+
 function renderEco(){
   const p=getProfil();
   const hist=getEconomiesHistorique();
