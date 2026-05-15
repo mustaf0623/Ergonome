@@ -1324,8 +1324,48 @@ async function addRel(){
   RELEVES.push(newR);RELEVES.sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('rel_kwh').value='';
   refreshProfil();renderRelH();
-  toast('🔋 Releve enregistre !');
-  if(RELEVES.length===1)toast('✅ 1er releve ! Fais-en un la semaine prochaine pour demarrer la calibration.');
+
+  // Message prochain releve + etat profil
+  const p2=getProfil();
+  const nextD=new Date(d+'T00:00:00');
+  nextD.setDate(nextD.getDate()+7);
+  const nextStr=nextD.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  const nextStrCourt=nextD.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+
+  let msg='', msgType='info';
+  if(RELEVES.length===1){
+    msg='🔋 1er releve enregistre ! Reviens le <strong>'+nextStr+'</strong> pour le 2eme — la calibration demarrera.';
+    msgType='info';
+  } else if(p2.stable){
+    const dans4sem=new Date(nextD); dans4sem.setDate(dans4sem.getDate()+21);
+    const dans4str=dans4sem.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+    msg='✅ Profil calibre a <strong>'+p2.pct+'%</strong> — les releves hebdomadaires ne sont plus necessaires ! Un releve mensuel suffit. Prochain recommande : <strong>'+dans4str+'</strong>.';
+    msgType='success';
+  } else if(p2.fiable){
+    msg='🔋 Releve enregistre — profil a <strong>'+p2.pct+'%</strong>. Prochain releve : <strong>'+nextStr+'</strong>.';
+    msgType='ok';
+  } else {
+    const manquants=Math.max(0,3-RELEVES.length);
+    msg='🔋 Releve enregistre. Encore <strong>'+manquants+'</strong> releve(s) pour demarrer les suggestions. Prochain : <strong>'+nextStr+'</strong>.';
+    msgType='info';
+  }
+  _showRelBanner(msg, msgType);
+}
+
+function _showRelBanner(html, type){
+  const bg={info:'rgba(56,189,248,.1)',ok:'rgba(34,197,94,.08)',success:'rgba(34,197,94,.13)',warn:'rgba(245,166,35,.1)'};
+  const bd={info:'rgba(56,189,248,.25)',ok:'rgba(34,197,94,.2)',success:'rgba(34,197,94,.35)',warn:'rgba(245,166,35,.25)'};
+  let el=document.getElementById('rel_msg_banner');
+  if(!el){
+    el=document.createElement('div');
+    el.id='rel_msg_banner';
+    const hist=document.getElementById('rel_hist');
+    if(hist)hist.parentNode.insertBefore(el,hist);
+  }
+  el.style.cssText='background:'+bg[type]+';border:1px solid '+bd[type]+';border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;line-height:1.7;color:var(--txt);animation:fu .3s ease';
+  el.innerHTML=html;
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .5s';setTimeout(()=>el&&el.remove(),500);},15000);
 }
 
 async function delRel(id){
