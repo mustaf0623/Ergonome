@@ -2462,10 +2462,11 @@ function renderEco(){
     }
     document.getElementById('eco_stats_row').style.display='flex';
     const nbOpt=hist.filter(h=>h.score>=80).length;
-    const bestMois=hist.reduce((b,h)=>h.eco>b.eco?h:b,hist[0]);
+    const bestMois=hist.reduce((b,h)=>Math.max(h.eco,h.ecoVsT2)>Math.max(b.eco,b.ecoVsT2)?h:b,hist[0]);
+    const bestMoisValue=bestMois?fmt(Math.max(bestMois.eco,bestMois.ecoVsT2))+' F':'—';
     const scoreGlobal=hist.length?Math.round(hist.reduce((s,h)=>s+h.score,0)/hist.length):0;
     document.getElementById('eco_nb_opt').textContent=nbOpt+'/'+hist.length;
-    document.getElementById('eco_best_mois').textContent=bestMois?fmt(bestMois.eco)+' F':'—';
+    document.getElementById('eco_best_mois').textContent=bestMoisValue;
     document.getElementById('eco_score').textContent=scoreGlobal+'%';
   } else ecoHeroDiv.style.display='none';
 
