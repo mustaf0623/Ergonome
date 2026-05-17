@@ -2336,19 +2336,27 @@ function getEconomiesHistorique(){
     moisMap[m].totF+=r.montant;
     moisMap[m].totK+=r.kwh;
   });
+  const p=getProfil();
+  const allK=DATA.reduce((s,r)=>s+r.kwh,0);
+  const allF=DATA.reduce((s,r)=>s+r.montant,0);
+  const coutKwhHabituel=allK>0?allF/allK:null;
   const hist=[];
   Object.entries(moisMap).forEach(([m,d])=>{
     // Cout T1 reel (avec redevance) — reference optimale
     const coutT1Reel=Math.ceil(d.totK*CFG.t1*(1+CFG.taxe/100)+CFG.rev);
     // Cout si tout avait ete en T2 — ce que l utilisateur aurait paye sans optimisation
     const coutT2Hyp=Math.ceil(d.totK*CFG.t2*(1+CFG.taxe/100)+CFG.rev);
-    // Economie reelle = surpayement vs T1 optimal (si l utilisateur a mal recharge)
-    const eco=Math.max(0,d.totF-coutT1Reel);
+    // Economie reelle vs T1 optimal
+    const ecoT1=Math.max(0,d.totF-coutT1Reel);
+    // Economie inférée vs habitude utilisateur si le profil est fiable
+    const ecoInfered=p.fiable&&coutKwhHabituel?Math.max(0,Math.round(d.totK*coutKwhHabituel-d.totF)):0;
+    // Économie réalisée conservant la meilleure base entre T1 et profil utilisateur
+    const eco=Math.max(ecoT1,ecoInfered);
     // Economie vs T2 = ce que l utilisateur a evite en restant en T1
     const ecoVsT2=Math.max(0,coutT2Hyp-d.totF);
     // Score T1 : 100% si ≤150kWh, degressif sinon
     const score=d.totK<=150?100:d.totK<=250?Math.round(100-(d.totK-150)):20;
-    hist.push({mois:m,totF:d.totF,totK:d.totK,coutT1Reel,eco,ecoVsT2,score,nbRecharges:d.recharges.length});
+    hist.push({mois:m,totF:d.totF,totK:d.totK,coutT1Reel,eco,ecoT1,ecoInfered,ecoVsT2,score,nbRecharges:d.recharges.length});
   });
   return hist.sort((a,b)=>b.mois.localeCompare(a.mois));
 }
