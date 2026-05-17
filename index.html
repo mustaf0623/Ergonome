@@ -2319,7 +2319,6 @@ function getPlanMois(){
 }
 
 function getEconomiesHistorique(){
-  // Pour chaque mois, compare montant réel vs montant optimal théorique
   const moisMap={};
   DATA.forEach(r=>{
     const m=r.date.substring(0,7);
@@ -2330,10 +2329,17 @@ function getEconomiesHistorique(){
   });
   const hist=[];
   Object.entries(moisMap).forEach(([m,d])=>{
-    const coutOptimal=Math.ceil(d.totK*CFG.t1*(1+CFG.taxe/100)+CFG.rev);
-    const eco=Math.max(0,d.totF-coutOptimal);
-    const score=d.totK<=150?100:d.totK<=250?60:20;
-    hist.push({mois:m,totF:d.totF,totK:d.totK,coutOptimal,eco,score,nbRecharges:d.recharges.length});
+    // Cout T1 reel (avec redevance) — reference optimale
+    const coutT1Reel=Math.ceil(d.totK*CFG.t1*(1+CFG.taxe/100)+CFG.rev);
+    // Cout si tout avait ete en T2 — ce que l utilisateur aurait paye sans optimisation
+    const coutT2Hyp=Math.ceil(d.totK*CFG.t2*(1+CFG.taxe/100)+CFG.rev);
+    // Economie reelle = surpayement vs T1 optimal (si l utilisateur a mal recharge)
+    const eco=Math.max(0,d.totF-coutT1Reel);
+    // Economie vs T2 = ce que l utilisateur a evite en restant en T1
+    const ecoVsT2=Math.max(0,coutT2Hyp-d.totF);
+    // Score T1 : 100% si ≤150kWh, degressif sinon
+    const score=d.totK<=150?100:d.totK<=250?Math.round(100-(d.totK-150)):20;
+    hist.push({mois:m,totF:d.totF,totK:d.totK,coutT1Reel,eco,ecoVsT2,score,nbRecharges:d.recharges.length});
   });
   return hist.sort((a,b)=>b.mois.localeCompare(a.mois));
 }
@@ -2364,17 +2370,15 @@ function renderEco(){
   document.getElementById('eco_lock').style.display='none';
   document.getElementById('eco_content').style.display='block';
 
-  // Progression partielle si pas encore niv4
-  if(!niv4){
+  // Progression — visible dans eco_content, jamais en overlay bloquant
+  {
     const steps=`
-      <div class="prog-step ${niv1?'prog-done':'prog-lock'}"><span class="prog-ic">${niv1?'✅':'🔒'}</span><span>1ère recharge enregistrée</span></div>
-      <div class="prog-step ${niv2?'prog-done':niv1?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv2?'✅':niv1?'⏳':'🔒'}</span><span>3 relevés compteur — <strong>${RELEVES.length}/3</strong>${niv2?' ✓':` (encore ${Math.max(0,3-RELEVES.length)})`}</span></div>
-      <div class="prog-step ${niv3?'prog-done':niv2?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv3?'✅':niv2?'⏳':'🔒'}</span><span>2 mois de recharges — <strong>${hist.length}/2</strong>${niv3?' ✓':niv2?` (encore ${Math.max(0,2-hist.length)} mois)`:'🔒'}</span></div>
-      <div class="prog-step ${niv4?'prog-done':niv3?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv4?'✅':niv3?'⏳':'🔒'}</span><span>9 relevés calibration — <strong>${RELEVES.length}/9</strong>${niv4?' ✓':niv3?` (encore ${Math.max(0,9-RELEVES.length)})`:'🔒'}</span></div>`;
+      <div class="prog-step ${niv1?'prog-done':'prog-lock'}"><span class="prog-ic">${niv1?'✅':'🔒'}</span><span>1ere recharge enregistree</span></div>
+      <div class="prog-step ${niv2?'prog-done':niv1?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv2?'✅':niv1?'⏳':'🔒'}</span><span>3 releves compteur — <strong>${RELEVES.length}/3</strong>${niv2?' ✓':' (encore '+Math.max(0,3-RELEVES.length)+')'}</span></div>
+      <div class="prog-step ${niv3?'prog-done':niv2?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv3?'✅':niv2?'⏳':'🔒'}</span><span>2 mois de recharges — <strong>${hist.length}/2</strong>${niv3?' ✓':niv2?' (encore '+Math.max(0,2-hist.length)+' mois)':'🔒'}</span></div>
+      <div class="prog-step ${niv4?'prog-done':niv3?'prog-curr':'prog-lock'}"><span class="prog-ic">${niv4?'✅':niv3?'⏳':'🔒'}</span><span>9 releves calibration — <strong>${RELEVES.length}/9</strong>${niv4?' ✓':niv3?' (encore '+Math.max(0,9-RELEVES.length)+')':'🔒'}</span></div>`;
     document.getElementById('eco_steps').innerHTML=steps;
-    document.getElementById('eco_lock').style.display='block';
-  } else {
-    document.getElementById('eco_lock').style.display='none';
+    document.getElementById('eco_lock').style.display=niv4?'none':'block';
   }
 
   // ── ALERTE PROACTIVE URGENTE ──
@@ -2443,12 +2447,19 @@ function renderEco(){
   const ecoHeroDiv=document.getElementById('eco_hero');
   if(niv3){
     const totalEco=hist.reduce((s,h)=>s+h.eco,0);
+    const totalEcoVsT2=hist.reduce((s,h)=>s+(h.ecoVsT2||0),0);
     const moyMensuelle=hist.length?Math.round(totalEco/hist.length):0;
     const projAnnuelle=moyMensuelle*12;
     ecoHeroDiv.style.display='block';
-    document.getElementById('eco_total').textContent=fmt(totalEco)+' F';
-    document.getElementById('eco_sub').textContent=`Économisé sur ${hist.length} mois vs recharges non optimisées`;
-    document.getElementById('eco_annuel').textContent=projAnnuelle>0?`📈 Projection annuelle : ~${fmt(projAnnuelle)} FCFA/an`:'';
+    if(totalEco===0&&totalEcoVsT2>0){
+      document.getElementById('eco_total').textContent=fmt(totalEcoVsT2)+' F';
+      document.getElementById('eco_sub').textContent='Economise sur '+hist.length+' mois en restant en T1 vs T2';
+      document.getElementById('eco_annuel').textContent='📈 Projection annuelle : ~'+fmt(Math.round(totalEcoVsT2/hist.length*12))+' FCFA/an evites';
+    } else {
+      document.getElementById('eco_total').textContent=fmt(totalEco)+' F';
+      document.getElementById('eco_sub').textContent='Economise sur '+hist.length+' mois vs recharges non optimisees';
+      document.getElementById('eco_annuel').textContent=projAnnuelle>0?'📈 Projection annuelle : ~'+fmt(projAnnuelle)+' FCFA/an':'';
+    }
     document.getElementById('eco_stats_row').style.display='flex';
     const nbOpt=hist.filter(h=>h.score>=80).length;
     const bestMois=hist.reduce((b,h)=>h.eco>b.eco?h:b,hist[0]);
@@ -2480,11 +2491,11 @@ function renderEco(){
   const histDiv=document.getElementById('eco_hist_block');
   if(niv3&&hist.length>0){
     histDiv.style.display='block';
-    document.getElementById('eco_hist_ct').innerHTML=hist.slice(0,6).map(h=>`
-      <div class="eco-hist-item">
-        <div><div style="font-weight:600;color:var(--txt)">${moisLbl(h.mois)}</div><div style="font-size:10px;color:var(--tx3)">${h.nbRecharges} recharge(s) · ${fD(h.totK)} kWh · Score T1: ${h.score}%</div></div>
-        <div class="eco-hist-eco">${h.eco>0?'+'+fmt(h.eco)+' F':'Optimal ✅'}</div>
-      </div>`).join('');
+    document.getElementById('eco_hist_ct').innerHTML=hist.slice(0,6).map(h=>{
+      const affEco=h.eco>0?'+'+fmt(h.eco)+' F economises':(h.ecoVsT2>0?'T1 ✅ (+'+fmt(h.ecoVsT2)+' F vs T2)':'Optimal ✅');
+      const affColor=h.eco>0?'var(--acc)':(h.ecoVsT2>0?'#4ade80':'#4ade80');
+      return '<div class="eco-hist-item"><div><div style="font-weight:600;color:var(--txt)">'+moisLbl(h.mois)+'</div><div style="font-size:10px;color:var(--tx3)">'+h.nbRecharges+' recharge(s) · '+fD(h.totK)+' kWh · Score T1: '+h.score+'%</div></div><div class="eco-hist-eco" style="color:'+affColor+'">'+affEco+'</div></div>';
+    }).join('');
   } else histDiv.style.display='none';
 }
 
