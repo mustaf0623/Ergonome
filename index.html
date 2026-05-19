@@ -453,7 +453,7 @@ input:checked+.tog-s::before{transform:translateX(20px);background:#000}
           <div class="bk-row"><span class="bk-l">↳ kWh Tranche 1 (82 F)</span><span class="bk-v" id="c1_k1" style="color:var(--t1)">—</span></div>
           <div class="bk-row" id="c1_k2r"><span class="bk-l">↳ kWh Tranche 2 (136,49 F)</span><span class="bk-v" id="c1_k2" style="color:var(--t2)">—</span></div>
         </div>
-        <div id="c1_al"></div><div id="c1_sg"></div>
+        <div id="c1_al"></div><div id="c1_sg"></div><div id="c1_duree"></div>
       </div>
     </div>
     <!-- kWh → FCFA -->
@@ -1626,6 +1626,7 @@ function calcCFA(){
   else al(ale,'ok','✅',`Tranche 1 (82 F/kWh). Reste ${fD(150-nv)} kWh avant T2.`);
   const sg=document.getElementById('c1_sg');
   if(nv>150){const ec=(nv-150)*(CFG.t2-CFG.t1)*(1+CFG.taxe/100);sg.innerHTML=`<div class="sugg" style="margin-top:10px"><div class="sugg-t">💡 Suggestion</div><p>En rechargeant en debut de mois (T1), tu economises ~<strong>${fmt(ec)} FCFA</strong> sur ces ${fD(nv-150)} kWh en T2.</p></div>`;}else sg.innerHTML='';
+  document.getElementById('c1_duree').innerHTML=dureeHTML(r.kwh);
   document.getElementById('c1r').classList.add('show');
 }
 
